@@ -165,6 +165,26 @@ ApplicationWindow {
         text: text.toUpperCase()
     }
 
+    component AboutInfoRow: Rectangle {
+        property string label: ""
+        property string value: ""
+        property color valueColor: window.textPrimary
+        Layout.fillWidth: true
+        implicitHeight: 34
+        radius: 8
+        color: "#07111e"
+        border.width: 1
+        border.color: window.border
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 12
+            anchors.rightMargin: 12
+            LabelText { text: label.toUpperCase(); color: window.textMuted; font.pixelSize: 9; font.bold: true; font.letterSpacing: 1 }
+            Item { Layout.fillWidth: true }
+            LabelText { text: value; color: valueColor; font.pixelSize: 11 }
+        }
+    }
+
     FolderDialog {
         id: rootDialog
         title: ui("browse_button")
@@ -184,6 +204,83 @@ ApplicationWindow {
         nameFilters: ["STL files (*.stl *.STL)"]
         onAccepted: {
             addFileField.text = selectedFile.toString()
+        }
+    }
+
+    Dialog {
+        id: aboutDialog
+        modal: true
+        anchors.centerIn: parent
+        width: 440
+        padding: 24
+        background: Rectangle { color: window.panel; radius: 16; border.color: window.border; border.width: 1 }
+        contentItem: ColumnLayout {
+            spacing: 8
+
+            RowLayout {
+                Layout.fillWidth: true
+                Item { Layout.fillWidth: true }
+                Rectangle {
+                    Layout.preferredWidth: 88; Layout.preferredHeight: 88; radius: 20
+                    color: "#0e3045"; border.width: 1; border.color: "#2d7695"
+                    VectorImage {
+                        anchors.fill: parent; anchors.margins: 10
+                        source: "../../../images/HYDRA_UMC_ICON.svg"
+                        preferredRendererType: VectorImage.CurveRenderer
+                        animations.loops: Animation.Infinite
+                        animations.paused: false
+                    }
+                }
+                Item { Layout.fillWidth: true }
+            }
+
+            LabelText {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                text: "HYDRA<font color=\"" + window.green + "\">-UM</font><font color=\"" + window.red + "\">C</font> <font color=\"" + window.cyan + "\">EDITOR STL</font>"
+                textFormat: Text.RichText
+                font.pixelSize: 20
+                font.bold: true
+                font.letterSpacing: 1
+            }
+            LabelText {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+                text: ui("about_tagline")
+                color: window.cyan
+                font.pixelSize: 12
+                font.bold: true
+            }
+            LabelText {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+                text: ui("about_description")
+                color: window.textMuted
+                font.pixelSize: 11
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.topMargin: 6
+                spacing: 4
+                AboutInfoRow { label: ui("about_version_label"); value: backend.appVersion }
+                AboutInfoRow { label: ui("about_author_label"); value: "JuanenRac (Electro Hobby 3D)" }
+                AboutInfoRow {
+                    label: ui("about_email_label")
+                    valueColor: window.cyan
+                    value: "electrohobby3d@gmail.com"
+                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: Qt.openUrlExternally("mailto:electrohobby3d@gmail.com") }
+                }
+                AboutInfoRow { label: ui("about_license_label"); value: ui("about_license") }
+            }
+
+            RowLayout { Layout.fillWidth: true; Layout.topMargin: 8
+                GameButton { text: ui("open_github_button"); Layout.preferredWidth: 230; accent: "#264966"; onClicked: Qt.openUrlExternally("https://github.com/JuanenRac/HYDRA-UMC-EDITOR-STL") }
+                Item { Layout.fillWidth: true }
+                GameButton { text: ui("about_close_button"); Layout.preferredWidth: 152; accent: window.cyan; onClicked: aboutDialog.close() }
+            }
         }
     }
 
@@ -254,6 +351,7 @@ ApplicationWindow {
                 }
                 onActivated: backend.setLanguage(model[currentIndex].code)
             }
+            GameButton { text: ui("menu_about"); Layout.preferredWidth: 110; accent: "#264966"; onClicked: aboutDialog.open() }
         }
 
         RowLayout {
