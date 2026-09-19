@@ -15,26 +15,34 @@
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick desktop GUI">
 </p>
 
-> **v0.0.1 - scaffolding.** The real CLI/GUI core described below is
-> genuinely implemented and tested. It does not yet push an edited part
-> back to HYDRA-UMC-SERVER's own `POST /api/models/submit` catalog (the
-> way HYDRA-UMC-EDITOR-URDF does for URDF models) or offer a live 3D
-> preview of a part before/after an edit - both are real, scoped future
-> work (see ROADMAP), not silently assumed done.
+> **v0.0.3.** The real CLI/GUI core described below is genuinely
+> implemented and tested, including a real Qt Quick 3D viewer with
+> pick-to-select, per-part color, transform, replace, remove and add. It
+> does not yet push an edited part back to HYDRA-UMC-SERVER's own
+> `POST /api/models/submit` catalog (the way HYDRA-UMC-EDITOR-URDF does
+> for URDF models) or propagate a part's own saved color into
+> STUDIO/SUITE's own live 3D viewers - both real, scoped future work
+> (see ROADMAP), not silently assumed done.
 
 **Honesty check - what actually runs today:** `model_catalog.py` (real,
-read-only discovery of both model libraries) and `stl_ops.py` (real STL
-mutation via `numpy-stl` - transform/replace/remove/add) are tested
-against real, generated STL fixtures (`pytest tests/`, 21 passing cases)
-and have been smoke-tested end to end against this ecosystem's own real
+read-only discovery of both model libraries), `stl_ops.py` (real STL
+mutation via `numpy-stl` - transform/replace/remove/add, plus
+`model_bounds()` for the 3D viewer's own camera framing),
+`part_colors.py` (real per-part color sidecar) and `stl_geometry.py`
+(real Qt Quick 3D geometry loading) are all tested against real,
+generated STL fixtures and a real, session-scoped `QGuiApplication`
+where needed (`pytest tests/`, 41 passing cases) and have been
+smoke-tested end to end against this ecosystem's own real
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` checkouts (`--cli categories`/
 `models`/`parts` against the real trees; `transform`/`remove` against a
-throwaway copy, never the real checkout). The Qt Quick desktop GUI
-(`qt_gui.py`, `qml/Main.qml`) loads and renders with no QML errors
-(verified with `QT_QPA_PLATFORM=offscreen`), but has no automated test of
-its own - driving a real Qt event loop isn't attempted here, the same
-honesty boundary HYDRA-UMC-UPDATER's own README already draws for its
-own Qt Quick shell.
+throwaway copy, never the real checkout). `qt_gui.py`'s `EditorBridge`
+itself is also directly tested (color slot, selection preserved across
+a color change). `qml/Main.qml` loads and renders with no QML errors
+(verified headlessly with `QT_QPA_PLATFORM=offscreen`, including with a
+real model's parts loaded into the 3D viewer), but the QML scene graph
+itself has no automated test of its own - driving a real Qt event loop
+isn't attempted here, the same honesty boundary HYDRA-UMC-UPDATER's own
+README already draws for its own Qt Quick shell.
 
 ---
 
@@ -50,12 +58,26 @@ the same real category layout (`robots-5-dof`/`robots-6-dof`/
 `metadata.json` alongside its `ATTRIBUTION.txt`) - this tool reads that
 exact real layout, not a separate copy or a database of its own.
 
-Four real operations, each backed by real file I/O against the actual
+A real Qt Quick 3D viewer renders every editable part of the selected
+model (`stl_geometry.py`, a real `QQuick3DGeometry` loading each part's
+own triangles straight from its STL file) - drag to orbit, wheel to
+zoom, click a part to select it (real `View3D.pick()`, not a hit-test
+guess). The camera frames itself on the model's own real combined
+bounding box (`stl_ops.py`'s `model_bounds()`), so a 400mm robot base
+and a 5mm screw both frame correctly.
+
+Five real operations, each backed by real file I/O against the actual
 checkout on disk:
 
 - **Transform** - translate/rotate/scale a part's own real vertex data
   (via `numpy-stl`, the same library HYDRA-UMC-SUITE's own
   `render/mesh.py` already depends on) and save it back in place.
+- **Change color** - a real per-part color annotation (`part_colors.json`,
+  a sidecar this tool owns) shown in the 3D view - a binary STL carries
+  no reliable color of its own, and this ecosystem's own STUDIO/SUITE
+  viewers don't interpret that convention either, so this is an honest
+  EDITOR-STL-only preview today, not (yet) propagated into their live
+  3D viewers.
 - **Replace** - overwrite a part with another real STL file.
 - **Remove** - take a part out of a model.
 - **Add** - bring a new real STL file into a model.
@@ -168,9 +190,9 @@ directory).
 - Push an edited/added part back to HYDRA-UMC-SERVER's own real
   `POST /api/models/submit` catalog endpoint, the same real integration
   point HYDRA-UMC-EDITOR-URDF already uses for URDF models.
-- A live 3D preview of the selected part (before/after a transform),
-  reusing HYDRA-UMC-SUITE's own real `RobotGLRenderer`/mesh-loading code
-  rather than a second, separate OpenGL viewer.
+- Propagating a part's own saved color (`part_colors.json`, see above)
+  into HYDRA-UMC-STUDIO/HYDRA-UMC-SUITE's own live 3D viewers - real,
+  separate, cross-repo work.
 - A packaged standalone GUI executable (PyInstaller, matching
   HYDRA-UMC-SUITE's own `build_exe.bat`/`.sh` convention).
 - Undo/redo over a session's own `.trash/` history, instead of a manual

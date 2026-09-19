@@ -15,29 +15,38 @@
   <img src="https://img.shields.io/badge/Escritorio-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="GUI de escritorio PySide6 Qt Quick">
 </p>
 
-> **v0.0.1 - scaffolding.** El núcleo real de CLI/GUI descrito abajo está
-> implementado y probado de verdad. Todavía no envía una pieza editada
-> de vuelta al catálogo real `POST /api/models/submit` de
-> HYDRA-UMC-SERVER (como sí hace HYDRA-UMC-EDITOR-URDF con los modelos
-> URDF), ni ofrece una vista previa 3D en vivo de una pieza antes/después
-> de una edición - ambas cosas son trabajo futuro real y acotado (ver
-> ROADMAP), no se dan por hechas en silencio.
+> **v0.0.3.** El núcleo real de CLI/GUI descrito abajo está implementado
+> y probado de verdad, incluido un visor 3D real en Qt Quick 3D con
+> selección por clic, color por pieza, transformar, reemplazar, quitar y
+> añadir. Todavía no envía una pieza editada de vuelta al catálogo real
+> `POST /api/models/submit` de HYDRA-UMC-SERVER (como sí hace
+> HYDRA-UMC-EDITOR-URDF con los modelos URDF), ni propaga el color
+> guardado de una pieza a los visores 3D en vivo de STUDIO/SUITE - ambas
+> cosas son trabajo futuro real y acotado (ver ROADMAP), no se dan por
+> hechas en silencio.
 
 **Comprobación de honestidad - qué funciona de verdad hoy:**
 `model_catalog.py` (descubrimiento real, de solo lectura, de las dos
-librerías de modelos) y `stl_ops.py` (mutación real de STL vía
-`numpy-stl` - transformar/reemplazar/quitar/añadir) están probados
-contra ficheros STL reales generados (`pytest tests/`, 21 casos en
+librerías de modelos), `stl_ops.py` (mutación real de STL vía
+`numpy-stl` - transformar/reemplazar/quitar/añadir, más
+`model_bounds()` para el encuadre de cámara del visor 3D),
+`part_colors.py` (fichero auxiliar real de color por pieza) y
+`stl_geometry.py` (carga real de geometría Qt Quick 3D) están todos
+probados contra ficheros STL reales generados y una `QGuiApplication`
+real de ámbito de sesión donde hace falta (`pytest tests/`, 41 casos en
 verde) y se han verificado de extremo a extremo contra los checkouts
 reales de `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` de este ecosistema
 (`--cli categories`/`models`/`parts` contra los árboles reales;
 `transform`/`remove` contra una copia desechable, nunca contra el
-checkout real). La GUI de escritorio Qt Quick (`qt_gui.py`,
-`qml/Main.qml`) carga y se renderiza sin errores de QML (verificado con
-`QT_QPA_PLATFORM=offscreen`), pero no tiene test automatizado propio -
-manejar un bucle de eventos Qt real no se intenta aquí, el mismo límite
-de honestidad que el propio README de HYDRA-UMC-UPDATER ya traza para
-su propia capa Qt Quick.
+checkout real). El propio `EditorBridge` de `qt_gui.py` también está
+probado directamente (el slot de color, la selección preservada tras un
+cambio de color). `qml/Main.qml` carga y se renderiza sin errores de
+QML (verificado sin interfaz con `QT_QPA_PLATFORM=offscreen`, incluso
+con las piezas reales de un modelo cargadas en el visor 3D), pero el
+propio grafo de escena QML no tiene test automatizado propio - manejar
+un bucle de eventos Qt real no se intenta aquí, el mismo límite de
+honestidad que el propio README de HYDRA-UMC-UPDATER ya traza para su
+propia capa Qt Quick.
 
 ---
 
@@ -55,13 +64,28 @@ carpetas de modelos en 2026-09 en la misma estructura real de categorías
 misma estructura real, no una copia separada ni una base de datos
 propia.
 
-Cuatro operaciones reales, cada una respaldada por E/S de ficheros real
+Un visor 3D real en Qt Quick 3D renderiza cada pieza editable del
+modelo seleccionado (`stl_geometry.py`, un `QQuick3DGeometry` real que
+carga los triángulos de cada pieza directamente desde su archivo STL) -
+arrastra para orbitar, rueda para hacer zoom, clic en una pieza para
+seleccionarla (`View3D.pick()` real, no una estimación). La cámara se
+encuadra sola sobre la caja delimitadora combinada real del modelo
+(`model_bounds()` de `stl_ops.py`), así que una base de robot de 400mm
+y un tornillo de 5mm encuadran correctamente por igual.
+
+Cinco operaciones reales, cada una respaldada por E/S de ficheros real
 contra el checkout real en disco:
 
 - **Transformar** - trasladar/rotar/escalar los vértices reales de una
   pieza (vía `numpy-stl`, la misma librería de la que ya depende
   `render/mesh.py` de HYDRA-UMC-SUITE) y guardarla de vuelta en el
   mismo sitio.
+- **Cambiar color** - una anotación real de color por pieza
+  (`part_colors.json`, un fichero auxiliar propio de esta herramienta)
+  mostrada en el visor 3D - un STL binario no lleva un color propio
+  fiable, y los visores de STUDIO/SUITE de este ecosistema tampoco
+  interpretan esa convención, así que hoy es una vista previa honesta
+  solo de EDITOR-STL, todavía no propagada a sus visores 3D en vivo.
 - **Reemplazar** - sobrescribir una pieza con otro fichero STL real.
 - **Quitar** - retirar una pieza de un modelo.
 - **Añadir** - incorporar un nuevo fichero STL real a un modelo.
@@ -182,10 +206,9 @@ nombres reales de carpeta que acaban de imprimir `categories`/`models`.
 - Enviar una pieza editada/añadida de vuelta al endpoint real
   `POST /api/models/submit` de HYDRA-UMC-SERVER, el mismo punto de
   integración real que ya usa HYDRA-UMC-EDITOR-URDF para modelos URDF.
-- Una vista previa 3D en vivo de la pieza seleccionada (antes/después de
-  una transformación), reutilizando el propio `RobotGLRenderer`/código
-  de carga de mallas de HYDRA-UMC-SUITE en vez de un segundo visor
-  OpenGL separado.
+- Propagar el color guardado de una pieza (`part_colors.json`, ver
+  arriba) a los visores 3D en vivo de HYDRA-UMC-STUDIO/HYDRA-UMC-SUITE -
+  trabajo real, separado y multi-repositorio.
 - Un ejecutable de GUI independiente empaquetado (PyInstaller, siguiendo
   la misma convención `build_exe.bat`/`.sh` de HYDRA-UMC-SUITE).
 - Deshacer/rehacer sobre el propio historial `.trash/` de una sesión, en

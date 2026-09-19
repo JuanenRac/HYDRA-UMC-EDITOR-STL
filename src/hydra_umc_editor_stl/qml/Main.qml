@@ -15,6 +15,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import QtQuick.VectorImage
+import QtQuick3D
+import HydraUmcEditorStl
 
 ApplicationWindow {
     id: window
@@ -433,126 +435,246 @@ ApplicationWindow {
                 }
             }
 
-            // --- right column: operations on the selected part ----------
+            // --- center: big 3D viewer + right: slim tool panel ---------
             SectionPanel {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                ColumnLayout {
+                RowLayout {
                     anchors.fill: parent
-                    anchors.margins: 18
-                    spacing: 16
+                    anchors.margins: 12
+                    spacing: 12
 
-                    LabelText { text: ui("trash_note"); color: window.textMuted; font.pixelSize: 11; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-
-                    SectionPanel {
+                    // Real orbit camera state - a mouse-drag orbit around
+                    // the currently loaded model's own real combined
+                    // bounding-box center (backend.boundsCenter/boundsRadius,
+                    // computed from the real parts just loaded, never a
+                    // fixed guess that would look broken for a 400mm robot
+                    // base and a 5mm screw alike).
+                    Item {
                         Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        property real camYaw: 35
+                        property real camPitch: -22
+                        property real camZoom: 1.0
+                        property real dragStartX: 0
+                        property real dragStartY: 0
+                        property bool dragMoved: false
+
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: 12
+                            color: "#050b13"
+                            border.width: 1
+                            border.color: window.border
+                            clip: true
+
+                            View3D {
+                                id: view3d
+                                anchors.fill: parent
+                                camera: orbitCamera
+                                environment: SceneEnvironment {
+                                    clearColor: "#050b13"
+                                    backgroundMode: SceneEnvironment.Color
+                                    antialiasingMode: SceneEnvironment.MSAA
+                                    antialiasingQuality: SceneEnvironment.High
+                                }
+
+                                Node {
+                                    id: cameraPivot
+                                    position: Qt.vector3d(backend.boundsCenter[0], backend.boundsCenter[1], backend.boundsCenter[2])
+                                    eulerRotation: Qt.vector3d(parent.parent.camPitch, parent.parent.camYaw, 0)
+                                    PerspectiveCamera {
+                                        id: orbitCamera
+                                        position: Qt.vector3d(0, 0, backend.boundsRadius * 2.4 * parent.parent.parent.camZoom)
+                                        clipNear: Math.max(1, backend.boundsRadius * 0.01)
+                                        clipFar: backend.boundsRadius * 50
+                                    }
+                                }
+
+                                DirectionalLight { eulerRotation: Qt.vector3d(-45, -35, 0); brightness: 1.1 }
+                                DirectionalLight { eulerRotation: Qt.vector3d(35, 135, 0); brightness: 0.35 }
+
+                                Repeater3D {
+                                    model: backend.parts
+                                    delegate: Model {
+                                        visible: modelData.editable
+                                        objectName: modelData.filename
+                                        geometry: StlGeometry { source: modelData.editable ? modelData.absolutePath : "" }
+                                        materials: PrincipledMaterial {
+                                            baseColor: modelData.filename === backend.selectedPart
+                                                ? Qt.lighter(modelData.color, 1.7)
+                                                : modelData.color
+                                            roughness: 0.55
+                                            metalness: 0.05
+                                        }
+                                    }
+                                }
+                            }
+
+                            LabelText {
+                                anchors.centerIn: parent
+                                visible: backend.parts.length === 0
+                                text: ui("viewer_empty_hint")
+                                color: window.textMuted
+                                wrapMode: Text.WordWrap
+                                horizontalAlignment: Text.AlignHCenter
+                                width: parent.width * 0.7
+                            }
+
+                            MouseArea {
+                                id: orbitArea
+                                anchors.fill: parent
+                                acceptedButtons: Qt.LeftButton
+                                onPressed: (mouse) => {
+                                    parent.parent.dragStartX = mouse.x
+                                    parent.parent.dragStartY = mouse.y
+                                    parent.parent.dragMoved = false
+                                }
+                                onPositionChanged: (mouse) => {
+                                    if (pressed) {
+                                        var dx = mouse.x - parent.parent.dragStartX
+                                        var dy = mouse.y - parent.parent.dragStartY
+                                        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) parent.parent.dragMoved = true
+                                        parent.parent.camYaw -= dx * 0.4
+                                        parent.parent.camPitch = Math.max(-85, Math.min(85, parent.parent.camPitch - dy * 0.4))
+                                        parent.parent.dragStartX = mouse.x
+                                        parent.parent.dragStartY = mouse.y
+                                    }
+                                }
+                                onClicked: (mouse) => {
+                                    if (parent.parent.dragMoved) return
+                                    var result = view3d.pick(mouse.x, mouse.y)
+                                    if (result.objectHit) backend.selectPart(result.objectHit.objectName)
+                                }
+                                onWheel: (wheel) => {
+                                    parent.parent.camZoom = Math.max(0.15, Math.min(6, parent.parent.camZoom - wheel.angleDelta.y / 1000))
+                                }
+                            }
+                        }
+                    }
+
+                    // --- slim tool panel - the project owner's own
+                    // explicit preference over the previous boxed-forms
+                    // layout that used to occupy this whole column. ---
+                    SectionPanel {
+                        Layout.preferredWidth: 230
+                        Layout.fillHeight: true
                         color: window.panelAlt
-                        implicitHeight: transformColumn.implicitHeight + 28
                         ColumnLayout {
-                            id: transformColumn
                             anchors.fill: parent
                             anchors.margins: 14
-                            spacing: 8
-                            LabelText { text: ui("panel_transform_title"); font.bold: true; font.pixelSize: 14 }
+                            spacing: 10
+
+                            ListLabel { text: ui("selected_part_label") }
+                            LabelText {
+                                text: backend.selectedPart || ui("no_part_selected")
+                                Layout.fillWidth: true
+                                elide: Text.ElideMiddle
+                                color: backend.selectedPart ? window.textPrimary : window.textMuted
+                            }
+
+                            Rectangle { Layout.fillWidth: true; height: 1; color: window.border }
+
+                            GameButton {
+                                text: ui("btn_change_color")
+                                accent: window.cyan
+                                Layout.fillWidth: true
+                                enabled: !!backend.selectedPart
+                                onClicked: colorDialog.open()
+                            }
+                            GameButton {
+                                text: ui("btn_choose_replacement")
+                                accent: window.amber
+                                Layout.fillWidth: true
+                                enabled: !!backend.selectedPart
+                                onClicked: replaceDialog.open()
+                            }
+                            GameButton {
+                                text: ui("btn_remove_part")
+                                accent: window.red
+                                Layout.fillWidth: true
+                                enabled: !!backend.selectedPart
+                                onClicked: removeConfirmDialog.open()
+                            }
+
+                            Rectangle { Layout.fillWidth: true; height: 1; color: window.border }
+
+                            ListLabel { text: ui("panel_transform_title") }
                             ListLabel { text: ui("lbl_translate") }
                             RowLayout {
-                                GameField { id: txField; text: "0"; Layout.preferredWidth: 90 }
-                                GameField { id: tyField; text: "0"; Layout.preferredWidth: 90 }
-                                GameField { id: tzField; text: "0"; Layout.preferredWidth: 90 }
+                                spacing: 4
+                                GameField { id: txField; text: "0"; Layout.fillWidth: true }
+                                GameField { id: tyField; text: "0"; Layout.fillWidth: true }
+                                GameField { id: tzField; text: "0"; Layout.fillWidth: true }
                             }
                             ListLabel { text: ui("lbl_rotate") }
                             RowLayout {
-                                GameField { id: rxField; text: "0"; Layout.preferredWidth: 90 }
-                                GameField { id: ryField; text: "0"; Layout.preferredWidth: 90 }
-                                GameField { id: rzField; text: "0"; Layout.preferredWidth: 90 }
+                                spacing: 4
+                                GameField { id: rxField; text: "0"; Layout.fillWidth: true }
+                                GameField { id: ryField; text: "0"; Layout.fillWidth: true }
+                                GameField { id: rzField; text: "0"; Layout.fillWidth: true }
                             }
                             ListLabel { text: ui("lbl_scale") }
-                            GameField { id: scaleField; text: "1"; Layout.preferredWidth: 90 }
+                            GameField { id: scaleField; text: "1"; Layout.fillWidth: true }
                             GameButton {
                                 text: ui("btn_apply_transform")
                                 accent: window.blue
-                                Layout.preferredWidth: 220
+                                Layout.fillWidth: true
+                                enabled: !!backend.selectedPart
                                 onClicked: backend.applyTransform(
                                     parseFloat(txField.text) || 0, parseFloat(tyField.text) || 0, parseFloat(tzField.text) || 0,
                                     parseFloat(rxField.text) || 0, parseFloat(ryField.text) || 0, parseFloat(rzField.text) || 0,
                                     parseFloat(scaleField.text) || 1
                                 )
                             }
-                        }
-                    }
 
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 14
+                            Rectangle { Layout.fillWidth: true; height: 1; color: window.border }
 
-                        SectionPanel {
-                            Layout.fillWidth: true
-                            color: window.panelAlt
-                            implicitHeight: replaceColumn.implicitHeight + 28
-                            ColumnLayout {
-                                id: replaceColumn
-                                anchors.fill: parent
-                                anchors.margins: 14
-                                spacing: 8
-                                LabelText { text: ui("panel_replace_title"); font.bold: true; font.pixelSize: 14 }
-                                GameButton { text: ui("btn_choose_replacement"); accent: window.amber; Layout.fillWidth: true; onClicked: replaceDialog.open() }
-                            }
-                        }
-
-                        SectionPanel {
-                            Layout.fillWidth: true
-                            color: window.panelAlt
-                            implicitHeight: removeColumn.implicitHeight + 28
-                            ColumnLayout {
-                                id: removeColumn
-                                anchors.fill: parent
-                                anchors.margins: 14
-                                spacing: 8
-                                LabelText { text: ui("panel_remove_title"); font.bold: true; font.pixelSize: 14 }
-                                GameButton { text: ui("btn_remove_part"); accent: window.red; Layout.fillWidth: true; onClicked: removeConfirmDialog.open() }
-                            }
-                        }
-                    }
-
-                    SectionPanel {
-                        Layout.fillWidth: true
-                        color: window.panelAlt
-                        implicitHeight: addColumn.implicitHeight + 28
-                        ColumnLayout {
-                            id: addColumn
-                            anchors.fill: parent
-                            anchors.margins: 14
-                            spacing: 8
-                            LabelText { text: ui("panel_add_title"); font.bold: true; font.pixelSize: 14 }
+                            ListLabel { text: ui("panel_add_title") }
                             RowLayout {
                                 Layout.fillWidth: true
                                 GameField { id: addFileField; Layout.fillWidth: true; readOnly: true }
-                                GameButton { text: "..."; Layout.preferredWidth: 46; accent: "#264966"; onClicked: addDialog.open() }
+                                GameButton { text: "..."; Layout.preferredWidth: 36; accent: "#264966"; onClicked: addDialog.open() }
                             }
-                            ListLabel { text: ui("dest_filename_label") }
-                            GameField { id: addDestField; Layout.fillWidth: true }
+                            GameField { id: addDestField; Layout.fillWidth: true; placeholderText: ui("dest_filename_label") }
                             GameButton {
                                 text: ui("btn_add_part")
                                 accent: window.green
-                                Layout.preferredWidth: 200
+                                Layout.fillWidth: true
                                 onClicked: backend.addPart(addFileField.text, addDestField.text)
                             }
+
+                            Item { Layout.fillHeight: true }
+
+                            LabelText { text: ui("trash_note"); color: window.textMuted; font.pixelSize: 10; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                height: 36
+                                radius: 8
+                                color: "#10283a"
+                                border.width: 1
+                                border.color: "#21516a"
+                                LabelText {
+                                    anchors.fill: parent
+                                    anchors.margins: 6
+                                    text: backend.statusText
+                                    color: window.textMuted
+                                    font.pixelSize: 10
+                                    wrapMode: Text.WordWrap
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
                         }
-                    }
-
-                    Item { Layout.fillHeight: true }
-
-                    Rectangle {
-                        Layout.fillWidth: true
-                        height: 40
-                        radius: 10
-                        color: "#10283a"
-                        border.width: 1
-                        border.color: "#21516a"
-                        LabelText { anchors.centerIn: parent; text: backend.statusText; color: window.textMuted; font.pixelSize: 11 }
                     }
                 }
             }
         }
+    }
+
+    ColorDialog {
+        id: colorDialog
+        title: ui("btn_change_color")
+        onAccepted: backend.setSelectedPartColor(selectedColor.toString())
     }
 }
