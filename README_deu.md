@@ -15,25 +15,28 @@
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick Desktop-GUI">
 </p>
 
-> **v0.0.3.** Der echte CLI/GUI-Kern unten ist wirklich implementiert
+> **v0.0.4.** Der echte CLI/GUI-Kern unten ist wirklich implementiert
 > und getestet, einschließlich eines echten Qt-Quick-3D-Viewers mit
-> Klick-Auswahl, Farbe pro Teil, Transformieren, Ersetzen, Entfernen und
-> Hinzufügen. Er sendet ein bearbeitetes Teil noch nicht an den echten
-> `POST /api/models/submit`-Katalog von HYDRA-UMC-SERVER zurück (so wie
-> es HYDRA-UMC-EDITOR-URDF für URDF-Modelle tut) und überträgt die
+> Klick-Auswahl, Farbe pro Teil, Transformieren, Ersetzen, Entfernen,
+> Hinzufügen und einem echten Senden eines bearbeiteten/hinzugefügten
+> Modells an den echten `POST /api/models/submit`-Katalog von
+> HYDRA-UMC-SERVER (derselbe echte Integrationspunkt, den
+> HYDRA-UMC-EDITOR-URDF für URDF-Modelle nutzt). Er überträgt die
 > gespeicherte Farbe eines Teils noch nicht in die echten Live-3D-Viewer
-> von STUDIO/SUITE - beides ist echte, abgegrenzte künftige Arbeit
-> (siehe ROADMAP), nicht stillschweigend als erledigt angenommen.
+> von STUDIO/SUITE - echte, abgegrenzte künftige Arbeit (siehe ROADMAP),
+> nicht stillschweigend als erledigt angenommen.
 
 **Ehrlichkeitscheck - was heute wirklich läuft:** `model_catalog.py`
 (echte, schreibgeschützte Erkennung beider Modellbibliotheken),
 `stl_ops.py` (echte STL-Mutation via `numpy-stl` - transformieren/
 ersetzen/entfernen/hinzufügen, plus `model_bounds()` für die
 Kamera-Einrahmung des 3D-Viewers), `part_colors.py` (echte
-Sidecar-Datei für Farbe pro Teil) und `stl_geometry.py` (echtes Laden
-von Qt-Quick-3D-Geometrie) sind alle gegen echte, generierte
+Sidecar-Datei für Farbe pro Teil), `stl_geometry.py` (echtes Laden
+von Qt-Quick-3D-Geometrie) und `catalog_push.py` (echte Erzeugung
+eines Assembly-URDF plus ein echter HTTP-Client für
+`POST /api/models/submit`) sind alle gegen echte, generierte
 STL-Dateien und, wo nötig, eine echte, sitzungsweite
-`QGuiApplication` getestet (`pytest tests/`, 41 bestandene Fälle) und
+`QGuiApplication` getestet (`pytest tests/`, 48 bestandene Fälle) und
 wurden End-to-End gegen die echten `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE`-
 Checkouts dieses Ökosystems verifiziert (`--cli categories`/`models`/
 `parts` gegen die echten Bäume; `transform`/`remove` gegen eine
@@ -74,7 +77,7 @@ auf die echte, kombinierte Bounding-Box des Modells ein
 (`model_bounds()` aus `stl_ops.py`), sodass eine 400mm-Roboterbasis und
 eine 5mm-Schraube beide korrekt eingerahmt werden.
 
-Fünf echte Operationen, jede gestützt auf echte Datei-E/A gegen den
+Sechs echte Operationen, jede gestützt auf echte Datei-E/A gegen den
 echten Checkout auf der Festplatte:
 
 - **Transformieren** - die echten Vertices eines Teils verschieben/
@@ -92,6 +95,16 @@ echten Checkout auf der Festplatte:
   überschreiben.
 - **Entfernen** - ein Teil aus einem Modell herausnehmen.
 - **Hinzufügen** - eine neue echte STL-Datei in ein Modell einbringen.
+- **An Server senden** - die aktuellen bearbeitbaren Teile des
+  ausgewählten Modells an den echten Modell-Einreichungskatalog eines
+  laufenden HYDRA-UMC-SERVER senden (`catalog_push.py`,
+  `POST /api/models/submit` - erfordert einen Admin-Login, genau wie die
+  entsprechende Funktion von HYDRA-UMC-EDITOR-URDF). Da der Vertrag
+  dieses Endpunkts URDF-förmig ist, verpackt dies die Teile in das
+  kleinste echte URDF, das er akzeptiert: ein Wurzel-Link plus ein
+  ungelenktes (`fixed`) Kind-Link pro Teil, da die tatsächliche Position
+  jedes Teils bereits in dessen eigenen STL-Vertices verankert ist -
+  niemals eine erfundene Pose.
 
 **Nichts wird jemals dauerhaft gelöscht.** Ein Entfernen oder Ersetzen
 verschiebt zuerst die echte Originaldatei in den eigenen
@@ -151,11 +164,12 @@ HYDRA-UMC-EDITOR-STL/
 ├── src/hydra_umc_editor_stl/
 │   ├── model_catalog.py    # Echte, schreibgeschützte Erkennung beider Modellbibliotheken
 │   ├── stl_ops.py           # Echte STL-Mutation: transformieren/ersetzen/entfernen/hinzufügen, .trash/-Sicherungen
+│   ├── catalog_push.py       # Assembly-URDF + HTTP-Client für POST /api/models/submit
 │   ├── settings.py          # Persistierte Ökosystem-Wurzel und Spracheinstellung
 │   ├── i18n.py               # Echte, vollständige GUI-Übersetzungen (7 Sprachen)
 │   ├── qt_gui.py             # Qt-Quick-Brücke über den echten model_catalog.py/stl_ops.py-Kern
 │   ├── qml/Main.qml          # Thematisierte Desktop-Hülle, gemeinsam mit HYDRA-UMC-UPDATER
-│   └── main.py               # Dispatch: GUI standardmäßig, --cli für categories/models/parts/transform/replace/remove/add
+│   └── main.py               # Dispatch: GUI standardmäßig, --cli für categories/models/parts/transform/replace/remove/add/push
 ├── tests/                    # Echte Tests gegen echte, generierte STL-Dateien
 ├── docs/
 │   └── CLI_REFERENCE.md      # Befehlsreferenz
@@ -183,6 +197,7 @@ chmod +x build.sh   # einmalig
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /pfad/neu.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /pfad/neu.stl
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin --password ***
 ```
 
 Unter Windows: `build.bat`, dann `run.bat` (GUI) oder
@@ -212,10 +227,6 @@ echten Ordnernamen, die `categories`/`models` gerade ausgegeben haben.
 
 ## 🚀 ROADMAP
 
-- Ein bearbeitetes/hinzugefügtes Teil an den echten
-  `POST /api/models/submit`-Endpunkt von HYDRA-UMC-SERVER
-  zurücksenden, denselben echten Integrationspunkt, den
-  HYDRA-UMC-EDITOR-URDF bereits für URDF-Modelle nutzt.
 - Die gespeicherte Farbe eines Teils (`part_colors.json`, siehe oben) in
   die echten Live-3D-Viewer von HYDRA-UMC-STUDIO/HYDRA-UMC-SUITE
   übertragen - echte, separate, repo-übergreifende Arbeit.
@@ -234,7 +245,7 @@ Dieses Projekt ist Teil des HYDRA-UMC-Robotik-Ökosystems desselben Autors (Juan
 **Direkt Verwandt**
 - **[HYDRA-UMC-SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE)** — Besitzer der zweiten echten Modellbibliothek, die dieser Editor liest und schreibt (`assets/meshes/`), in genau derselben Kategoriestruktur wie die von STUDIO gepflegt.
 - **[HYDRA-UMC-EDITOR-URDF](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-URDF)** — Schwester-Desktop-Editor für die URDF-/Kinematik-Seite desselben Modellkatalogs, statt der rohen STL-Geometrie, die dieses Werkzeug bearbeitet.
-- **[HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** — Besitzer des echten `POST /api/models/submit`-Endpunkts, an den dieser Editor geplant seine fertigen Bearbeitungen senden soll (siehe ROADMAP - in v0.0.1 noch nicht angebunden).
+- **[HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** — Besitzer des echten `POST /api/models/submit`-Endpunkts, an den dieser Editor seine fertigen Bearbeitungen sendet (`catalog_push.py`, „An Server senden..." in der GUI oder `--cli push`).
 
 **Ebenfalls Teil des Ökosystems**
 

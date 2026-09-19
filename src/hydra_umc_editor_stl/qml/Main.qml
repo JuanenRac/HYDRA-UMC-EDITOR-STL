@@ -309,6 +309,58 @@ ApplicationWindow {
         }
     }
 
+    Dialog {
+        id: pushDialog
+        modal: true
+        anchors.centerIn: parent
+        width: 420
+        padding: 22
+        background: Rectangle { color: window.panel; radius: 16; border.color: window.border; border.width: 1 }
+        contentItem: ColumnLayout {
+            spacing: 10
+            LabelText { text: ui("push_dialog_title"); font.bold: true; font.pixelSize: 14; color: window.cyan }
+
+            ListLabel { text: ui("push_host_label") }
+            RowLayout {
+                Layout.fillWidth: true
+                GameField { id: pushHostField; text: "192.168.1.100"; Layout.fillWidth: true }
+                ListLabel { text: ui("push_port_label") }
+                GameField { id: pushPortField; text: "3000"; Layout.preferredWidth: 70 }
+            }
+            GameField { id: pushUsernameField; Layout.fillWidth: true; placeholderText: ui("push_username_placeholder") }
+            GameField { id: pushPasswordField; Layout.fillWidth: true; placeholderText: ui("push_password_placeholder"); echoMode: TextInput.Password }
+            ListLabel { text: ui("push_category_label") }
+            GameField { id: pushCategoryField; Layout.fillWidth: true }
+            RowLayout {
+                Layout.fillWidth: true
+                CheckBox { id: pushOverwriteCheck; text: ui("push_overwrite_checkbox") }
+            }
+            LabelText {
+                text: backend.pushStatus
+                visible: backend.pushStatus.length > 0
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                color: window.textMuted
+                font.pixelSize: 10
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                GameButton { text: ui("push_close_button"); accent: "#264966"; onClicked: pushDialog.close() }
+                Item { Layout.fillWidth: true }
+                GameButton {
+                    text: backend.pushBusy ? "..." : ui("push_button")
+                    accent: window.blue
+                    enabled: !backend.pushBusy
+                    onClicked: backend.pushToServer(
+                        pushHostField.text, parseInt(pushPortField.text) || 3000,
+                        pushUsernameField.text, pushPasswordField.text,
+                        pushCategoryField.text, pushOverwriteCheck.checked
+                    )
+                }
+            }
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.leftMargin: 28
@@ -642,6 +694,19 @@ ApplicationWindow {
                                 accent: window.green
                                 Layout.fillWidth: true
                                 onClicked: backend.addPart(addFileField.text, addDestField.text)
+                            }
+
+                            Rectangle { Layout.fillWidth: true; height: 1; color: window.border }
+
+                            GameButton {
+                                text: ui("btn_push_to_server")
+                                accent: window.blue
+                                Layout.fillWidth: true
+                                enabled: !!backend.selectedModel
+                                onClicked: {
+                                    pushCategoryField.text = backend.selectedCategory
+                                    pushDialog.open()
+                                }
                             }
 
                             Item { Layout.fillHeight: true }
