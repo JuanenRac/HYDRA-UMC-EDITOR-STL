@@ -23,6 +23,7 @@ from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
 
 from . import i18n, settings
+from . import __version__
 from .model_catalog import list_categories, list_models, load_model
 from .stl_ops import StlOpsError, add_part, remove_part, replace_part, transform_part
 
@@ -72,6 +73,10 @@ class EditorBridge(QObject):
     @Property("QVariantList", constant=True)
     def availableLanguages(self) -> list[dict]:
         return [{"code": code, "label": label} for code, label in i18n.LANGUAGES]
+
+    @Property(str, constant=True)
+    def appVersion(self) -> str:
+        return __version__
 
     # --- ecosystem root / library / category / model selection --------
 

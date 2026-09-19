@@ -5,6 +5,17 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.0.2] - A real About dialog
+
+Added a real About dialog (same visual pattern HYDRA-UMC-UPDATER's own
+Main.qml already established for this ecosystem's PC tools), opened via
+a new header button - shows the app's own real version
+(`EditorBridge.appVersion`), author/email/license, and a link to this
+repo's own GitHub page. Full 7-language translations. A dedicated,
+larger 3D viewer with per-part selection/color/replace/delete (the
+project owner's own explicit next request) is real, substantial future
+work, not attempted here.
+
 ## [0.0.1] - First real, working scaffold
 
 - `model_catalog.py` - real, read-only discovery of both of the
