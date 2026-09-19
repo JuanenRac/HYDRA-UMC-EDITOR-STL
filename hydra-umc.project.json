@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "ecosystem": "HYDRA-UMC",
+  "name": "HYDRA-UMC-EDITOR-STL",
+  "version": "0.0.1",
+  "role": "tool",
+  "stack": "python",
+  "technologies": [
+    "Python",
+    "PySide6",
+    "Qt Quick",
+    "numpy-stl"
+  ],
+  "deployment_target": "user-pc",
+  "maturity": "scaffolding",
+  "family": "Core Backend & Clients",
+  "parent": "HYDRA-UMC-STUDIO",
+  "build": "Desktop Python app, dependency-light core (numpy-stl only) plus an optional PySide6/Qt Quick GUI extra. run.bat/run.sh runs it from source; build.bat/build.sh creates a venv, installs the dev+gui extras and runs the real test suite; build-test.bat/build-test.sh validates sources without bumping the version.",
+  "notes": "Browses and edits the two real model libraries HYDRA-UMC-STUDIO's own public/models/ and HYDRA-UMC-SUITE's own assets/meshes/ already ship (both reorganized into the same category folders in 2026-09: robots-5-dof/robots-6-dof/robots-7-dof, machine-pnp/machine-cnc/machine-laser, heatedbeds/racks/vacuum-tables). Real operations only, no simulated success: transform (translate/rotate/scale real vertex data via numpy-stl), replace, remove and add a part's own STL file, each backed by real file I/O against the actual checkout on disk - nothing is ever permanently deleted, a removed/replaced part is moved into that model's own .trash/ subfolder instead. `--cli` is stdlib+numpy-stl only (no Qt import at all) so a headless machine can still browse/edit the libraries; the default launch is the Qt Quick desktop shell, sharing HYDRA-UMC-UPDATER's own visual component set (GameButton/GameCombo/SectionPanel, dark cyan/blue/amber/red theme) rather than a separately styled UI. v0.0.1: first real, working scaffold - does not yet write back to HYDRA-UMC-SERVER's own POST /api/models/submit catalog (HYDRA-UMC-EDITOR-URDF's own real integration point) or offer per-mesh visual preview; both are real, scoped future work, not silently assumed done.",
+  "native_version": {
+    "file": "src/hydra_umc_editor_stl/__init__.py",
+    "pattern": "__version__\\s*=\\s*\"(\\d+)\\.(\\d+)\\.(\\d+)\""
+  }
+}

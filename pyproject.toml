@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hydra-umc-editor-stl"
+version = "0.0.1"
+description = "Browses and edits HYDRA-UMC-STUDIO's/HYDRA-UMC-SUITE's own real STL model libraries - transform, replace, remove and add parts."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE.md" }
+authors = [
+    { name = "JuanenRac (Electro Hobby 3D)", email = "electrohobby3d@gmail.com" },
+]
+keywords = ["hydra-umc", "stl", "editor", "3d-models", "robotics"]
+# numpy-stl is the same real STL read/write library HYDRA-UMC-SUITE's own
+# render/mesh.py already depends on for the exact same file format - no
+# second, competing STL implementation introduced here. It IS a hard
+# dependency (not optional like the GUI extra below): even `--cli`
+# transform/replace/add need real STL parsing to validate/mutate a part.
+dependencies = ["numpy-stl>=3.1,<5"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+gui = ["PySide6>=6.8,<7"]
+
+[project.urls]
+Homepage = "https://github.com/JuanenRac/HYDRA-UMC-EDITOR-STL"
+
+[project.scripts]
+hydra-umc-editor-stl = "hydra_umc_editor_stl.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+hydra_umc_editor_stl = ["qml/*.qml"]
