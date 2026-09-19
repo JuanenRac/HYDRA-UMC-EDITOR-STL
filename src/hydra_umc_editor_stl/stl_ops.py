@@ -48,6 +48,35 @@ def _bounding_box(mesh: stl_mesh.Mesh) -> BoundingBox:
     )
 
 
+def model_bounds(model_dir: Path, filenames: list[str]) -> BoundingBox | None:
+    """Real, combined bounding box across every real, loadable part named
+    in `filenames` (relative to `model_dir`) - `None` only when none of
+    them could actually be loaded (an empty model, or every part
+    genuinely unreadable). Used to frame a 3D view's own camera on the
+    real model just selected, instead of a fixed distance that would
+    look broken for a 400mm robot base and a 5mm screw alike."""
+    mins: list[tuple[float, float, float]] = []
+    maxs: list[tuple[float, float, float]] = []
+    for filename in filenames:
+        try:
+            mesh = stl_mesh.Mesh.from_file(str(model_dir / filename))
+        except Exception:
+            continue
+        if len(mesh.vectors) == 0:
+            continue
+        box = _bounding_box(mesh)
+        mins.append(box.min_xyz)
+        maxs.append(box.max_xyz)
+    if not mins:
+        return None
+    mins_arr = np.array(mins)
+    maxs_arr = np.array(maxs)
+    return BoundingBox(
+        min_xyz=tuple(float(v) for v in mins_arr.min(axis=0)),
+        max_xyz=tuple(float(v) for v in maxs_arr.max(axis=0)),
+    )
+
+
 def is_real_stl(path: Path) -> bool:
     """True only if `path` actually parses as a real, non-empty ASCII or
     binary STL. Real gap found writing this project's own tests:

@@ -36,6 +36,18 @@ def make_cube_stl(path: Path, size: float = 10.0) -> None:
     cube.save(str(path))
 
 
+@pytest.fixture(scope="session")
+def qt_app():
+    """A real, single, session-scoped QGuiApplication - QQuick3DGeometry
+    (stl_geometry.py) is a real Qt/QML type and cannot be instantiated
+    without one. Headless: relies on QT_QPA_PLATFORM=offscreen being set
+    in the environment this test suite runs in (see build-test.sh/CI),
+    same as every other Qt-dependent test in this ecosystem."""
+    from PySide6.QtGui import QGuiApplication
+    app = QGuiApplication.instance() or QGuiApplication([])
+    yield app
+
+
 @pytest.fixture
 def ecosystem_root(tmp_path: Path) -> Path:
     """A real, minimal ecosystem checkout layout - just enough of

@@ -13,6 +13,7 @@ from stl import mesh as stl_mesh
 from hydra_umc_editor_stl.stl_ops import (
     StlOpsError,
     add_part,
+    model_bounds,
     is_real_stl,
     remove_part,
     replace_part,
@@ -142,3 +143,30 @@ def test_add_part_rejects_a_non_stl_source(tmp_path: Path) -> None:
     bad_source.write_bytes(b"not a real stl")
     with pytest.raises(StlOpsError):
         add_part(tmp_path, bad_source)
+
+
+def test_model_bounds_unions_every_real_part_given(tmp_path: Path) -> None:
+    make_cube_stl(tmp_path / "a.stl", size=5.0)  # (0,0,0) - (5,5,5)
+    b = stl_mesh.Mesh.from_file(str(tmp_path / "a.stl"))
+    b.translate([10.0, 0.0, 0.0])
+    b.save(str(tmp_path / "b.stl"))  # (10,0,0) - (15,5,5)
+    box = model_bounds(tmp_path, ["a.stl", "b.stl"])
+    assert box is not None
+    assert box.min_xyz == (0.0, 0.0, 0.0)
+    assert box.max_xyz == (15.0, 5.0, 5.0)
+
+
+def test_model_bounds_skips_an_unreadable_part_instead_of_raising(tmp_path: Path) -> None:
+    make_cube_stl(tmp_path / "a.stl", size=5.0)
+    box = model_bounds(tmp_path, ["a.stl", "missing.stl"])
+    assert box is not None
+    assert box.min_xyz == (0.0, 0.0, 0.0)
+    assert box.max_xyz == (5.0, 5.0, 5.0)
+
+
+def test_model_bounds_returns_none_when_nothing_could_be_loaded(tmp_path: Path) -> None:
+    assert model_bounds(tmp_path, ["missing.stl"]) is None
+
+
+def test_model_bounds_returns_none_for_an_empty_part_list(tmp_path: Path) -> None:
+    assert model_bounds(tmp_path, []) is None

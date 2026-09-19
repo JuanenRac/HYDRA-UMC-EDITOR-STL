@@ -20,12 +20,14 @@ from pathlib import Path
 
 from PySide6.QtCore import Property, QObject, QUrl, Signal, Slot
 from PySide6.QtGui import QGuiApplication, QIcon
-from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
 
 from . import i18n, settings
 from . import __version__
 from .model_catalog import list_categories, list_models, load_model
-from .stl_ops import StlOpsError, add_part, remove_part, replace_part, transform_part
+from .part_colors import DEFAULT_COLOR, load_part_colors, save_part_color
+from .stl_geometry import StlGeometry
+from .stl_ops import StlOpsError, add_part, model_bounds, remove_part, replace_part, transform_part
 
 
 class EditorBridge(QObject):
@@ -50,6 +52,8 @@ class EditorBridge(QObject):
         self._parts: list[dict] = []
         self._selected_part = ""
         self._status = ""
+        self._bounds_center = [0.0, 0.0, 0.0]
+        self._bounds_radius = 100.0  # a real, honest default before any real model is loaded
         self._refresh_categories()
 
     # --- i18n ---------------------------------------------------------
@@ -152,6 +156,14 @@ class EditorBridge(QObject):
     def parts(self) -> list[dict]:
         return self._parts
 
+    @Property("QVariantList", notify=partsChanged)
+    def boundsCenter(self) -> list[float]:
+        return self._bounds_center
+
+    @Property(float, notify=partsChanged)
+    def boundsRadius(self) -> float:
+        return self._bounds_radius
+
     @Property(str, notify=selectionChanged)
     def selectedPart(self) -> str:
         return self._selected_part
@@ -189,9 +201,29 @@ class EditorBridge(QObject):
 
     def _refresh_parts(self) -> None:
         model = self._load_selected_model()
-        self._parts = [] if model is None else [
-            {"filename": p.filename, "sizeBytes": p.size_bytes, "editable": p.editable} for p in model.parts
-        ]
+        if model is None:
+            self._parts = []
+        else:
+            colors = load_part_colors(model.path)
+            self._parts = [
+                {
+                    "filename": p.filename,
+                    "sizeBytes": p.size_bytes,
+                    "editable": p.editable,
+                    "absolutePath": str((model.path / p.filename).resolve()) if p.editable else "",
+                    "color": colors.get(p.filename, DEFAULT_COLOR),
+                }
+                for p in model.parts
+            ]
+            editable_filenames = [p.filename for p in model.parts if p.editable]
+            box = model_bounds(model.path, editable_filenames)
+            if box is not None:
+                self._bounds_center = [(a + b) / 2 for a, b in zip(box.min_xyz, box.max_xyz)]
+                diagonal = sum((b - a) ** 2 for a, b in zip(box.min_xyz, box.max_xyz)) ** 0.5
+                # Half the real diagonal, floored so a single tiny part
+                # (a screw) doesn't put the camera closer than a sane
+                # near-clip distance.
+                self._bounds_radius = max(diagonal / 2, 5.0)
         self.partsChanged.emit()
         self._selected_part = ""
         self.selectionChanged.emit()
@@ -252,6 +284,27 @@ class EditorBridge(QObject):
         self._set_status(i18n.t(self._lang, "msg_remove_done", name=self._selected_part))
         self._refresh_parts()
 
+    @Slot(str)
+    def setSelectedPartColor(self, hex_color: str) -> None:
+        model = self._load_selected_model()
+        if model is None or not self._selected_part:
+            self._set_status(i18n.t(self._lang, "msg_select_part_first"))
+            return
+        save_part_color(model.path, self._selected_part, hex_color)
+        self._refresh_parts_preserving_selection()
+
+    def _refresh_parts_preserving_selection(self) -> None:
+        # Real gap that _refresh_parts() itself must never fix: a color
+        # change should update this part's own row (list + 3D view) but
+        # never drop the operator's own current selection the way every
+        # OTHER mutation here does (they all move/rename/remove the file
+        # itself, so dropping selection is the honest outcome there -
+        # setting a color changes none of that).
+        selected = self._selected_part
+        self._refresh_parts()
+        self._selected_part = selected
+        self.selectionChanged.emit()
+
     @Slot(str, str)
     def addPart(self, source_path: str, dest_filename: str) -> None:
         model = self._load_selected_model()
@@ -277,6 +330,7 @@ def launch_qt_gui(ecosystem_root: Path) -> int:
     if not icon.is_file():
         icon = project_root / "images" / "HYDRA_UMC_ICON.svg"
     app.setWindowIcon(QIcon(str(icon)))
+    qmlRegisterType(StlGeometry, "HydraUmcEditorStl", 1, 0, "StlGeometry")
     engine = QQmlApplicationEngine()
     bridge = EditorBridge(ecosystem_root)
     engine.rootContext().setContextProperty("backend", bridge)

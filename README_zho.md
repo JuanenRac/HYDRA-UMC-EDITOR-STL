@@ -15,21 +15,28 @@
   <img src="https://img.shields.io/badge/桌面-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick 桌面 GUI">
 </p>
 
-> **v0.0.1 - 脚手架阶段。** 下面描述的真实 CLI/GUI 核心是真正实现并经过测试的。
-> 它还不会把编辑好的部件回传给 HYDRA-UMC-SERVER 自己真实的
+> **v0.0.3。** 下面描述的真实 CLI/GUI 核心是真正实现并经过测试的，包括一个
+> 真实的 Qt Quick 3D 查看器，支持点击选中、按部件着色、变换、替换、移除
+> 和添加。它还不会把编辑好的部件回传给 HYDRA-UMC-SERVER 自己真实的
 > `POST /api/models/submit` 目录（就像 HYDRA-UMC-EDITOR-URDF 对 URDF 模型
-> 所做的那样），也还没有在编辑前/后提供部件的实时 3D 预览 —— 这两项都是
-> 真实、有明确范围的未来工作（见路线图），并未被悄悄假定为已完成。
+> 所做的那样），也还不会把部件保存的颜色传播到 STUDIO/SUITE 自己真实的
+> 3D 查看器中 —— 这两项都是真实、有明确范围的未来工作（见路线图），并未
+> 被悄悄假定为已完成。
 
 **诚实检查——今天到底能真正运行什么：** `model_catalog.py`（对两个模型库
-进行真实的、只读的发现）和 `stl_ops.py`（通过 `numpy-stl` 进行真实的 STL
-变更——变换/替换/移除/添加）已针对真实生成的 STL 文件进行了测试
-（`pytest tests/`，21 个用例通过），并已针对本生态系统真实的
+进行真实的、只读的发现）、`stl_ops.py`（通过 `numpy-stl` 进行真实的 STL
+变更——变换/替换/移除/添加，外加为 3D 查看器摄像机取景服务的
+`model_bounds()`）、`part_colors.py`（真实的按部件颜色附属文件）和
+`stl_geometry.py`（真实的 Qt Quick 3D 几何体加载）全部都针对真实生成的
+STL 文件、以及在需要时一个真实的、会话范围的 `QGuiApplication` 进行了
+测试（`pytest tests/`，41 个用例通过），并已针对本生态系统真实的
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` 检出进行了端到端的冒烟测试
 （`--cli categories`/`models`/`parts` 针对真实的目录树；`transform`/`remove`
-针对一份可丢弃的副本，绝不是真实的检出本身）。Qt Quick 桌面 GUI
-（`qt_gui.py`、`qml/Main.qml`）能够加载并渲染而不出现任何 QML 错误
-（已用 `QT_QPA_PLATFORM=offscreen` 验证），但没有自己的自动化测试——驱动
+针对一份可丢弃的副本，绝不是真实的检出本身）。`qt_gui.py` 自己的
+`EditorBridge` 也被直接测试（颜色 slot、颜色更改后选中状态被保留）。
+`qml/Main.qml` 能够加载并渲染而不出现任何 QML 错误（已用
+`QT_QPA_PLATFORM=offscreen` 无界面验证，包括把一个真实模型的部件加载到
+3D 查看器中的情况），但 QML 场景图本身没有自己的自动化测试——驱动
 一个真实的 Qt 事件循环在这里并未尝试，这与 HYDRA-UMC-UPDATER 自己的
 README 已经为其自身 Qt Quick 层划出的诚实界限相同。
 
@@ -47,11 +54,23 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
 `metadata.json`，与其 `ATTRIBUTION.txt` 放在一起）——本工具读取的正是这套
 真实结构，而不是另一份副本或自己的数据库。
 
-四个真实操作，每一个都由针对磁盘上真实检出的真实文件 I/O 支撑：
+真实的 Qt Quick 3D 视图会渲染所选模型的每一个可编辑部件
+(`stl_geometry.py`，一个真实的 `QQuick3DGeometry`，直接从每个部件自己
+的 STL 文件加载其三角形) —— 拖动可环绕旋转，滚轮可缩放，点击一个部件
+即可选中它 (真实的 `View3D.pick()`，不是猜测)。摄像机会根据模型自己
+真实的组合包围盒自动取景 (`stl_ops.py` 的 `model_bounds()`)，所以
+400mm 的机器人底座和 5mm 的螺丝都能正确取景。
+
+五个真实操作，每一个都由针对磁盘上真实检出的真实文件 I/O 支撑：
 
 - **变换** —— 通过 `numpy-stl`（HYDRA-UMC-SUITE 自己的
   `render/mesh.py` 已经依赖的同一个库）平移/旋转/缩放一个部件的真实
   顶点数据，并原地保存回去。
+- **更改颜色** —— 一个真实的、按部件保存的颜色标注
+  (`part_colors.json`，本工具自己的一个附属文件)，会显示在 3D 视图
+  中 —— 二进制 STL 本身并不可靠地携带颜色，而且本生态系统自己的
+  STUDIO/SUITE 查看器也不会解析那种约定，所以这目前是一个诚实的、
+  仅限 EDITOR-STL 的预览，尚未传播到它们真正的 3D 查看器中。
 - **替换** —— 用另一份真实的 STL 文件覆盖一个部件。
 - **移除** —— 把一个部件从模型中取出。
 - **添加** —— 把一份新的真实 STL 文件带入一个模型。
@@ -158,8 +177,9 @@ chmod +x build.sh   # 一次性
 - 把编辑/新增的部件回传到 HYDRA-UMC-SERVER 自己真实的
   `POST /api/models/submit` 目录端点，与 HYDRA-UMC-EDITOR-URDF 对 URDF
   模型已经使用的同一个真实集成点。
-- 所选部件的实时 3D 预览（变换前/后），复用 HYDRA-UMC-SUITE 自己真实的
-  `RobotGLRenderer`/网格加载代码，而不是再做一个独立的 OpenGL 查看器。
+- 把一个部件保存的颜色（`part_colors.json`，见上文）传播到
+  HYDRA-UMC-STUDIO/HYDRA-UMC-SUITE 自己真实的实时 3D 查看器中——这是
+  真实的、独立的跨仓库工作。
 - 一个打包好的独立 GUI 可执行文件（PyInstaller，遵循与
   HYDRA-UMC-SUITE 相同的 `build_exe.bat`/`.sh` 约定）。
 - 基于某次会话自己的 `.trash/` 历史记录的撤销/重做，而不是手动恢复文件。
