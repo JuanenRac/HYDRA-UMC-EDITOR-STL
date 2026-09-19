@@ -18,16 +18,40 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import Property, QObject, QUrl, Signal, Slot
+from PySide6.QtCore import Property, QObject, QThread, QUrl, Signal, Slot
 from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
 
 from . import i18n, settings
 from . import __version__
+from .catalog_push import CatalogPushError, ServerClient
 from .model_catalog import list_categories, list_models, load_model
 from .part_colors import DEFAULT_COLOR, load_part_colors, save_part_color
 from .stl_geometry import StlGeometry
 from .stl_ops import StlOpsError, add_part, model_bounds, remove_part, replace_part, transform_part
+
+
+class _PushThread(QThread):
+    """Runs ServerClient.login()+push_model() off the UI thread - both are
+    blocking urllib calls (this app has no asyncio event loop at all,
+    unlike SUITE/EDITOR-URDF), same reasoning EDITOR-URDF's own
+    ui/panels/upload_panel.py already documents for its equivalent
+    _ServerCallThread."""
+
+    finished_ok = Signal(str)  # the server-assigned slug
+    finished_error = Signal(str)
+
+    def __init__(self, fn, parent=None):
+        super().__init__(parent)
+        self._fn = fn
+
+    def run(self) -> None:
+        try:
+            self.finished_ok.emit(self._fn())
+        except CatalogPushError as e:
+            self.finished_error.emit(str(e))
+        except Exception as e:  # noqa: BLE001 - last-resort guard, same as upload_panel.py's own thread
+            self.finished_error.emit(str(e))
 
 
 class EditorBridge(QObject):
@@ -39,6 +63,7 @@ class EditorBridge(QObject):
     partsChanged = Signal()
     selectionChanged = Signal()
     statusChanged = Signal()
+    pushStateChanged = Signal()
 
     def __init__(self, ecosystem_root: Path) -> None:
         super().__init__()
@@ -54,6 +79,9 @@ class EditorBridge(QObject):
         self._status = ""
         self._bounds_center = [0.0, 0.0, 0.0]
         self._bounds_radius = 100.0  # a real, honest default before any real model is loaded
+        self._push_busy = False
+        self._push_status = ""
+        self._push_thread: _PushThread | None = None
         self._refresh_categories()
 
     # --- i18n ---------------------------------------------------------
@@ -319,6 +347,59 @@ class EditorBridge(QObject):
             return
         self._set_status(i18n.t(self._lang, "msg_add_done", name=filename))
         self._refresh_parts()
+
+    # --- push to a running server's own model-submission catalog --------
+
+    @Property(bool, notify=pushStateChanged)
+    def pushBusy(self) -> bool:
+        return self._push_busy
+
+    @Property(str, notify=pushStateChanged)
+    def pushStatus(self) -> str:
+        return self._push_status
+
+    @Slot(str, int, str, str, str, bool)
+    def pushToServer(self, host: str, port: int, username: str, password: str, category: str, overwrite: bool) -> None:
+        model = self._load_selected_model()
+        if model is None:
+            self._push_status = i18n.t(self._lang, "msg_select_model_first")
+            self.pushStateChanged.emit()
+            return
+        if self._push_busy:
+            return  # a push is already in flight - same one-at-a-time guard every other mutation here gets for free by being synchronous
+
+        def do_push() -> str:
+            client = ServerClient(host, port)
+            client.login(username, password)
+            return client.push_model(model, category or self._category, overwrite)
+
+        self._push_busy = True
+        self._push_status = ""
+        self.pushStateChanged.emit()
+        thread = _PushThread(do_push, self)
+        self._push_thread = thread
+        thread.finished_ok.connect(self._on_push_ok)
+        thread.finished_error.connect(self._on_push_error)
+        thread.finished.connect(self._on_push_thread_done)
+        thread.start()
+
+    def _on_push_ok(self, slug: str) -> None:
+        self._push_busy = False
+        self._push_status = i18n.t(self._lang, "msg_push_done", slug=slug)
+        self.pushStateChanged.emit()
+
+    def _on_push_error(self, message: str) -> None:
+        self._push_busy = False
+        self._push_status = i18n.t(self._lang, "msg_push_failed", error=message)
+        self.pushStateChanged.emit()
+
+    def _on_push_thread_done(self) -> None:
+        # Same real "only drop the reference once QThread.finished confirms
+        # run() has actually returned" discipline EDITOR-URDF's own
+        # upload_panel.py documents for its equivalent threads.
+        if self._push_thread is not None:
+            self._push_thread.deleteLater()
+            self._push_thread = None
 
 
 def launch_qt_gui(ecosystem_root: Path) -> int:

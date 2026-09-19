@@ -15,14 +15,14 @@
   <img src="https://img.shields.io/badge/デスクトップ-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick デスクトップGUI">
 </p>
 
-> **v0.0.3。** 以下で説明する実際のCLI/GUIコアは本当に実装され、テスト
+> **v0.0.4。** 以下で説明する実際のCLI/GUIコアは本当に実装され、テスト
 > されています。クリックで選択できる本物の Qt Quick 3D ビューア、
-> パーツごとの色、変換、置換、削除、追加を含みます。まだ編集した
-> パーツを HYDRA-UMC-SERVER 自身の実在する `POST /api/models/submit`
-> カタログへ送り返すことはできません（HYDRA-UMC-EDITOR-URDF が URDF
-> モデルに対して行っているように）し、パーツ自身が保存した色を
-> STUDIO/SUITE 自身の実際のライブ 3D ビューアへ伝播することもまだ
-> できません — どちらも実在する、範囲が明確な今後の作業であり
+> パーツごとの色、変換、置換、削除、追加、そして編集/追加したモデルを
+> HYDRA-UMC-SERVER 自身の実在する `POST /api/models/submit` カタログへ
+> 実際に送信する機能（HYDRA-UMC-EDITOR-URDF が URDF モデルに対して
+> 使っているのと同じ実在の統合ポイント）を含みます。パーツ自身が
+> 保存した色を STUDIO/SUITE 自身の実際のライブ 3D ビューアへ伝播する
+> ことはまだできません — 実在する、範囲が明確な今後の作業であり
 > （ロードマップ参照）、暗黙のうちに完了したものとして扱ってはいません。
 
 **誠実さの確認 - 今日実際に動くもの：** `model_catalog.py`
@@ -30,9 +30,11 @@
 `stl_ops.py`（`numpy-stl` による実在の STL 変更 - 変換/置換/削除/追加、
 さらに 3D ビューアのカメラ取景用の `model_bounds()`）、`part_colors.py`
 （実在のパーツごとの色サイドカーファイル）、`stl_geometry.py`
-（実在の Qt Quick 3D ジオメトリ読み込み）はすべて、実際に生成した
+（実在の Qt Quick 3D ジオメトリ読み込み）、`catalog_push.py`
+（実在の組み立て用 URDF 生成に加え、`POST /api/models/submit` 向けの
+実在の HTTP クライアント）はすべて、実際に生成した
 実在の STL ファイルと、必要に応じて実在のセッションスコープの
-`QGuiApplication` に対してテストされており（`pytest tests/`、41 件の
+`QGuiApplication` に対してテストされており（`pytest tests/`、48 件の
 ケースが合格）、本エコシステム自身の実在する
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` のチェックアウトに対してエンド
 ツーエンドでスモークテスト済みです（`--cli categories`/`models`/
@@ -71,7 +73,7 @@ HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
 `model_bounds()`）ので、400mm のロボットベースと 5mm のネジのどちら
 も正しくフレーミングされます。
 
-5つの実在する操作、それぞれディスク上の実際のチェックアウトに対する
+6つの実在する操作、それぞれディスク上の実際のチェックアウトに対する
 実在のファイル I/O に裏打ちされています：
 
 - **変換** - パーツの実在する頂点データを（`numpy-stl` — すでに
@@ -86,6 +88,15 @@ HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
 - **置換** - あるパーツを別の実在する STL ファイルで上書きする。
 - **削除** - あるパーツをモデルから取り除く。
 - **追加** - 新しい実在の STL ファイルをモデルに持ち込む。
+- **サーバーに送信** - 選択中のモデルの現在の編集可能パーツを、稼働中の
+  HYDRA-UMC-SERVER 自身の実在するモデル提出カタログへ送信する
+  （`catalog_push.py`、`POST /api/models/submit` — 管理者ログインが
+  必要、HYDRA-UMC-EDITOR-URDF 自身の同等機能と同様）。このエンドポイント
+  自身の契約は URDF 向けの形をしているため、パーツをその契約が受け入れる
+  最小の実在する URDF に包みます：ルートリンク1つと、パーツごとに
+  関節を持たない（`fixed`）子リンク1つ — 各パーツの実際の位置はすでに
+  それ自身の STL 頂点に焼き込まれているため、ここで架空のポーズを
+  作り出すことはありません。
 
 **何も永久には削除されません。** 削除や置換は、まず実在する元のファイル
 をそのモデル自身の `.trash/` サブフォルダへ移動します - これは本
@@ -140,11 +151,12 @@ HYDRA-UMC-EDITOR-STL/
 ├── src/hydra_umc_editor_stl/
 │   ├── model_catalog.py    # 両方のモデルライブラリに対する実在の読み取り専用ディスカバリ
 │   ├── stl_ops.py           # 実在の STL 変更：変換/置換/削除/追加、.trash/ バックアップ
+│   ├── catalog_push.py       # 組み立て用 URDF + POST /api/models/submit 向け HTTP クライアント
 │   ├── settings.py          # 永続化されたエコシステムのルートと言語設定
 │   ├── i18n.py               # 実在の完全な GUI 翻訳（7言語）
 │   ├── qt_gui.py             # 実在の model_catalog.py/stl_ops.py コア上の Qt Quick ブリッジ
 │   ├── qml/Main.qml          # HYDRA-UMC-UPDATER と共有するテーマ付きデスクトップシェル
-│   └── main.py               # ディスパッチ：デフォルトは GUI、--cli は categories/models/parts/transform/replace/remove/add 用
+│   └── main.py               # ディスパッチ：デフォルトは GUI、--cli は categories/models/parts/transform/replace/remove/add/push 用
 ├── tests/                    # 実際に生成した実在の STL ファイルに対する実在のテスト
 ├── docs/
 │   └── CLI_REFERENCE.md      # コマンドリファレンス
@@ -172,6 +184,7 @@ chmod +x build.sh   # 一度だけ
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /path/new.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /path/new.stl
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin --password ***
 ```
 
 Windows では：`build.bat`、続いて `run.bat`（GUI）または
@@ -200,10 +213,6 @@ Windows では：`build.bat`、続いて `run.bat`（GUI）または
 
 ## 🚀 ロードマップ
 
-- 編集/追加したパーツを HYDRA-UMC-SERVER 自身の実在する
-  `POST /api/models/submit` カタログエンドポイントへ送り返す機能。
-  これは HYDRA-UMC-EDITOR-URDF がすでに URDF モデルに対して使って
-  いるのと同じ実在の統合ポイントです。
 - パーツ自身が保存した色（`part_colors.json`、上記参照）を
   HYDRA-UMC-STUDIO/HYDRA-UMC-SUITE 自身の実在するライブ 3D ビューアへ
   伝播する - 実在する、独立したリポジトリ横断の作業です。
@@ -223,7 +232,7 @@ Windows では：`build.bat`、続いて `run.bat`（GUI）または
 **直接関連**
 - **[HYDRA-UMC-SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE)** — この編集ツールが読み書きする2つ目の実在するモデルライブラリ（`assets/meshes/`）を所有しており、STUDIO のものと全く同じカテゴリ構造で維持されています。
 - **[HYDRA-UMC-EDITOR-URDF](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-URDF)** — 本ツールが編集する生の STL ジオメトリではなく、同じモデルカタログの URDF/運動学側を扱う姉妹デスクトップエディタです。
-- **[HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** — 本エディタが完成した編集内容を送信する予定の実在する `POST /api/models/submit` エンドポイントを所有しています（ロードマップ参照 - v0.0.1 ではまだ接続されていません）。
+- **[HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** — 本エディタが完成した編集内容を送信する実在する `POST /api/models/submit` エンドポイントを所有しています（`catalog_push.py`、GUI の「サーバーに送信...」または `--cli push`）。
 
 **エコシステムの他の一部**
 

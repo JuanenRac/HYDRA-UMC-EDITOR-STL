@@ -89,6 +89,30 @@ Refuses to overwrite an existing part with the same name - use
 hydra-umc-editor-stl --cli add studio robots-6-dof ar3 /path/to/extra_bracket.stl
 ```
 
+## `push <library> <category> <model> --host HOST --username USER --password PASS [options]`
+
+Submits `model`'s own current editable (`.stl`) parts to a running
+HYDRA-UMC-SERVER's real model-submission catalog (`POST
+/api/models/submit`) - the same real integration point
+HYDRA-UMC-EDITOR-URDF already uses for URDF models. Requires an
+admin-role account (that endpoint's own `requireAdmin`). Since the
+endpoint's own contract is URDF-shaped, this wraps the parts in the
+smallest real URDF it accepts: one root link plus one un-jointed
+(`fixed`) child link per part - each part's actual position is already
+baked into its own STL vertices, never a synthetic pose invented here.
+
+| Option | Meaning | Default |
+| --- | --- | --- |
+| `--host` | HYDRA-UMC-SERVER host/IP (required) | - |
+| `--port` | Server port | `3000` |
+| `--username`/`--password` | Admin account credentials (required) | - |
+| `--server-category` | Category to file this under server-side | same as `<category>` |
+| `--overwrite` | Replace an existing submission with the same name/category | off |
+
+```bash
+hydra-umc-editor-stl --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin --password ***
+```
+
 ## Global options
 
 - `--root PATH` - ecosystem root to scan (default: this tool's own

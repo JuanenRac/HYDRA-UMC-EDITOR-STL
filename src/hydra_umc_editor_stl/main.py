@@ -20,6 +20,7 @@ import sys
 from pathlib import Path
 
 from . import __version__, settings
+from .catalog_push import CatalogPushError, ServerClient
 from .model_catalog import list_categories, list_models, load_model
 from .stl_ops import StlOpsError, add_part, remove_part, replace_part, transform_part
 
@@ -145,6 +146,23 @@ def cmd_add(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_push(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve() if args.root else default_ecosystem_root()
+    model = load_model(root, args.library, args.category, args.model)
+    if model is None:
+        print(f"No such model: {args.library}/{args.category}/{args.model}", file=sys.stderr)
+        return 1
+    client = ServerClient(args.host, args.port)
+    try:
+        client.login(args.username, args.password)
+        slug = client.push_model(model, args.server_category or args.category, args.overwrite)
+    except CatalogPushError as error:
+        print(f"Push failed: {error}", file=sys.stderr)
+        return 1
+    print(f"Pushed as {slug}")
+    return 0
+
+
 def _add_model_selector_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--root", help="Ecosystem root to scan (default: this tool's own parent directory).")
     parser.add_argument("library", choices=["studio", "suite"], help="Which model library to use.")
@@ -206,6 +224,16 @@ def build_parser() -> argparse.ArgumentParser:
     add_p.add_argument("source", help="Path to the STL file to add.")
     add_p.add_argument("--dest-filename", help="Save under this filename instead of the source's own name.")
     add_p.set_defaults(func=cmd_add)
+
+    push_p = subparsers.add_parser("push", help="Push a model's editable parts to a running server's model-submission catalog.")
+    _add_model_selector_args(push_p)
+    push_p.add_argument("--host", required=True, help="HYDRA-UMC-SERVER host/IP.")
+    push_p.add_argument("--port", type=int, default=3000)
+    push_p.add_argument("--username", required=True, help="Admin account username (POST /api/models/submit requires admin).")
+    push_p.add_argument("--password", required=True)
+    push_p.add_argument("--server-category", help="Category to file this under on the server (default: the same folder name used locally).")
+    push_p.add_argument("--overwrite", action="store_true", help="Replace an existing submission with the same name/category.")
+    push_p.set_defaults(func=cmd_push)
 
     return parser
 

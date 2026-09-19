@@ -5,6 +5,27 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.0.4] - Push an edited/added model to a running server's catalog
+
+Until now this tool only ever edited STUDIO's/SUITE's own bundled model
+libraries directly on local disk - there was no way to hand a model over
+to a running HYDRA-UMC-SERVER's own live model-submission catalog (the
+same real `POST /api/models/submit` HYDRA-UMC-EDITOR-URDF already uses
+for URDF robots). That endpoint's contract is URDF-shaped, but the parts
+this tool edits are plain, un-jointed STL meshes - closed the gap by
+wrapping a model's own editable parts in the smallest real URDF that
+contract already accepts (one root link, one child link per part joined
+by a `fixed` joint at the identity origin, since each part's actual
+position is already baked into its own STL vertices).
+
+- `catalog_push.py` (new) - `build_assembly_urdf()` + `ServerClient`
+  (login, then push, mirroring EDITOR-URDF's own client).
+- New "Push to server..." dialog (host/port/admin login/category/
+  overwrite) and `--cli push` subcommand, both routed through the same
+  real `catalog_push.py`.
+- Runs on a background `QThread` (this app has no asyncio event loop),
+  same discipline EDITOR-URDF's own upload panel already documents.
+
 ## [0.0.3] - A real 3D viewer with pick-to-select, per-part color, replace and delete
 
 The right column used to be a stack of boxed forms (transform/replace/

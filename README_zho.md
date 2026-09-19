@@ -15,21 +15,23 @@
   <img src="https://img.shields.io/badge/桌面-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick 桌面 GUI">
 </p>
 
-> **v0.0.3。** 下面描述的真实 CLI/GUI 核心是真正实现并经过测试的，包括一个
-> 真实的 Qt Quick 3D 查看器，支持点击选中、按部件着色、变换、替换、移除
-> 和添加。它还不会把编辑好的部件回传给 HYDRA-UMC-SERVER 自己真实的
-> `POST /api/models/submit` 目录（就像 HYDRA-UMC-EDITOR-URDF 对 URDF 模型
-> 所做的那样），也还不会把部件保存的颜色传播到 STUDIO/SUITE 自己真实的
-> 3D 查看器中 —— 这两项都是真实、有明确范围的未来工作（见路线图），并未
-> 被悄悄假定为已完成。
+> **v0.0.4。** 下面描述的真实 CLI/GUI 核心是真正实现并经过测试的，包括一个
+> 真实的 Qt Quick 3D 查看器，支持点击选中、按部件着色、变换、替换、移除、
+> 添加，以及把一个编辑好/新增的模型真正推送回 HYDRA-UMC-SERVER 自己真实的
+> `POST /api/models/submit` 目录（与 HYDRA-UMC-EDITOR-URDF 对 URDF 模型
+> 所用的同一个真实集成点）。它还不会把部件保存的颜色传播到 STUDIO/SUITE
+> 自己真实的 3D 查看器中 —— 这是真实、有明确范围的未来工作（见路线图），
+> 并未被悄悄假定为已完成。
 
 **诚实检查——今天到底能真正运行什么：** `model_catalog.py`（对两个模型库
 进行真实的、只读的发现）、`stl_ops.py`（通过 `numpy-stl` 进行真实的 STL
 变更——变换/替换/移除/添加，外加为 3D 查看器摄像机取景服务的
-`model_bounds()`）、`part_colors.py`（真实的按部件颜色附属文件）和
-`stl_geometry.py`（真实的 Qt Quick 3D 几何体加载）全部都针对真实生成的
+`model_bounds()`）、`part_colors.py`（真实的按部件颜色附属文件）、
+`stl_geometry.py`（真实的 Qt Quick 3D 几何体加载）和 `catalog_push.py`
+（真实生成装配用 URDF，外加一个真实的 `POST /api/models/submit` HTTP
+客户端）全部都针对真实生成的
 STL 文件、以及在需要时一个真实的、会话范围的 `QGuiApplication` 进行了
-测试（`pytest tests/`，41 个用例通过），并已针对本生态系统真实的
+测试（`pytest tests/`，48 个用例通过），并已针对本生态系统真实的
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` 检出进行了端到端的冒烟测试
 （`--cli categories`/`models`/`parts` 针对真实的目录树；`transform`/`remove`
 针对一份可丢弃的副本，绝不是真实的检出本身）。`qt_gui.py` 自己的
@@ -61,7 +63,7 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
 真实的组合包围盒自动取景 (`stl_ops.py` 的 `model_bounds()`)，所以
 400mm 的机器人底座和 5mm 的螺丝都能正确取景。
 
-五个真实操作，每一个都由针对磁盘上真实检出的真实文件 I/O 支撑：
+六个真实操作，每一个都由针对磁盘上真实检出的真实文件 I/O 支撑：
 
 - **变换** —— 通过 `numpy-stl`（HYDRA-UMC-SUITE 自己的
   `render/mesh.py` 已经依赖的同一个库）平移/旋转/缩放一个部件的真实
@@ -74,6 +76,13 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
 - **替换** —— 用另一份真实的 STL 文件覆盖一个部件。
 - **移除** —— 把一个部件从模型中取出。
 - **添加** —— 把一份新的真实 STL 文件带入一个模型。
+- **推送到服务器** —— 把所选模型当前可编辑的部件提交到一个正在运行的
+  HYDRA-UMC-SERVER 真实的模型提交目录（`catalog_push.py`，
+  `POST /api/models/submit` —— 需要管理员登录，与 HYDRA-UMC-EDITOR-URDF
+  自己等效的功能相同）。由于该端点自身的契约是为 URDF 设计的，这里会把
+  部件包装进它能接受的最小真实 URDF 中：一个根链接，外加每个部件一个
+  未加关节的（`fixed`）子链接，因为每个部件的真实位置已经烘焙在它自己的
+  STL 顶点中 —— 绝不是凭空捏造的姿态。
 
 **任何东西都不会被永久删除。** 移除或替换会先把真实的原始文件移动到该
 模型自己的 `.trash/` 子文件夹中——这与本生态系统内部工作惯例早已遵循的
@@ -119,11 +128,12 @@ HYDRA-UMC-EDITOR-STL/
 ├── src/hydra_umc_editor_stl/
 │   ├── model_catalog.py    # 对两个模型库的真实、只读发现
 │   ├── stl_ops.py           # 真实的 STL 变更：变换/替换/移除/添加，.trash/ 备份
+│   ├── catalog_push.py       # 装配用 URDF + POST /api/models/submit 的 HTTP 客户端
 │   ├── settings.py          # 持久化的生态系统根目录和语言偏好
 │   ├── i18n.py               # 真实、完整的 GUI 翻译（7 种语言）
 │   ├── qt_gui.py             # 建立在真实 model_catalog.py/stl_ops.py 核心之上的 Qt Quick 桥接层
 │   ├── qml/Main.qml          # 主题化的桌面外壳，与 HYDRA-UMC-UPDATER 共享
-│   └── main.py               # 分发：默认 GUI，--cli 用于 categories/models/parts/transform/replace/remove/add
+│   └── main.py               # 分发：默认 GUI，--cli 用于 categories/models/parts/transform/replace/remove/add/push
 ├── tests/                    # 针对真实生成的 STL 文件的真实测试
 ├── docs/
 │   └── CLI_REFERENCE.md      # 命令参考
@@ -151,6 +161,7 @@ chmod +x build.sh   # 一次性
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /路径/new.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /路径/new.stl
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin --password ***
 ```
 
 在 Windows 上：先 `build.bat`，然后 `run.bat`（GUI）或
@@ -174,9 +185,6 @@ chmod +x build.sh   # 一次性
 
 ## 🚀 路线图
 
-- 把编辑/新增的部件回传到 HYDRA-UMC-SERVER 自己真实的
-  `POST /api/models/submit` 目录端点，与 HYDRA-UMC-EDITOR-URDF 对 URDF
-  模型已经使用的同一个真实集成点。
 - 把一个部件保存的颜色（`part_colors.json`，见上文）传播到
   HYDRA-UMC-STUDIO/HYDRA-UMC-SUITE 自己真实的实时 3D 查看器中——这是
   真实的、独立的跨仓库工作。
@@ -194,7 +202,7 @@ chmod +x build.sh   # 一次性
 **直接相关**
 - **[HYDRA-UMC-SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE)** — 拥有本编辑器读写的第二个真实模型库（`assets/meshes/`），与 STUDIO 保持完全相同的分类结构。
 - **[HYDRA-UMC-EDITOR-URDF](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-URDF)** — 同一模型目录的姐妹桌面编辑器，负责 URDF/运动学一侧，而非本工具编辑的原始 STL 几何体。
-- **[HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** — 拥有真实的 `POST /api/models/submit` 端点，本编辑器计划将完成的编辑推送到该端点（见路线图——v0.0.1 中尚未接通）。
+- **[HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** — 拥有真实的 `POST /api/models/submit` 端点，本编辑器会把完成的编辑推送到该端点（`catalog_push.py`，GUI 中的“推送到服务器...”或 `--cli push`）。
 
 **同样属于本生态系统**
 
