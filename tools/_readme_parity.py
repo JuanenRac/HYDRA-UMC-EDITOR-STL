@@ -1,11 +1,11 @@
 # =============================================================================
-# HYDRA-UMC-UPDATER - tools/_readme_parity.py
+# HYDRA-UMC-EDITOR-STL - tools/_readme_parity.py
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
 # GPL-3.0-or-later - see LICENSE
 # =============================================================================
 # VENDORED - do not hand-edit. This is a byte-for-byte copy of
 # HYDRA-UMC-SDK's own canonical
-# clients/python/src/hydra_umc_sdk/readme_parity.py (H048), kept in sync
+# clients/python/src/hydra_umc_sdk/readme_parity.py, kept in sync
 # by that repo's own tools/sync_readme_parity.py. Edit the rule there,
 # then re-run that script to update every repo that vendors it, this one
 # included.
