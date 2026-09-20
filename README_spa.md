@@ -21,9 +21,10 @@
 > añadir y un envío real de un modelo editado/añadido de vuelta al
 > catálogo real `POST /api/models/submit` de HYDRA-UMC-SERVER (el mismo
 > punto de integración real que usa HYDRA-UMC-EDITOR-URDF con los modelos
-> URDF). Todavía no propaga el color guardado de una pieza a los visores
-> 3D en vivo de STUDIO/SUITE - trabajo futuro real y acotado (ver
-> ROADMAP), no se da por hecho en silencio.
+> URDF). El color guardado de una pieza ahora también llega a los visores
+> 3D en vivo de HYDRA-UMC-STUDIO y HYDRA-UMC-SUITE (cambios reales
+> propios de esos repos - ver sus propios CHANGELOG), así que
+> `part_colors.json` ya no es una vista previa exclusiva de EDITOR-STL.
 
 **Comprobación de honestidad - qué funciona de verdad hoy:**
 `model_catalog.py` (descubrimiento real, de solo lectura, de las dos
@@ -85,9 +86,11 @@ contra el checkout real en disco:
 - **Cambiar color** - una anotación real de color por pieza
   (`part_colors.json`, un fichero auxiliar propio de esta herramienta)
   mostrada en el visor 3D - un STL binario no lleva un color propio
-  fiable, y los visores de STUDIO/SUITE de este ecosistema tampoco
-  interpretan esa convención, así que hoy es una vista previa honesta
-  solo de EDITOR-STL, todavía no propagada a sus visores 3D en vivo.
+  fiable, así que este fichero auxiliar es la fuente real de verdad.
+  El propio `hooks/usePartColors.ts` de HYDRA-UMC-STUDIO y el propio
+  `render/part_colors.py` de HYDRA-UMC-SUITE leen ese mismo fichero, así
+  que un color guardado aquí también llega a sus visores 3D en vivo, no
+  solo a la vista previa de esta herramienta.
 - **Reemplazar** - sobrescribir una pieza con otro fichero STL real.
 - **Quitar** - retirar una pieza de un modelo.
 - **Añadir** - incorporar un nuevo fichero STL real a un modelo.
@@ -217,9 +220,6 @@ nombres reales de carpeta que acaban de imprimir `categories`/`models`.
 
 ## 🚀 HOJA DE RUTA
 
-- Propagar el color guardado de una pieza (`part_colors.json`, ver
-  arriba) a los visores 3D en vivo de HYDRA-UMC-STUDIO/HYDRA-UMC-SUITE -
-  trabajo real, separado y multi-repositorio.
 - Un ejecutable de GUI independiente empaquetado (PyInstaller, siguiendo
   la misma convención `build_exe.bat`/`.sh` de HYDRA-UMC-SUITE).
 - Deshacer/rehacer sobre el propio historial `.trash/` de una sesión, en

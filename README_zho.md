@@ -19,9 +19,10 @@
 > 真实的 Qt Quick 3D 查看器，支持点击选中、按部件着色、变换、替换、移除、
 > 添加，以及把一个编辑好/新增的模型真正推送回 HYDRA-UMC-SERVER 自己真实的
 > `POST /api/models/submit` 目录（与 HYDRA-UMC-EDITOR-URDF 对 URDF 模型
-> 所用的同一个真实集成点）。它还不会把部件保存的颜色传播到 STUDIO/SUITE
-> 自己真实的 3D 查看器中 —— 这是真实、有明确范围的未来工作（见路线图），
-> 并未被悄悄假定为已完成。
+> 所用的同一个真实集成点）。部件保存的颜色现在也会传播到
+> HYDRA-UMC-STUDIO 和 HYDRA-UMC-SUITE 自己真实的 3D 查看器中（那两个仓库
+> 各自真实的改动——见它们各自的 CHANGELOG），所以 `part_colors.json`
+> 不再只是 EDITOR-STL 专属的预览。
 
 **诚实检查——今天到底能真正运行什么：** `model_catalog.py`（对两个模型库
 进行真实的、只读的发现）、`stl_ops.py`（通过 `numpy-stl` 进行真实的 STL
@@ -70,9 +71,11 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
   顶点数据，并原地保存回去。
 - **更改颜色** —— 一个真实的、按部件保存的颜色标注
   (`part_colors.json`，本工具自己的一个附属文件)，会显示在 3D 视图
-  中 —— 二进制 STL 本身并不可靠地携带颜色，而且本生态系统自己的
-  STUDIO/SUITE 查看器也不会解析那种约定，所以这目前是一个诚实的、
-  仅限 EDITOR-STL 的预览，尚未传播到它们真正的 3D 查看器中。
+  中 —— 二进制 STL 本身并不可靠地携带颜色，所以这个附属文件才是真正的
+  真相来源。HYDRA-UMC-STUDIO 自己的 `hooks/usePartColors.ts` 和
+  HYDRA-UMC-SUITE 自己的 `render/part_colors.py` 都会读回这同一个文件，
+  所以在这里保存的颜色也会到达它们真正的 3D 查看器中，而不仅仅是本工具
+  自己的预览。
 - **替换** —— 用另一份真实的 STL 文件覆盖一个部件。
 - **移除** —— 把一个部件从模型中取出。
 - **添加** —— 把一份新的真实 STL 文件带入一个模型。
@@ -185,9 +188,6 @@ chmod +x build.sh   # 一次性
 
 ## 🚀 路线图
 
-- 把一个部件保存的颜色（`part_colors.json`，见上文）传播到
-  HYDRA-UMC-STUDIO/HYDRA-UMC-SUITE 自己真实的实时 3D 查看器中——这是
-  真实的、独立的跨仓库工作。
 - 一个打包好的独立 GUI 可执行文件（PyInstaller，遵循与
   HYDRA-UMC-SUITE 相同的 `build_exe.bat`/`.sh` 约定）。
 - 基于某次会话自己的 `.trash/` 历史记录的撤销/重做，而不是手动恢复文件。

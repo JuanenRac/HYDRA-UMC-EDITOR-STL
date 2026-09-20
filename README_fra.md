@@ -21,10 +21,11 @@
 > retirer, ajouter et un vrai envoi d'un modèle édité/ajouté vers le
 > vrai catalogue `POST /api/models/submit` de HYDRA-UMC-SERVER (le même
 > point d'intégration réel qu'utilise HYDRA-UMC-EDITOR-URDF pour les
-> modèles URDF). Il ne propage pas encore la couleur enregistrée d'une
-> pièce vers les visionneuses 3D en direct de STUDIO/SUITE - un vrai
-> travail futur délimité (voir FEUILLE DE ROUTE), pas silencieusement
-> supposé fait.
+> modèles URDF). La couleur enregistrée d'une pièce atteint maintenant
+> aussi les visionneuses 3D en direct de HYDRA-UMC-STUDIO et
+> HYDRA-UMC-SUITE (leurs propres vrais changements - voir leurs propres
+> CHANGELOG), donc `part_colors.json` n'est plus un aperçu réservé à
+> EDITOR-STL.
 
 **Vérification d'honnêteté - ce qui fonctionne vraiment aujourd'hui :**
 `model_catalog.py` (découverte réelle, en lecture seule, des deux
@@ -85,11 +86,12 @@ contre le vrai checkout sur disque :
   même endroit.
 - **Changer la couleur** - une vraie annotation de couleur par pièce
   (`part_colors.json`, un fichier annexe propre à cet outil) affichée
-  dans la vue 3D - un STL binaire ne porte aucune couleur fiable qui
-  lui soit propre, et les visionneuses STUDIO/SUITE de cet écosystème
-  n'interprètent pas non plus cette convention, donc c'est aujourd'hui
-  un aperçu honnête propre à EDITOR-STL, pas encore propagé à leurs
-  vraies visionneuses 3D.
+  dans la vue 3D - un STL binaire ne porte aucune couleur fiable qui lui
+  soit propre, donc ce fichier annexe est la vraie source de vérité. Le
+  propre `hooks/usePartColors.ts` de HYDRA-UMC-STUDIO et le propre
+  `render/part_colors.py` de HYDRA-UMC-SUITE relisent ce même fichier,
+  donc une couleur enregistrée ici atteint aussi leurs vraies
+  visionneuses 3D, pas seulement l'aperçu de cet outil.
 - **Remplacer** - écraser une pièce avec un autre vrai fichier STL.
 - **Retirer** - sortir une pièce d'un modèle.
 - **Ajouter** - apporter un nouveau vrai fichier STL à un modèle.
@@ -222,10 +224,6 @@ outil).
 
 ## 🚀 FEUILLE DE ROUTE
 
-- Propager la couleur enregistrée d'une pièce (`part_colors.json`, voir
-  ci-dessus) vers les visionneuses 3D en direct de
-  HYDRA-UMC-STUDIO/HYDRA-UMC-SUITE - un vrai travail séparé,
-  multi-dépôts.
 - Un exécutable de GUI autonome empaqueté (PyInstaller, suivant la même
   convention `build_exe.bat`/`.sh` de HYDRA-UMC-SUITE).
 - Annuler/rétablir sur le propre historique `.trash/` d'une session, au
