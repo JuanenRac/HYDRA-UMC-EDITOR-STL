@@ -13,10 +13,10 @@
 # tool's own sidecar `part_colors.json`, one per model folder, next to
 # the parts it describes - never inside metadata.json (owned by
 # STUDIO/SUITE's own catalog contract, not something this tool invents
-# new fields into) and never inside the STL bytes themselves. This is a
-# real, honest EDITOR-STL-only preview annotation today - propagating it
-# into STUDIO/SUITE's own live 3D viewers is real, separate, cross-repo
-# future work this file does not attempt.
+# new fields into) and never inside the STL bytes themselves. Not just an
+# EDITOR-STL-only preview: HYDRA-UMC-STUDIO's own hooks/usePartColors.ts
+# and HYDRA-UMC-SUITE's own render/part_colors.py both read this exact
+# same file back into their own live 3D viewers.
 # =============================================================================
 from __future__ import annotations
 

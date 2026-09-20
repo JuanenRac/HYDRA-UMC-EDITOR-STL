@@ -21,10 +21,11 @@
 > Hinzufügen und einem echten Senden eines bearbeiteten/hinzugefügten
 > Modells an den echten `POST /api/models/submit`-Katalog von
 > HYDRA-UMC-SERVER (derselbe echte Integrationspunkt, den
-> HYDRA-UMC-EDITOR-URDF für URDF-Modelle nutzt). Er überträgt die
-> gespeicherte Farbe eines Teils noch nicht in die echten Live-3D-Viewer
-> von STUDIO/SUITE - echte, abgegrenzte künftige Arbeit (siehe ROADMAP),
-> nicht stillschweigend als erledigt angenommen.
+> HYDRA-UMC-EDITOR-URDF für URDF-Modelle nutzt). Die gespeicherte Farbe
+> eines Teils erreicht jetzt auch die echten Live-3D-Viewer von
+> HYDRA-UMC-STUDIO und HYDRA-UMC-SUITE (deren eigene echte Änderungen -
+> siehe deren eigene CHANGELOGs), sodass `part_colors.json` keine reine
+> EDITOR-STL-Vorschau mehr ist.
 
 **Ehrlichkeitscheck - was heute wirklich läuft:** `model_catalog.py`
 (echte, schreibgeschützte Erkennung beider Modellbibliotheken),
@@ -87,10 +88,11 @@ echten Checkout auf der Festplatte:
 - **Farbe ändern** - eine echte Farbanmerkung pro Teil
   (`part_colors.json`, eine eigene Sidecar-Datei dieses Tools) in der
   3D-Ansicht angezeigt - eine binäre STL trägt keine zuverlässige eigene
-  Farbe, und auch die STUDIO/SUITE-Viewer dieses Ökosystems
-  interpretieren diese Konvention nicht, daher ist dies heute eine
-  ehrliche, nur auf EDITOR-STL beschränkte Vorschau, noch nicht in deren
-  echte 3D-Viewer übertragen.
+  Farbe, daher ist diese Sidecar-Datei die echte Quelle der Wahrheit.
+  Sowohl HYDRA-UMC-STUDIOs eigenes `hooks/usePartColors.ts` als auch
+  HYDRA-UMC-SUITEs eigenes `render/part_colors.py` lesen genau dieselbe
+  Datei zurück, sodass eine hier gespeicherte Farbe auch deren echte
+  3D-Viewer erreicht, nicht nur die Vorschau dieses Tools.
 - **Ersetzen** - ein Teil mit einer anderen echten STL-Datei
   überschreiben.
 - **Entfernen** - ein Teil aus einem Modell herausnehmen.
@@ -227,9 +229,6 @@ echten Ordnernamen, die `categories`/`models` gerade ausgegeben haben.
 
 ## 🚀 ROADMAP
 
-- Die gespeicherte Farbe eines Teils (`part_colors.json`, siehe oben) in
-  die echten Live-3D-Viewer von HYDRA-UMC-STUDIO/HYDRA-UMC-SUITE
-  übertragen - echte, separate, repo-übergreifende Arbeit.
 - Eine gepackte, eigenständige GUI-Ausführungsdatei (PyInstaller, nach
   derselben `build_exe.bat`/`.sh`-Konvention wie HYDRA-UMC-SUITE).
 - Rückgängig/Wiederholen über die eigene `.trash/`-Historie einer

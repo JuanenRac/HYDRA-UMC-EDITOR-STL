@@ -20,9 +20,11 @@
 > pick-to-select, per-part color, transform, replace, remove, add and a
 > real push of an edited/added model back to HYDRA-UMC-SERVER's own
 > `POST /api/models/submit` catalog (the same real integration point
-> HYDRA-UMC-EDITOR-URDF uses for URDF models). It does not yet propagate
-> a part's own saved color into STUDIO/SUITE's own live 3D viewers - real,
-> scoped future work (see ROADMAP), not silently assumed done.
+> HYDRA-UMC-EDITOR-URDF uses for URDF models). A part's own saved color
+> now also reaches HYDRA-UMC-STUDIO's and HYDRA-UMC-SUITE's own live 3D
+> viewers (their own separate, real changes - see those repos' own
+> CHANGELOGs), so `part_colors.json` is no longer an EDITOR-STL-only
+> preview.
 
 **Honesty check - what actually runs today:** `model_catalog.py` (real,
 read-only discovery of both model libraries), `stl_ops.py` (real STL
@@ -76,10 +78,11 @@ checkout on disk:
   `render/mesh.py` already depends on) and save it back in place.
 - **Change color** - a real per-part color annotation (`part_colors.json`,
   a sidecar this tool owns) shown in the 3D view - a binary STL carries
-  no reliable color of its own, and this ecosystem's own STUDIO/SUITE
-  viewers don't interpret that convention either, so this is an honest
-  EDITOR-STL-only preview today, not (yet) propagated into their live
-  3D viewers.
+  no reliable color of its own, so this sidecar is the real source of
+  truth. HYDRA-UMC-STUDIO's own `hooks/usePartColors.ts` and
+  HYDRA-UMC-SUITE's own `render/part_colors.py` both read the exact same
+  file back, so a color saved here reaches their live 3D viewers too,
+  not just this tool's own preview.
 - **Replace** - overwrite a part with another real STL file.
 - **Remove** - take a part out of a model.
 - **Add** - bring a new real STL file into a model.
@@ -199,9 +202,6 @@ directory).
 
 ## 🚀 ROADMAP
 
-- Propagating a part's own saved color (`part_colors.json`, see above)
-  into HYDRA-UMC-STUDIO/HYDRA-UMC-SUITE's own live 3D viewers - real,
-  separate, cross-repo work.
 - A packaged standalone GUI executable (PyInstaller, matching
   HYDRA-UMC-SUITE's own `build_exe.bat`/`.sh` convention).
 - Undo/redo over a session's own `.trash/` history, instead of a manual
