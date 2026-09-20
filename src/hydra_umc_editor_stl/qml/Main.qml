@@ -503,6 +503,7 @@ ApplicationWindow {
                     // fixed guess that would look broken for a 400mm robot
                     // base and a 5mm screw alike).
                     Item {
+                        id: orbitState
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         property real camYaw: 35
@@ -534,10 +535,10 @@ ApplicationWindow {
                                 Node {
                                     id: cameraPivot
                                     position: Qt.vector3d(backend.boundsCenter[0], backend.boundsCenter[1], backend.boundsCenter[2])
-                                    eulerRotation: Qt.vector3d(parent.parent.camPitch, parent.parent.camYaw, 0)
+                                    eulerRotation: Qt.vector3d(orbitState.camPitch, orbitState.camYaw, 0)
                                     PerspectiveCamera {
                                         id: orbitCamera
-                                        position: Qt.vector3d(0, 0, backend.boundsRadius * 2.4 * parent.parent.parent.camZoom)
+                                        position: Qt.vector3d(0, 0, backend.boundsRadius * 2.4 * orbitState.camZoom)
                                         clipNear: Math.max(1, backend.boundsRadius * 0.01)
                                         clipFar: backend.boundsRadius * 50
                                     }
@@ -578,28 +579,28 @@ ApplicationWindow {
                                 anchors.fill: parent
                                 acceptedButtons: Qt.LeftButton
                                 onPressed: (mouse) => {
-                                    parent.parent.dragStartX = mouse.x
-                                    parent.parent.dragStartY = mouse.y
-                                    parent.parent.dragMoved = false
+                                    orbitState.dragStartX = mouse.x
+                                    orbitState.dragStartY = mouse.y
+                                    orbitState.dragMoved = false
                                 }
                                 onPositionChanged: (mouse) => {
                                     if (pressed) {
-                                        var dx = mouse.x - parent.parent.dragStartX
-                                        var dy = mouse.y - parent.parent.dragStartY
-                                        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) parent.parent.dragMoved = true
-                                        parent.parent.camYaw -= dx * 0.4
-                                        parent.parent.camPitch = Math.max(-85, Math.min(85, parent.parent.camPitch - dy * 0.4))
-                                        parent.parent.dragStartX = mouse.x
-                                        parent.parent.dragStartY = mouse.y
+                                        var dx = mouse.x - orbitState.dragStartX
+                                        var dy = mouse.y - orbitState.dragStartY
+                                        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) orbitState.dragMoved = true
+                                        orbitState.camYaw -= dx * 0.4
+                                        orbitState.camPitch = Math.max(-85, Math.min(85, orbitState.camPitch - dy * 0.4))
+                                        orbitState.dragStartX = mouse.x
+                                        orbitState.dragStartY = mouse.y
                                     }
                                 }
                                 onClicked: (mouse) => {
-                                    if (parent.parent.dragMoved) return
+                                    if (orbitState.dragMoved) return
                                     var result = view3d.pick(mouse.x, mouse.y)
                                     if (result.objectHit) backend.selectPart(result.objectHit.objectName)
                                 }
                                 onWheel: (wheel) => {
-                                    parent.parent.camZoom = Math.max(0.15, Math.min(6, parent.parent.camZoom - wheel.angleDelta.y / 1000))
+                                    orbitState.camZoom = Math.max(0.15, Math.min(6, orbitState.camZoom - wheel.angleDelta.y / 1000))
                                 }
                             }
                         }

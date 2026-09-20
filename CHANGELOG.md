@@ -5,6 +5,20 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.0.5] - Real bug: the 3D viewer showed nothing at all
+
+Live report from the project owner: the 3D view stayed completely
+blank, even with a model's parts loaded (the parts list itself worked
+fine). Root cause: the orbit camera's own `parent.parent`/
+`parent.parent.parent` chains in `qml/Main.qml` were one hop short of
+the `Item` that actually owns `camPitch`/`camYaw`/`camZoom` (the camera
+lives inside `View3D` -> `Node`, one level deeper than the sibling
+`MouseArea` those same property names were copied from) - both the
+camera's own position and rotation silently evaluated against
+`undefined`, producing a `NaN` transform the renderer had nothing valid
+to draw. Fixed by giving that `Item` a real `id` and referencing it
+directly everywhere instead of a fragile parent-chain hop count.
+
 ## [0.0.4] - Push an edited/added model to a running server's catalog
 
 Until now this tool only ever edited STUDIO's/SUITE's own bundled model
