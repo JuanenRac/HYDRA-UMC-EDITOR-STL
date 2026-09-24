@@ -58,3 +58,55 @@ def test_set_selected_part_color_with_no_part_selected_reports_status_instead_of
     bridge.setSelectedPartColor("#00ff88")  # no selectPart() call at all
 
     assert bridge.statusText  # some real, non-empty message was set, not a silent no-op
+
+
+def test_copy_then_paste_adds_a_non_colliding_copy_of_the_part(qt_app, ecosystem_root: Path) -> None:
+    bridge = EditorBridge(ecosystem_root)
+    _select_ar3_base_link(bridge)
+    assert not bridge.hasClipboard
+
+    bridge.copySelectedPart()
+    assert bridge.hasClipboard
+    assert bridge.clipboardLabel == "base_link.STL"
+
+    bridge.pasteClipboard()
+    bridge.pasteClipboard()
+    filenames = {p["filename"] for p in bridge.parts}
+    assert {"base_link.STL", "base_link_copy.STL", "base_link_copy2.STL"} <= filenames
+
+
+def test_cut_copies_then_moves_the_original_to_trash(qt_app, ecosystem_root: Path) -> None:
+    bridge = EditorBridge(ecosystem_root)
+    _select_ar3_base_link(bridge)
+
+    bridge.cutSelectedPart()
+
+    assert bridge.hasClipboard
+    assert "base_link.STL" not in {p["filename"] for p in bridge.parts}
+    bridge.pasteClipboard()
+    assert "base_link.STL" in {p["filename"] for p in bridge.parts}
+
+
+def test_paste_with_an_empty_clipboard_changes_nothing(qt_app, ecosystem_root: Path) -> None:
+    bridge = EditorBridge(ecosystem_root)
+    _select_ar3_base_link(bridge)
+    before = {p["filename"] for p in bridge.parts}
+    bridge.pasteClipboard()
+    assert {p["filename"] for p in bridge.parts} == before
+
+
+def test_independent_parts_categories_are_flagged_and_robots_are_not(qt_app, ecosystem_root: Path) -> None:
+    bridge = EditorBridge(ecosystem_root)
+    bridge.selectLibrary("studio")
+    bridge.selectCategory("robots-6-dof")
+    assert not bridge.isIndependentPartsCategory
+    for category in ("heatedbeds", "vacuum-tables", "racks"):
+        bridge.selectCategory(category)
+        assert bridge.isIndependentPartsCategory
+
+
+def test_selected_part_center_is_the_real_center_of_that_part_only(qt_app, ecosystem_root: Path) -> None:
+    bridge = EditorBridge(ecosystem_root)
+    _select_ar3_base_link(bridge)
+    # conftest's cube fixture spans 0..10 on every axis.
+    assert bridge.selectedPartCenter == [5.0, 5.0, 5.0]

@@ -104,6 +104,7 @@ il vero checkout su disco:
   che accetta: un link radice più un link figlio non articolato
   (`fixed`) per pezzo, dato che la posizione reale di ogni pezzo è già
   incorporata nei propri vertici STL - mai una posa inventata.
+- **Barra mobile del visualizzatore** - Seleziona, Sposta (un vero gizmo a 3 assi trascinabile), Modifica (ruota/scala), Colore, Aggiungi, Elimina, Fissa (salva in modo permanente spostamento/rotazione/scala), Copia, Incolla e Taglia, direttamente nella vista 3D. Piani riscaldati, tavoli a vuoto e rack sono varianti di dimensione indipendenti: il visualizzatore mostra solo quella selezionata invece di sovrapporle.
 
 **Niente viene mai eliminato in modo permanente.** Una rimozione o una
 sostituzione sposta prima il vero file originale nella propria

@@ -104,6 +104,7 @@ contra el checkout real en disco:
   enlace hijo sin articular (`fixed`) por pieza, ya que la posición real
   de cada pieza ya está integrada en sus propios vértices STL - nunca una
   pose inventada.
+- **Barra flotante del visor** - Seleccionar, Mover (un gizmo real de 3 ejes arrastrable), Editar (rotar/escalar), Color, Añadir, Borrar, Fijar (guarda de forma permanente el movimiento/rotación/escala), Copiar, Pegar y Cortar, dentro del propio visor 3D. Las camas calientes, mesas de vacío y racks son variantes de tamaño independientes, así que el visor muestra solo la seleccionada en vez de apilarlas.
 
 **Nunca se borra nada de forma permanente.** Un "quitar" o un
 "reemplazar" mueve primero el fichero original real a la propia

@@ -34,6 +34,23 @@ LIBRARIES: tuple[tuple[str, str], ...] = (
 #: listed here as read-only/non-editable parts instead of hidden).
 MESH_EXTENSIONS: frozenset[str] = frozenset({".stl", ".glb"})
 
+#: Categories whose STL files are independent, mutually exclusive
+#: size/variant options (e.g. 4 real heated-bed sizes) - never meant to
+#: be viewed/assembled together the way a robot/CNC/PnP/laser model's own
+#: real links or CAD parts are. Real gap found live: the 3D viewer used
+#: to render every one of these on top of the others at the same origin
+#: (one giant plate visible, the rest hidden inside/behind it) since it
+#: had no way to tell "these are alternatives" apart from "these are one
+#: real assembly" - both are just "a folder of STL files" to
+#: model_catalog.py otherwise.
+INDEPENDENT_PART_CATEGORIES: frozenset[str] = frozenset({"heatedbeds", "vacuum-tables", "racks"})
+
+
+def is_independent_parts_category(category: str) -> bool:
+    """True for a category whose parts should be viewed one at a time
+    (the operator's own current selection only), never all overlapping."""
+    return category in INDEPENDENT_PART_CATEGORIES
+
 
 @dataclass(frozen=True)
 class PartInfo:
