@@ -547,7 +547,7 @@ ApplicationWindow {
                         // for both a 400mm robot base and a 5mm screw,
                         // matching every other "never a fixed guess" camera/
                         // clip constant already in this file.
-                        readonly property real gizmoLen: Math.max(backend.boundsRadius * 0.5, 8)
+                        readonly property real gizmoLen: backend.boundsRadius * 0.5
                         readonly property real gizmoThickness: gizmoLen * 0.05
 
                         Connections {
@@ -581,7 +581,7 @@ ApplicationWindow {
                                     PerspectiveCamera {
                                         id: orbitCamera
                                         position: Qt.vector3d(0, 0, backend.boundsRadius * 2.4 * orbitState.camZoom)
-                                        clipNear: Math.max(1, backend.boundsRadius * 0.01)
+                                        clipNear: backend.boundsRadius * 0.01
                                         clipFar: backend.boundsRadius * 50
                                     }
                                 }
@@ -605,7 +605,13 @@ ApplicationWindow {
                                         // Live gizmo drag preview for the selected part only - the
                                         // underlying STL vertices never move until "Fijar" commits
                                         // this same offset via backend.applyTransform().
-                                        position: isSelected ? gizmoState.pendingOffset : Qt.vector3d(0, 0, 0)
+                                        readonly property bool useAssembly: backend.hasAssembly && backend.assembledView
+                                        position: useAssembly
+                                            ? Qt.vector3d(modelData.asmPos[0], modelData.asmPos[1], modelData.asmPos[2])
+                                            : (isSelected ? gizmoState.pendingOffset : Qt.vector3d(0, 0, 0))
+                                        rotation: useAssembly
+                                            ? Qt.quaternion(modelData.asmRot[0], modelData.asmRot[1], modelData.asmRot[2], modelData.asmRot[3])
+                                            : Qt.quaternion(1, 0, 0, 0)
                                         geometry: StlGeometry { source: modelData.editable ? modelData.absolutePath : "" }
                                         materials: PrincipledMaterial {
                                             baseColor: isSelected
@@ -824,8 +830,17 @@ ApplicationWindow {
                                     ToolbarButton {
                                         iconName: "move"; text: ui("toolbar_move")
                                         accent: window.toolMode === "move" ? window.cyan : "#264966"
-                                        enabled: !!backend.selectedPart
+                                        enabled: !!backend.selectedPart && !(backend.hasAssembly && backend.assembledView)
                                         onClicked: window.toolMode = window.toolMode === "move" ? "select" : "move"
+                                    }
+                                    ToolbarButton {
+                                        iconName: "assemble"; text: ui("toolbar_assembled")
+                                        visible: backend.hasAssembly
+                                        accent: backend.assembledView ? window.cyan : "#264966"
+                                        onClicked: {
+                                            window.toolMode = "select"
+                                            backend.setAssembledView(!backend.assembledView)
+                                        }
                                     }
                                     ToolbarButton {
                                         iconName: "edit"; text: ui("toolbar_edit")

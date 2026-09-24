@@ -5,6 +5,19 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.0.8] - Robots, CNC, PnP and laser now open already assembled
+
+Those models' STL parts are each stored in their own local link frame, so
+they used to open as a pile. `assembly.py` now asks the sibling
+HYDRA-UMC-SUITE checkout's own kinematics (`render/kinematics.py`,
+`render/pnp_rig.py` - read, never copied) where every link sits at the
+machine's home pose and shows the parts there (display only; nothing is
+written to any STL). A new "Assembled view" toolbar button switches back
+to the raw parts, which is where Move/Pin editing happens. Also fixed the
+camera/gizmo size floors, which assumed millimeter-scale parts and hid
+meter-scale ones (a 0.5 m robot). With no SUITE checkout next to this
+one, or an unknown model, it simply keeps showing the raw parts.
+
 ## [0.0.7] - Icon toolbar that really floats
 
 Feedback on 0.0.6: the toolbar sat fixed in a corner and used text

@@ -105,6 +105,7 @@ contra el checkout real en disco:
   de cada pieza ya está integrada en sus propios vértices STL - nunca una
   pose inventada.
 - **Barra flotante del visor** - Seleccionar, Mover (un gizmo real de 3 ejes arrastrable), Editar (rotar/escalar), Color, Añadir, Borrar, Fijar (guarda de forma permanente el movimiento/rotación/escala), Copiar, Pegar y Cortar, dentro del propio visor 3D. Las camas calientes, mesas de vacío y racks son variantes de tamaño independientes, así que el visor muestra solo la seleccionada en vez de apilarlas.
+- **Vista montada** - los robots, CNC, PnP y laser se abren ya montados en su pose de reposo (leída de la cinemática de HYDRA-UMC-SUITE junto a este checkout, solo visualización); un botón de la barra cambia a las piezas sin montar para editarlas.
 
 **Nunca se borra nada de forma permanente.** Un "quitar" o un
 "reemplazar" mueve primero el fichero original real a la propia

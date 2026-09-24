@@ -108,6 +108,7 @@ echten Checkout auf der Festplatte:
   jedes Teils bereits in dessen eigenen STL-Vertices verankert ist -
   niemals eine erfundene Pose.
 - **Schwebende Viewer-Werkzeugleiste** - Auswählen, Verschieben (ein echtes ziehbares 3-Achsen-Gizmo), Bearbeiten (drehen/skalieren), Farbe, Hinzufügen, Löschen, Fixieren (speichert Verschiebung/Drehung/Skalierung dauerhaft), Kopieren, Einfügen und Ausschneiden, direkt in der 3D-Ansicht. Heizbetten, Vakuumtische und Racks sind unabhängige Größenvarianten, daher zeigt der Viewer nur die ausgewählte statt alle übereinander.
+- **Montierte Ansicht** - Roboter, CNC, PnP und Laser öffnen sich bereits in ihrer Grundstellung montiert (aus der Kinematik von HYDRA-UMC-SUITE neben diesem Checkout gelesen, nur Anzeige); eine Schaltfläche der Leiste wechselt zu den Rohteilen zum Bearbeiten.
 
 **Nichts wird jemals dauerhaft gelöscht.** Ein Entfernen oder Ersetzen
 verschiebt zuerst die echte Originaldatei in den eigenen

@@ -95,6 +95,7 @@ checkout on disk:
   (`fixed`) child link per part, since each part's actual position is
   already baked into its own STL vertices - never a synthetic pose.
 - **Floating viewer toolbar** - Select, Move (a real draggable 3-axis gizmo), Edit (rotate/scale), Color, Add, Delete, Pin (bakes the move/rotate/scale permanently), Copy, Paste and Cut, right inside the 3D view. Heated beds, vacuum tables and racks are independent size variants, so the viewer shows only the selected one instead of piling them up.
+- **Assembled view** - robots, CNC, PnP and laser models open already assembled at their home pose (read from HYDRA-UMC-SUITE's own kinematics next to this checkout, display only); a toolbar button switches to the raw parts for editing.
 
 **Nothing is ever permanently deleted.** A remove or a replace moves the
 real original file into that model's own `.trash/` subfolder first -
