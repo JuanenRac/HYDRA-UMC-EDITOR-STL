@@ -676,7 +676,7 @@ ApplicationWindow {
                                 // CHANGELOG entry for the honest caveat.
                                 Node {
                                     id: gizmoNode
-                                    visible: window.toolMode === "move" && !!backend.selectedPart
+                                    visible: window.toolMode === "move" && !!backend.selectedPart && !(backend.hasAssembly && backend.assembledView)
                                     position: Qt.vector3d(
                                         backend.selectedPartCenter[0] + gizmoState.pendingOffset.x,
                                         backend.selectedPartCenter[1] + gizmoState.pendingOffset.y,
@@ -738,7 +738,7 @@ ApplicationWindow {
                                         orbitState.dragMoved = true
                                         return
                                     }
-                                    if (window.toolMode === "move" && !!backend.selectedPart) {
+                                    if (window.toolMode === "move" && !!backend.selectedPart && !(backend.hasAssembly && backend.assembledView)) {
                                         var hit = view3d.pick(mouse.x, mouse.y)
                                         if (hit.objectHit && hit.objectHit.objectName.indexOf("gizmo_axis_") === 0) {
                                             gizmoState.dragAxis = hit.objectHit.objectName.substring("gizmo_axis_".length)
