@@ -116,8 +116,7 @@ def test_no_suite_checkout_means_no_assembly_and_raw_parts(qt_app, ecosystem_roo
     bridge = EditorBridge(ecosystem_root)
     _select_ar3_base_link(bridge)
     assert not bridge.hasAssembly
-    assert bridge.parts[0]["asmPos"] == [0.0, 0.0, 0.0]
-    assert bridge.parts[0]["asmRot"] == [1.0, 0.0, 0.0, 0.0]
+    assert bridge.parts[0]["asmMatrix"] == []
 
 
 def test_real_suite_kinematics_place_a_robot_and_the_toggle_reframes(qt_app) -> None:
@@ -132,7 +131,18 @@ def test_real_suite_kinematics_place_a_robot_and_the_toggle_reframes(qt_app) -> 
     bridge.selectCategory("robots-6-dof")
     bridge.selectModel("ur5e")
     assert bridge.hasAssembly and bridge.assembledView
-    positions = {tuple(p["asmPos"]) for p in bridge.parts if p["editable"]}
+    positions = {tuple(p["asmMatrix"][9:]) for p in bridge.parts if p["editable"]}
     assert len(positions) > 1  # links are no longer all stacked at the origin
     bridge.setAssembledView(False)
     assert not bridge.assembledView
+
+
+def test_placement_matrix_is_rotation_then_translation() -> None:
+    from hydra_umc_editor_stl.assembly import PartPlacement, placement_matrix
+
+    quarter_turn_about_x = (0.7071067811865476, 0.7071067811865476, 0.0, 0.0)
+    matrix = placement_matrix(PartPlacement((1.0, 2.0, 3.0), quarter_turn_about_x))
+    assert matrix[9:] == [1.0, 2.0, 3.0]
+    # +90 deg about X sends local +Y to world +Z and local +Z to world -Y.
+    rotation = [[round(matrix[r * 3 + c], 6) for c in range(3)] for r in range(3)]
+    assert rotation == [[1.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, 1.0, 0.0]]

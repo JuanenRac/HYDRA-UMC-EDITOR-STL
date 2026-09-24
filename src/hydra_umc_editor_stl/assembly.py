@@ -164,3 +164,10 @@ def assembled_bounds(model_dir: Path, placements: dict[str, PartPlacement]) -> t
         return None
     stacked = np.vstack(corners_all)
     return tuple(float(v) for v in stacked.min(axis=0)), tuple(float(v) for v in stacked.max(axis=0))
+
+
+def placement_matrix(placement: PartPlacement) -> list[float]:
+    """The placement as 12 floats: the 3x3 rotation row by row, then the
+    translation - what the 3D view bakes into a part's vertices."""
+    rotation = _rotation_matrix(placement.rotation_wxyz)
+    return [float(v) for v in rotation.reshape(9)] + [float(v) for v in placement.position]
