@@ -107,6 +107,7 @@ echten Checkout auf der Festplatte:
   ungelenktes (`fixed`) Kind-Link pro Teil, da die tatsächliche Position
   jedes Teils bereits in dessen eigenen STL-Vertices verankert ist -
   niemals eine erfundene Pose.
+- **Schwebende Viewer-Werkzeugleiste** - Auswählen, Verschieben (ein echtes ziehbares 3-Achsen-Gizmo), Bearbeiten (drehen/skalieren), Farbe, Hinzufügen, Löschen, Fixieren (speichert Verschiebung/Drehung/Skalierung dauerhaft), Kopieren, Einfügen und Ausschneiden, direkt in der 3D-Ansicht. Heizbetten, Vakuumtische und Racks sind unabhängige Größenvarianten, daher zeigt der Viewer nur die ausgewählte statt alle übereinander.
 
 **Nichts wird jemals dauerhaft gelöscht.** Ein Entfernen oder Ersetzen
 verschiebt zuerst die echte Originaldatei in den eigenen

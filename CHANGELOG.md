@@ -5,6 +5,32 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.0.6] - Floating viewer toolbar, move gizmo, and one-at-a-time variant view
+
+Live report from the project owner: heated beds, vacuum tables and racks
+showed one giant plate with every other variant piled underneath it, and
+robots looked badly assembled. Those three categories hold independent,
+mutually exclusive size variants (never one assembly), while a robot/CNC/
+PnP/laser model's STL parts are each stored in their own local frame -
+this tool has no joint data, so assembling them is a manual job.
+
+- Heated beds, vacuum tables and racks (`is_independent_parts_category()`)
+  now show only the selected variant in the 3D view instead of every one
+  overlapping at the same origin.
+- New floating toolbar inside the 3D view: Select, Move, Edit
+  (rotate/scale), Color, Add, Delete, Pin, Copy, Paste, Cut.
+- Move shows a real draggable 3-axis gizmo on the selected part (screen-
+  space axis drag, live preview only); Pin writes the accumulated move plus
+  the Edit rotate/scale permanently through the existing
+  `transform_part()` (original kept in `.trash/`), so a badly assembled
+  robot can be fixed once by hand and stays fixed.
+- Copy snapshots the part's bytes; Paste adds it under a non-colliding
+  name (`<name>_copy.stl`, `_copy2`, ...), also into a different model;
+  Cut is copy + move to `.trash/`.
+- Honest caveat: the gizmo's appearance and drag feel could only be
+  checked headlessly (loads with no QML errors), not visually - its size
+  and calibration may need tuning on a real display.
+
 ## [0.0.5] - Real bug: the 3D viewer showed nothing at all
 
 Live report from the project owner: the 3D view stayed completely

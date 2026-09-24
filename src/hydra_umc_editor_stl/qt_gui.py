@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 from pathlib import Path
 
 from PySide6.QtCore import Property, QObject, QThread, QUrl, Signal, Slot
@@ -25,10 +26,10 @@ from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
 from . import i18n, settings
 from . import __version__
 from .catalog_push import CatalogPushError, ServerClient
-from .model_catalog import list_categories, list_models, load_model
+from .model_catalog import is_independent_parts_category, list_categories, list_models, load_model
 from .part_colors import DEFAULT_COLOR, load_part_colors, save_part_color
 from .stl_geometry import StlGeometry
-from .stl_ops import StlOpsError, add_part, model_bounds, remove_part, replace_part, transform_part
+from .stl_ops import StlOpsError, add_part, model_bounds, remove_part, replace_part, transform_part, unique_part_filename
 
 
 class _PushThread(QThread):
@@ -64,6 +65,7 @@ class EditorBridge(QObject):
     selectionChanged = Signal()
     statusChanged = Signal()
     pushStateChanged = Signal()
+    clipboardChanged = Signal()
 
     def __init__(self, ecosystem_root: Path) -> None:
         super().__init__()
@@ -82,6 +84,8 @@ class EditorBridge(QObject):
         self._push_busy = False
         self._push_status = ""
         self._push_thread: _PushThread | None = None
+        self._clipboard_path: Path | None = None
+        self._clipboard_label = ""
         self._refresh_categories()
 
     # --- i18n ---------------------------------------------------------
@@ -155,6 +159,15 @@ class EditorBridge(QObject):
     def selectedCategory(self) -> str:
         return self._category
 
+    @Property(bool, notify=selectionChanged)
+    def isIndependentPartsCategory(self) -> bool:
+        """True for heatedbeds/vacuum-tables/racks - real, independent
+        size/variant options, never one real assembly - the 3D viewer
+        uses this to show only the operator's own current selection
+        instead of every variant piled on top of the others at the same
+        origin (see model_catalog.py's own header comment)."""
+        return is_independent_parts_category(self._category)
+
     @Slot(str)
     def selectCategory(self, category: str) -> None:
         if category == self._category:
@@ -200,6 +213,21 @@ class EditorBridge(QObject):
     def selectPart(self, filename: str) -> None:
         self._selected_part = filename
         self.selectionChanged.emit()
+
+    @Property("QVariantList", notify=selectionChanged)
+    def selectedPartCenter(self) -> list[float]:
+        """Real combined bounding-box center of ONLY the currently
+        selected part (unlike `boundsCenter`, which frames the whole
+        model) - where the move gizmo anchors itself, so it sits on the
+        actual selected piece rather than the model's own overall
+        center."""
+        model = self._load_selected_model()
+        if model is None or not self._selected_part:
+            return [0.0, 0.0, 0.0]
+        box = model_bounds(model.path, [self._selected_part])
+        if box is None:
+            return [0.0, 0.0, 0.0]
+        return [(a + b) / 2 for a, b in zip(box.min_xyz, box.max_xyz)]
 
     @Property(str, notify=statusChanged)
     def statusText(self) -> str:
@@ -347,6 +375,71 @@ class EditorBridge(QObject):
             return
         self._set_status(i18n.t(self._lang, "msg_add_done", name=filename))
         self._refresh_parts()
+
+    # --- copy / paste / cut ----------------------------------------------
+    # A real clipboard, not just a filename reference: copySelectedPart()
+    # snapshots the part's own bytes into a real temp file right away, so
+    # a later edit or removal of the original never corrupts a pending
+    # paste - the same "independent snapshot" semantics an OS clipboard
+    # already gives you for any other copy.
+
+    @Property(bool, notify=clipboardChanged)
+    def hasClipboard(self) -> bool:
+        return self._clipboard_path is not None
+
+    @Property(str, notify=clipboardChanged)
+    def clipboardLabel(self) -> str:
+        return self._clipboard_label
+
+    @Slot()
+    def copySelectedPart(self) -> None:
+        model = self._load_selected_model()
+        if model is None or not self._selected_part:
+            self._set_status(i18n.t(self._lang, "msg_select_part_first"))
+            return
+        source = model.path / self._selected_part
+        try:
+            data = source.read_bytes()
+        except OSError as error:
+            self._set_status(i18n.t(self._lang, "msg_copy_failed", error=str(error)))
+            return
+        suffix = Path(self._selected_part).suffix or ".stl"
+        fd, tmp_name = tempfile.mkstemp(suffix=suffix)
+        tmp_path = Path(tmp_name)
+        with open(fd, "wb") as handle:
+            handle.write(data)
+        self._clipboard_path = tmp_path
+        self._clipboard_label = self._selected_part
+        self.clipboardChanged.emit()
+        self._set_status(i18n.t(self._lang, "msg_copy_done", name=self._selected_part))
+
+    @Slot()
+    def pasteClipboard(self) -> None:
+        model = self._load_selected_model()
+        if model is None:
+            self._set_status(i18n.t(self._lang, "msg_select_model_first"))
+            return
+        if self._clipboard_path is None or not self._clipboard_path.is_file():
+            self._set_status(i18n.t(self._lang, "msg_clipboard_empty"))
+            return
+        dest_name = unique_part_filename(model.path, self._clipboard_label or self._clipboard_path.name)
+        try:
+            filename = add_part(model.path, self._clipboard_path, dest_name)
+        except StlOpsError as error:
+            self._set_status(i18n.t(self._lang, "msg_add_failed", error=str(error)))
+            return
+        self._set_status(i18n.t(self._lang, "msg_paste_done", name=filename))
+        self._refresh_parts()
+
+    @Slot()
+    def cutSelectedPart(self) -> None:
+        if not self._selected_part:
+            self._set_status(i18n.t(self._lang, "msg_select_part_first"))
+            return
+        cut_name = self._selected_part
+        self.copySelectedPart()
+        if self._clipboard_path is not None and self._clipboard_label == cut_name:
+            self.removeSelectedPart()
 
     # --- push to a running server's own model-submission catalog --------
 

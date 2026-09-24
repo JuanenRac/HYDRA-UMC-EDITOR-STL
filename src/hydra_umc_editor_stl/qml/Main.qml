@@ -42,6 +42,11 @@ ApplicationWindow {
     property color amber: "#f3ba55"
     property color red: "#ee6b80"
 
+    // "select" (plain click-to-pick, the default) or "move" (shows the
+    // real drag gizmo on the currently selected part) - the floating
+    // viewer toolbar's own Mover button toggles this.
+    property string toolMode: "select"
+
     function ui(key) {
         var ignored = languageTick
         return backend.text(key)
@@ -513,6 +518,43 @@ ApplicationWindow {
                         property real dragStartY: 0
                         property bool dragMoved: false
 
+                        // Real, live-preview move gizmo state - dragging an
+                        // axis handle only ever updates `pendingOffset`
+                        // (never touches disk); the floating toolbar's own
+                        // "Fijar"/Pin button is what actually calls
+                        // backend.applyTransform() to bake it permanently
+                        // into the STL's own vertices, same as this app's
+                        // pre-existing numeric transform fields already do -
+                        // this gizmo is a second, visual way to fill in
+                        // those same tx/ty/tz values, not a separate write
+                        // path.
+                        QtObject {
+                            id: gizmoState
+                            property vector3d pendingOffset: Qt.vector3d(0, 0, 0)
+                            property string dragAxis: ""
+                            property real dragStartScreenX: 0
+                            property real dragStartScreenY: 0
+                            property vector3d dragStartOffset: Qt.vector3d(0, 0, 0)
+                            property vector2d axisScreenDir: Qt.vector2d(1, 0)
+
+                            function resetForSelection() {
+                                pendingOffset = Qt.vector3d(0, 0, 0)
+                                dragAxis = ""
+                            }
+                        }
+                        // Real gizmo geometry size, scaled off the whole
+                        // model's own bounding radius so it reads sensibly
+                        // for both a 400mm robot base and a 5mm screw,
+                        // matching every other "never a fixed guess" camera/
+                        // clip constant already in this file.
+                        readonly property real gizmoLen: Math.max(backend.boundsRadius * 0.5, 8)
+                        readonly property real gizmoThickness: gizmoLen * 0.05
+
+                        Connections {
+                            target: backend
+                            function onSelectionChanged() { gizmoState.resetForSelection() }
+                        }
+
                         Rectangle {
                             anchors.fill: parent
                             radius: 12
@@ -550,16 +592,71 @@ ApplicationWindow {
                                 Repeater3D {
                                     model: backend.parts
                                     delegate: Model {
-                                        visible: modelData.editable
+                                        readonly property bool isSelected: modelData.filename === backend.selectedPart
+                                        // Independent-variant categories (heatedbeds/vacuum-tables/
+                                        // racks) show ONLY the operator's own current selection -
+                                        // every variant used to render on top of the others at the
+                                        // same origin (one giant plate visible, the rest hidden
+                                        // inside/behind it) since they are real, separate options,
+                                        // never one assembly to view together.
+                                        visible: modelData.editable && (!backend.isIndependentPartsCategory || isSelected)
                                         objectName: modelData.filename
+                                        pickable: true
+                                        // Live gizmo drag preview for the selected part only - the
+                                        // underlying STL vertices never move until "Fijar" commits
+                                        // this same offset via backend.applyTransform().
+                                        position: isSelected ? gizmoState.pendingOffset : Qt.vector3d(0, 0, 0)
                                         geometry: StlGeometry { source: modelData.editable ? modelData.absolutePath : "" }
                                         materials: PrincipledMaterial {
-                                            baseColor: modelData.filename === backend.selectedPart
+                                            baseColor: isSelected
                                                 ? Qt.lighter(modelData.color, 1.7)
                                                 : modelData.color
                                             roughness: 0.55
                                             metalness: 0.05
                                         }
+                                    }
+                                }
+
+                                // Real, draggable translate gizmo - 3 axis
+                                // rods (X red/Y green/Z blue) centered on the
+                                // selected part's own real bounding-box
+                                // center (backend.selectedPartCenter), shown
+                                // only in "move" tool mode. Deliberately
+                                // plain rods rather than arrow+cone heads -
+                                // fewer real unknowns about the exact size of
+                                // Qt Quick 3D's own built-in "#Cube"/
+                                // "#Cone" primitives to get right without a
+                                // real display to check against in this
+                                // environment - see this project's own
+                                // CHANGELOG entry for the honest caveat.
+                                Node {
+                                    id: gizmoNode
+                                    visible: window.toolMode === "move" && !!backend.selectedPart
+                                    position: Qt.vector3d(
+                                        backend.selectedPartCenter[0] + gizmoState.pendingOffset.x,
+                                        backend.selectedPartCenter[1] + gizmoState.pendingOffset.y,
+                                        backend.selectedPartCenter[2] + gizmoState.pendingOffset.z
+                                    )
+                                    Model {
+                                        objectName: "gizmo_axis_x"
+                                        source: "#Cube"
+                                        pickable: true
+                                        scale: Qt.vector3d(orbitState.gizmoLen / 100, orbitState.gizmoThickness / 100, orbitState.gizmoThickness / 100)
+                                        materials: PrincipledMaterial { baseColor: "#ef4444"; lighting: PrincipledMaterial.NoLighting }
+                                    }
+                                    Model {
+                                        objectName: "gizmo_axis_y"
+                                        source: "#Cube"
+                                        pickable: true
+                                        scale: Qt.vector3d(orbitState.gizmoThickness / 100, orbitState.gizmoLen / 100, orbitState.gizmoThickness / 100)
+                                        materials: PrincipledMaterial { baseColor: "#22c55e"; lighting: PrincipledMaterial.NoLighting }
+                                    }
+                                    Model {
+                                        objectName: "gizmo_axis_z"
+                                        source: "#Cube"
+                                        pickable: true
+                                        scale: Qt.vector3d(orbitState.gizmoThickness / 100, orbitState.gizmoThickness / 100, orbitState.gizmoLen / 100)
+                                        materials: PrincipledMaterial { baseColor: "#3b82f6"; lighting: PrincipledMaterial.NoLighting }
                                     }
                                 }
                             }
@@ -574,33 +671,199 @@ ApplicationWindow {
                                 width: parent.width * 0.7
                             }
 
+                            LabelText {
+                                anchors.centerIn: parent
+                                visible: backend.parts.length > 0 && backend.isIndependentPartsCategory && !backend.selectedPart
+                                text: ui("viewer_independent_hint")
+                                color: window.textMuted
+                                wrapMode: Text.WordWrap
+                                horizontalAlignment: Text.AlignHCenter
+                                width: parent.width * 0.7
+                            }
+
                             MouseArea {
                                 id: orbitArea
                                 anchors.fill: parent
                                 acceptedButtons: Qt.LeftButton
                                 onPressed: (mouse) => {
+                                    if (window.toolMode === "move" && !!backend.selectedPart) {
+                                        var hit = view3d.pick(mouse.x, mouse.y)
+                                        if (hit.objectHit && hit.objectHit.objectName.indexOf("gizmo_axis_") === 0) {
+                                            gizmoState.dragAxis = hit.objectHit.objectName.substring("gizmo_axis_".length)
+                                            gizmoState.dragStartScreenX = mouse.x
+                                            gizmoState.dragStartScreenY = mouse.y
+                                            gizmoState.dragStartOffset = gizmoState.pendingOffset
+                                            var origin = Qt.vector3d(
+                                                backend.selectedPartCenter[0] + gizmoState.pendingOffset.x,
+                                                backend.selectedPartCenter[1] + gizmoState.pendingOffset.y,
+                                                backend.selectedPartCenter[2] + gizmoState.pendingOffset.z
+                                            )
+                                            var axisVec = gizmoState.dragAxis === "x" ? Qt.vector3d(1, 0, 0)
+                                                : gizmoState.dragAxis === "y" ? Qt.vector3d(0, 1, 0) : Qt.vector3d(0, 0, 1)
+                                            var originScreen = view3d.mapFrom3DScene(origin)
+                                            var axisScreen = view3d.mapFrom3DScene(Qt.vector3d(origin.x + axisVec.x, origin.y + axisVec.y, origin.z + axisVec.z))
+                                            gizmoState.axisScreenDir = Qt.vector2d(axisScreen.x - originScreen.x, axisScreen.y - originScreen.y)
+                                            return
+                                        }
+                                    }
                                     orbitState.dragStartX = mouse.x
                                     orbitState.dragStartY = mouse.y
                                     orbitState.dragMoved = false
                                 }
                                 onPositionChanged: (mouse) => {
+                                    if (gizmoState.dragAxis !== "") {
+                                        var dx = mouse.x - gizmoState.dragStartScreenX
+                                        var dy = mouse.y - gizmoState.dragStartScreenY
+                                        var dirSq = gizmoState.axisScreenDir.x * gizmoState.axisScreenDir.x + gizmoState.axisScreenDir.y * gizmoState.axisScreenDir.y
+                                        var worldDelta = dirSq > 0.0001 ? (dx * gizmoState.axisScreenDir.x + dy * gizmoState.axisScreenDir.y) / dirSq : 0
+                                        var o = gizmoState.dragStartOffset
+                                        if (gizmoState.dragAxis === "x") gizmoState.pendingOffset = Qt.vector3d(o.x + worldDelta, o.y, o.z)
+                                        else if (gizmoState.dragAxis === "y") gizmoState.pendingOffset = Qt.vector3d(o.x, o.y + worldDelta, o.z)
+                                        else gizmoState.pendingOffset = Qt.vector3d(o.x, o.y, o.z + worldDelta)
+                                        return
+                                    }
                                     if (pressed) {
-                                        var dx = mouse.x - orbitState.dragStartX
-                                        var dy = mouse.y - orbitState.dragStartY
-                                        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) orbitState.dragMoved = true
-                                        orbitState.camYaw -= dx * 0.4
-                                        orbitState.camPitch = Math.max(-85, Math.min(85, orbitState.camPitch - dy * 0.4))
+                                        var ox = mouse.x - orbitState.dragStartX
+                                        var oy = mouse.y - orbitState.dragStartY
+                                        if (Math.abs(ox) > 3 || Math.abs(oy) > 3) orbitState.dragMoved = true
+                                        orbitState.camYaw -= ox * 0.4
+                                        orbitState.camPitch = Math.max(-85, Math.min(85, orbitState.camPitch - oy * 0.4))
                                         orbitState.dragStartX = mouse.x
                                         orbitState.dragStartY = mouse.y
                                     }
                                 }
+                                onReleased: (mouse) => {
+                                    gizmoState.dragAxis = ""
+                                }
                                 onClicked: (mouse) => {
                                     if (orbitState.dragMoved) return
                                     var result = view3d.pick(mouse.x, mouse.y)
-                                    if (result.objectHit) backend.selectPart(result.objectHit.objectName)
+                                    if (result.objectHit && result.objectHit.objectName.indexOf("gizmo_") !== 0) {
+                                        backend.selectPart(result.objectHit.objectName)
+                                    }
                                 }
                                 onWheel: (wheel) => {
                                     orbitState.camZoom = Math.max(0.15, Math.min(6, orbitState.camZoom - wheel.angleDelta.y / 1000))
+                                }
+                            }
+
+                            // --- floating viewer toolbar - real select/move/
+                            // edit/color/delete/add/pin/copy/paste/cut tools,
+                            // the project owner's own explicit request for
+                            // an in-viewport panel rather than only the
+                            // slim side panel's numeric fields. ---
+                            Rectangle {
+                                id: viewerToolbar
+                                anchors.top: parent.top
+                                anchors.left: parent.left
+                                anchors.margins: 10
+                                width: toolbarColumn.implicitWidth + 12
+                                height: toolbarColumn.implicitHeight + 12
+                                radius: 10
+                                color: "#0c1b2bcc"
+                                border.width: 1
+                                border.color: window.border
+                                ColumnLayout {
+                                    id: toolbarColumn
+                                    anchors.centerIn: parent
+                                    spacing: 4
+
+                                    component ToolbarButton: GameButton {
+                                        Layout.fillWidth: true
+                                        implicitHeight: 30
+                                        font.pixelSize: 10
+                                    }
+
+                                    ToolbarButton {
+                                        text: ui("toolbar_select")
+                                        accent: window.toolMode === "select" ? window.cyan : "#264966"
+                                        onClicked: window.toolMode = "select"
+                                    }
+                                    ToolbarButton {
+                                        text: ui("toolbar_move")
+                                        accent: window.toolMode === "move" ? window.cyan : "#264966"
+                                        enabled: !!backend.selectedPart
+                                        onClicked: window.toolMode = window.toolMode === "move" ? "select" : "move"
+                                    }
+                                    ToolbarButton {
+                                        text: ui("toolbar_edit")
+                                        accent: "#264966"
+                                        enabled: !!backend.selectedPart
+                                        onClicked: editPopup.open()
+                                    }
+                                    ToolbarButton {
+                                        text: ui("toolbar_color")
+                                        accent: window.cyan
+                                        enabled: !!backend.selectedPart
+                                        onClicked: colorDialog.open()
+                                    }
+                                    ToolbarButton {
+                                        text: ui("toolbar_add")
+                                        accent: window.green
+                                        onClicked: addDialog.open()
+                                    }
+                                    ToolbarButton {
+                                        text: ui("toolbar_delete")
+                                        accent: window.red
+                                        enabled: !!backend.selectedPart
+                                        onClicked: removeConfirmDialog.open()
+                                    }
+                                    Rectangle { Layout.fillWidth: true; height: 1; color: window.border }
+                                    ToolbarButton {
+                                        text: ui("toolbar_pin")
+                                        accent: window.blue
+                                        enabled: !!backend.selectedPart
+                                        onClicked: {
+                                            backend.applyTransform(
+                                                gizmoState.pendingOffset.x, gizmoState.pendingOffset.y, gizmoState.pendingOffset.z,
+                                                parseFloat(rxField.text) || 0, parseFloat(ryField.text) || 0, parseFloat(rzField.text) || 0,
+                                                parseFloat(scaleField.text) || 1
+                                            )
+                                            gizmoState.resetForSelection()
+                                            rxField.text = "0"; ryField.text = "0"; rzField.text = "0"; scaleField.text = "1"
+                                        }
+                                    }
+                                    Rectangle { Layout.fillWidth: true; height: 1; color: window.border }
+                                    ToolbarButton {
+                                        text: ui("toolbar_copy")
+                                        accent: "#264966"
+                                        enabled: !!backend.selectedPart
+                                        onClicked: backend.copySelectedPart()
+                                    }
+                                    ToolbarButton {
+                                        text: ui("toolbar_paste")
+                                        accent: "#264966"
+                                        enabled: backend.hasClipboard && !!backend.selectedModel
+                                        onClicked: backend.pasteClipboard()
+                                    }
+                                    ToolbarButton {
+                                        text: ui("toolbar_cut")
+                                        accent: "#264966"
+                                        enabled: !!backend.selectedPart
+                                        onClicked: backend.cutSelectedPart()
+                                    }
+                                }
+                            }
+
+                            Popup {
+                                id: editPopup
+                                x: viewerToolbar.x + viewerToolbar.width + 10
+                                y: viewerToolbar.y
+                                modal: false
+                                focus: true
+                                background: Rectangle { color: window.panel; radius: 10; border.width: 1; border.color: window.border }
+                                contentItem: ColumnLayout {
+                                    spacing: 6
+                                    LabelText { text: ui("toolbar_edit_popup_title"); font.bold: true }
+                                    ListLabel { text: ui("lbl_rotate") }
+                                    RowLayout {
+                                        spacing: 4
+                                        GameField { id: rxField; text: "0"; Layout.preferredWidth: 60 }
+                                        GameField { id: ryField; text: "0"; Layout.preferredWidth: 60 }
+                                        GameField { id: rzField; text: "0"; Layout.preferredWidth: 60 }
+                                    }
+                                    ListLabel { text: ui("lbl_scale") }
+                                    GameField { id: scaleField; text: "1"; Layout.fillWidth: true }
                                 }
                             }
                         }
@@ -660,15 +923,8 @@ ApplicationWindow {
                                 GameField { id: tyField; text: "0"; Layout.fillWidth: true }
                                 GameField { id: tzField; text: "0"; Layout.fillWidth: true }
                             }
-                            ListLabel { text: ui("lbl_rotate") }
-                            RowLayout {
-                                spacing: 4
-                                GameField { id: rxField; text: "0"; Layout.fillWidth: true }
-                                GameField { id: ryField; text: "0"; Layout.fillWidth: true }
-                                GameField { id: rzField; text: "0"; Layout.fillWidth: true }
-                            }
-                            ListLabel { text: ui("lbl_scale") }
-                            GameField { id: scaleField; text: "1"; Layout.fillWidth: true }
+                            // Rotate/scale live in the floating toolbar's own
+                            // Edit popup (rxField/ryField/rzField/scaleField).
                             GameButton {
                                 text: ui("btn_apply_transform")
                                 accent: window.blue

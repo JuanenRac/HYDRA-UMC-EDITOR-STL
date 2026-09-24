@@ -175,6 +175,23 @@ def remove_part(model_dir: Path, filename: str) -> Path:
     return destination
 
 
+def unique_part_filename(model_dir: Path, filename: str) -> str:
+    """A real filename inside `model_dir` that doesn't collide with an
+    existing part - `filename` itself if it's already free, else
+    `<stem>_copy<N><suffix>` for the first free `N`. Used by copy/paste so
+    pasting the same clipboard part twice (or into the model it was
+    copied from) never hits `add_part`'s own "already exists" refusal."""
+    if not (model_dir / filename).exists():
+        return filename
+    stem, suffix = Path(filename).stem, Path(filename).suffix
+    candidate = f"{stem}_copy{suffix}"
+    n = 2
+    while (model_dir / candidate).exists():
+        candidate = f"{stem}_copy{n}{suffix}"
+        n += 1
+    return candidate
+
+
 def add_part(model_dir: Path, source_path: Path, dest_filename: str | None = None) -> str:
     """Copies a real, externally-parseable STL into `model_dir` under
     `dest_filename` (or `source_path`'s own name) - refuses to silently
