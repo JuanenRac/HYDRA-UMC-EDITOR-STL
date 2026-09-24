@@ -485,8 +485,34 @@ ApplicationWindow {
                                 LabelText { text: modelData.filename; Layout.fillWidth: true; elide: Text.ElideMiddle }
                                 LabelText { text: modelData.sizeBytes + " B"; color: window.textMuted; Layout.preferredWidth: 80; font.pixelSize: 10 }
                                 LabelText { text: modelData.editable ? "✓" : "—"; color: modelData.editable ? window.green : window.textMuted; Layout.preferredWidth: 60 }
+                                Rectangle {
+                                    Layout.preferredWidth: 26
+                                    Layout.preferredHeight: 26
+                                    radius: 6
+                                    color: rowDeleteArea.containsMouse ? "#4a2530" : "transparent"
+                                    Image {
+                                        anchors.centerIn: parent
+                                        width: 16
+                                        height: 16
+                                        source: "icons/delete.svg"
+                                        sourceSize: Qt.size(32, 32)
+                                    }
+                                    MouseArea {
+                                        id: rowDeleteArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        ToolTip.visible: containsMouse
+                                        ToolTip.delay: 300
+                                        ToolTip.text: ui("toolbar_delete")
+                                        onClicked: {
+                                            backend.selectPart(modelData.filename)
+                                            removeConfirmDialog.open()
+                                        }
+                                    }
+                                }
                             }
-                            MouseArea { anchors.fill: parent; onClicked: backend.selectPart(modelData.filename) }
+                            MouseArea { anchors.fill: parent; z: -1; onClicked: backend.selectPart(modelData.filename) }
                         }
                     }
                 }
