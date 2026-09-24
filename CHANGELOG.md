@@ -5,6 +5,13 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.1.2] - The move gizmo only exists where its axes are the part's own
+
+- The move gizmo is hidden and cannot start a drag while the assembled view is on,
+  including when the move tool was already selected before switching views. In the
+  assembled view a part sits in world coordinates while the transform is applied in
+  the part's own coordinates, so the gizmo only works in the raw view where both agree.
+
 ## [0.1.1] - Basic Qt style
 
 - The app now uses Qt Quick's Basic style. The native Windows style ignores
