@@ -22,6 +22,7 @@ from pathlib import Path
 from PySide6.QtCore import Property, QObject, QThread, QUrl, Signal, Slot
 from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
+from PySide6.QtQuickControls2 import QQuickStyle
 
 from . import i18n, settings
 from . import __version__
@@ -535,6 +536,8 @@ class EditorBridge(QObject):
 
 
 def launch_qt_gui(ecosystem_root: Path) -> int:
+    # The Windows native style ignores custom backgrounds; Basic honours them.
+    QQuickStyle.setStyle("Basic")
     app = QGuiApplication.instance() or QGuiApplication(sys.argv)
     app.setApplicationName("HYDRA-UMC-EDITOR-STL")
     app.setApplicationDisplayName("HYDRA-UMC Editor STL")
