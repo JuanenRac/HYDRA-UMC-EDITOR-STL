@@ -5,6 +5,12 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.0.9] - Delete a part straight from the left-hand list
+
+- Every row of the parts list now has a trash button. It selects the row's
+  part and opens the same confirmation as the toolbar's delete; the STL is
+  moved to `.trash/`, never erased permanently.
+
 ## [0.0.8] - Robots, CNC, PnP and laser now open already assembled
 
 Those models' STL parts are each stored in their own local link frame, so
