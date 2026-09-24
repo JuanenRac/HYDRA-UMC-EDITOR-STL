@@ -34,4 +34,4 @@ hydra-umc-editor-stl = "hydra_umc_editor_stl.main:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-hydra_umc_editor_stl = ["qml/*.qml"]
+hydra_umc_editor_stl = ["qml/*.qml", "qml/icons/*.svg"]

@@ -754,63 +754,104 @@ ApplicationWindow {
                             // slim side panel's numeric fields. ---
                             Rectangle {
                                 id: viewerToolbar
-                                anchors.top: parent.top
-                                anchors.left: parent.left
-                                anchors.margins: 10
-                                width: toolbarColumn.implicitWidth + 12
-                                height: toolbarColumn.implicitHeight + 12
-                                radius: 10
-                                color: "#0c1b2bcc"
+                                // Freely floating: dragged by its grip handle, kept
+                                // inside the 3D view's own bounds.
+                                x: 10
+                                y: 10
+                                width: 46
+                                height: toolbarColumn.implicitHeight + 10
+                                radius: 12
+                                color: "#0c1b2be6"
                                 border.width: 1
-                                border.color: window.border
+                                border.color: window.cyan
+                                z: 10
+
                                 ColumnLayout {
                                     id: toolbarColumn
-                                    anchors.centerIn: parent
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.top: parent.top
+                                    anchors.topMargin: 5
                                     spacing: 4
 
-                                    component ToolbarButton: GameButton {
-                                        Layout.fillWidth: true
-                                        implicitHeight: 30
-                                        font.pixelSize: 10
+                                    Item {
+                                        Layout.alignment: Qt.AlignHCenter
+                                        implicitWidth: 34
+                                        implicitHeight: 18
+                                        Image { anchors.centerIn: parent; source: "icons/grip.svg"; sourceSize.width: 20; sourceSize.height: 20; opacity: 0.7 }
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            cursorShape: Qt.SizeAllCursor
+                                            drag.target: viewerToolbar
+                                            drag.axis: Drag.XAndYAxis
+                                            drag.minimumX: 0
+                                            drag.maximumX: viewerToolbar.parent.width - viewerToolbar.width
+                                            drag.minimumY: 0
+                                            drag.maximumY: viewerToolbar.parent.height - viewerToolbar.height
+                                        }
+                                    }
+
+                                    component ToolbarButton: Button {
+                                        id: tbButton
+                                        property string iconName: ""
+                                        property color accent: "#264966"
+                                        Layout.alignment: Qt.AlignHCenter
+                                        implicitWidth: 34
+                                        implicitHeight: 34
+                                        hoverEnabled: true
+                                        ToolTip.visible: hovered
+                                        ToolTip.delay: 300
+                                        ToolTip.text: text
+                                        contentItem: Image {
+                                            source: "icons/" + tbButton.iconName + ".svg"
+                                            sourceSize.width: 20
+                                            sourceSize.height: 20
+                                            fillMode: Image.PreserveAspectFit
+                                            opacity: tbButton.enabled ? 1.0 : 0.3
+                                        }
+                                        background: Rectangle {
+                                            radius: 8
+                                            border.width: 1
+                                            border.color: tbButton.enabled ? Qt.lighter(tbButton.accent, tbButton.hovered ? 1.3 : 1.1) : "#25384b"
+                                            color: !tbButton.enabled ? "#122031" : (tbButton.down ? Qt.darker(tbButton.accent, 1.4) : (tbButton.hovered ? Qt.lighter(tbButton.accent, 1.15) : tbButton.accent))
+                                        }
                                     }
 
                                     ToolbarButton {
-                                        text: ui("toolbar_select")
+                                        iconName: "select"; text: ui("toolbar_select")
                                         accent: window.toolMode === "select" ? window.cyan : "#264966"
                                         onClicked: window.toolMode = "select"
                                     }
                                     ToolbarButton {
-                                        text: ui("toolbar_move")
+                                        iconName: "move"; text: ui("toolbar_move")
                                         accent: window.toolMode === "move" ? window.cyan : "#264966"
                                         enabled: !!backend.selectedPart
                                         onClicked: window.toolMode = window.toolMode === "move" ? "select" : "move"
                                     }
                                     ToolbarButton {
-                                        text: ui("toolbar_edit")
-                                        accent: "#264966"
+                                        iconName: "edit"; text: ui("toolbar_edit")
                                         enabled: !!backend.selectedPart
                                         onClicked: editPopup.open()
                                     }
                                     ToolbarButton {
-                                        text: ui("toolbar_color")
-                                        accent: window.cyan
+                                        iconName: "color"; text: ui("toolbar_color")
+                                        accent: window.blue
                                         enabled: !!backend.selectedPart
                                         onClicked: colorDialog.open()
                                     }
                                     ToolbarButton {
-                                        text: ui("toolbar_add")
+                                        iconName: "add"; text: ui("toolbar_add")
                                         accent: window.green
                                         onClicked: addDialog.open()
                                     }
                                     ToolbarButton {
-                                        text: ui("toolbar_delete")
+                                        iconName: "delete"; text: ui("toolbar_delete")
                                         accent: window.red
                                         enabled: !!backend.selectedPart
                                         onClicked: removeConfirmDialog.open()
                                     }
                                     Rectangle { Layout.fillWidth: true; height: 1; color: window.border }
                                     ToolbarButton {
-                                        text: ui("toolbar_pin")
+                                        iconName: "pin"; text: ui("toolbar_pin")
                                         accent: window.blue
                                         enabled: !!backend.selectedPart
                                         onClicked: {
@@ -825,20 +866,17 @@ ApplicationWindow {
                                     }
                                     Rectangle { Layout.fillWidth: true; height: 1; color: window.border }
                                     ToolbarButton {
-                                        text: ui("toolbar_copy")
-                                        accent: "#264966"
+                                        iconName: "copy"; text: ui("toolbar_copy")
                                         enabled: !!backend.selectedPart
                                         onClicked: backend.copySelectedPart()
                                     }
                                     ToolbarButton {
-                                        text: ui("toolbar_paste")
-                                        accent: "#264966"
+                                        iconName: "paste"; text: ui("toolbar_paste")
                                         enabled: backend.hasClipboard && !!backend.selectedModel
                                         onClicked: backend.pasteClipboard()
                                     }
                                     ToolbarButton {
-                                        text: ui("toolbar_cut")
-                                        accent: "#264966"
+                                        iconName: "cut"; text: ui("toolbar_cut")
                                         enabled: !!backend.selectedPart
                                         onClicked: backend.cutSelectedPart()
                                     }
@@ -847,7 +885,7 @@ ApplicationWindow {
 
                             Popup {
                                 id: editPopup
-                                x: viewerToolbar.x + viewerToolbar.width + 10
+                                x: viewerToolbar.x + viewerToolbar.width + 8
                                 y: viewerToolbar.y
                                 modal: false
                                 focus: true
