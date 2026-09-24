@@ -5,6 +5,11 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.1.1] - Basic Qt style
+
+- The app now uses Qt Quick's Basic style. The native Windows style ignores
+  custom control backgrounds and logged a warning for each one.
+
 ## [0.1.0] - Machines and robots open correctly assembled; right-drag pans
 
 - **Assembled view fixed.** Rendering the real viewer showed machines upside
