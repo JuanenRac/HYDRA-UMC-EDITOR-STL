@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hydra-umc-editor-stl"
-version = "0.0.1"
+dynamic = ["version"]
 description = "Browses and edits HYDRA-UMC-STUDIO's/HYDRA-UMC-SUITE's own real STL model libraries - transform, replace, remove and add parts."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -32,6 +32,9 @@ hydra-umc-editor-stl = "hydra_umc_editor_stl.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "hydra_umc_editor_stl.__version__" }
 
 [tool.setuptools.package-data]
 hydra_umc_editor_stl = ["qml/*.qml", "qml/icons/*.svg"]
