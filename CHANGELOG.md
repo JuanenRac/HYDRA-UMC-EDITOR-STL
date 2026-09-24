@@ -5,6 +5,15 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.0.7] - Icon toolbar that really floats
+
+Feedback on 0.0.6: the toolbar sat fixed in a corner and used text
+buttons. It is now a compact, semi-transparent panel you drag anywhere
+inside the 3D view by its grip handle (kept within the view's bounds),
+and every button is an icon (bundled SVGs in `qml/icons/`) with the
+translated name as a hover tooltip, so all 7 languages still read
+correctly.
+
 ## [0.0.6] - Floating viewer toolbar, move gizmo, and one-at-a-time variant view
 
 Live report from the project owner: heated beds, vacuum tables and racks
