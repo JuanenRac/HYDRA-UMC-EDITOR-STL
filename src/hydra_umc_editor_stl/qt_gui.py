@@ -25,7 +25,7 @@ from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
 
 from . import i18n, settings
 from . import __version__
-from .assembly import assembled_bounds, assembled_transforms
+from .assembly import assembled_bounds, assembled_transforms, placement_matrix
 from .catalog_push import CatalogPushError, ServerClient
 from .model_catalog import is_independent_parts_category, list_categories, list_models, load_model
 from .part_colors import DEFAULT_COLOR, load_part_colors, save_part_color
@@ -287,7 +287,7 @@ class EditorBridge(QObject):
                 placements = assembled_transforms(self._ecosystem_root, self._category, self._model, model.path)
             self._has_assembly = placements is not None
             show_assembled = self._has_assembly and self._assembled_view
-            identity = {"asmPos": [0.0, 0.0, 0.0], "asmRot": [1.0, 0.0, 0.0, 0.0]}
+            identity = {"asmMatrix": []}
             self._parts = [
                 {
                     "filename": p.filename,
@@ -296,7 +296,7 @@ class EditorBridge(QObject):
                     "absolutePath": str((model.path / p.filename).resolve()) if p.editable else "",
                     "color": colors.get(p.filename, DEFAULT_COLOR),
                     **(
-                        {"asmPos": list(placements[p.filename].position), "asmRot": list(placements[p.filename].rotation_wxyz)}
+                        {"asmMatrix": placement_matrix(placements[p.filename])}
                         if placements is not None and p.filename in placements else identity
                     ),
                 }

@@ -543,6 +543,15 @@ ApplicationWindow {
                         property real dragStartX: 0
                         property real dragStartY: 0
                         property bool dragMoved: false
+                        // Right-button drag pans the view through the 3D space;
+                        // it moves the orbit pivot and is cleared whenever a
+                        // different model is loaded.
+                        property vector3d panOffset: Qt.vector3d(0, 0, 0)
+                        property bool panning: false
+                        Connections {
+                            target: backend
+                            function onPartsChanged() { orbitState.panOffset = Qt.vector3d(0, 0, 0) }
+                        }
 
                         // Real, live-preview move gizmo state - dragging an
                         // axis handle only ever updates `pendingOffset`
@@ -602,7 +611,7 @@ ApplicationWindow {
 
                                 Node {
                                     id: cameraPivot
-                                    position: Qt.vector3d(backend.boundsCenter[0], backend.boundsCenter[1], backend.boundsCenter[2])
+                                    position: Qt.vector3d(backend.boundsCenter[0] + orbitState.panOffset.x, backend.boundsCenter[1] + orbitState.panOffset.y, backend.boundsCenter[2] + orbitState.panOffset.z)
                                     eulerRotation: Qt.vector3d(orbitState.camPitch, orbitState.camYaw, 0)
                                     PerspectiveCamera {
                                         id: orbitCamera
@@ -632,13 +641,17 @@ ApplicationWindow {
                                         // underlying STL vertices never move until "Fijar" commits
                                         // this same offset via backend.applyTransform().
                                         readonly property bool useAssembly: backend.hasAssembly && backend.assembledView
+                                        // In the assembled view the placement is baked into the
+                                        // geometry itself (see StlGeometry.placement), so the model
+                                        // keeps an identity transform; only the raw view moves a
+                                        // part, by the live gizmo offset.
                                         position: useAssembly
-                                            ? Qt.vector3d(modelData.asmPos[0], modelData.asmPos[1], modelData.asmPos[2])
+                                            ? Qt.vector3d(0, 0, 0)
                                             : (isSelected ? gizmoState.pendingOffset : Qt.vector3d(0, 0, 0))
-                                        rotation: useAssembly
-                                            ? Qt.quaternion(modelData.asmRot[0], modelData.asmRot[1], modelData.asmRot[2], modelData.asmRot[3])
-                                            : Qt.quaternion(1, 0, 0, 0)
-                                        geometry: StlGeometry { source: modelData.editable ? modelData.absolutePath : "" }
+                                        geometry: StlGeometry {
+                                            source: modelData.editable ? modelData.absolutePath : ""
+                                            placement: useAssembly ? modelData.asmMatrix : []
+                                        }
                                         materials: PrincipledMaterial {
                                             baseColor: isSelected
                                                 ? Qt.lighter(modelData.color, 1.7)
@@ -716,8 +729,15 @@ ApplicationWindow {
                             MouseArea {
                                 id: orbitArea
                                 anchors.fill: parent
-                                acceptedButtons: Qt.LeftButton
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
                                 onPressed: (mouse) => {
+                                    if (mouse.button === Qt.RightButton) {
+                                        orbitState.panning = true
+                                        orbitState.dragStartX = mouse.x
+                                        orbitState.dragStartY = mouse.y
+                                        orbitState.dragMoved = true
+                                        return
+                                    }
                                     if (window.toolMode === "move" && !!backend.selectedPart) {
                                         var hit = view3d.pick(mouse.x, mouse.y)
                                         if (hit.objectHit && hit.objectHit.objectName.indexOf("gizmo_axis_") === 0) {
@@ -754,6 +774,22 @@ ApplicationWindow {
                                         else gizmoState.pendingOffset = Qt.vector3d(o.x, o.y, o.z + worldDelta)
                                         return
                                     }
+                                    if (orbitState.panning) {
+                                        // Slide the pivot along the camera's own right/up axes by the
+                                        // world size of one screen pixel at the pivot's distance.
+                                        var perPixel = 2 * backend.boundsRadius * 2.4 * orbitState.camZoom * Math.tan(Math.PI / 6) / Math.max(1, view3d.height)
+                                        var dxp = (mouse.x - orbitState.dragStartX) * perPixel
+                                        var dyp = (mouse.y - orbitState.dragStartY) * perPixel
+                                        var r = cameraPivot.right
+                                        var u = cameraPivot.up
+                                        orbitState.panOffset = Qt.vector3d(
+                                            orbitState.panOffset.x - r.x * dxp + u.x * dyp,
+                                            orbitState.panOffset.y - r.y * dxp + u.y * dyp,
+                                            orbitState.panOffset.z - r.z * dxp + u.z * dyp)
+                                        orbitState.dragStartX = mouse.x
+                                        orbitState.dragStartY = mouse.y
+                                        return
+                                    }
                                     if (pressed) {
                                         var ox = mouse.x - orbitState.dragStartX
                                         var oy = mouse.y - orbitState.dragStartY
@@ -765,10 +801,11 @@ ApplicationWindow {
                                     }
                                 }
                                 onReleased: (mouse) => {
+                                    orbitState.panning = false
                                     gizmoState.dragAxis = ""
                                 }
                                 onClicked: (mouse) => {
-                                    if (orbitState.dragMoved) return
+                                    if (mouse.button !== Qt.LeftButton || orbitState.dragMoved) return
                                     var result = view3d.pick(mouse.x, mouse.y)
                                     if (result.objectHit && result.objectHit.objectName.indexOf("gizmo_") !== 0) {
                                         backend.selectPart(result.objectHit.objectName)

@@ -5,6 +5,19 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.1.0] - Machines and robots open correctly assembled; right-drag pans
+
+- **Assembled view fixed.** Rendering the real viewer showed machines upside
+  down and robot links displaced: Quick 3D did not apply the placement's
+  quaternion the way the source kinematics define it (and for a symmetric
+  rotation such as the UR arms, conjugating it changed nothing). The
+  placement is now baked into each part's vertices with a plain matrix
+  product (`StlGeometry.placement`), and the model keeps an identity
+  transform. Checked against renders of the CNC, PnP, UR5e and AR4.
+- **Right mouse button pans.** Holding the right button and dragging moves
+  the view through the 3D space; the left button still orbits, the wheel
+  zooms. The pan resets when another model is loaded.
+
 ## [0.0.9] - Delete a part straight from the left-hand list
 
 - Every row of the parts list now has a trash button. It selects the row's

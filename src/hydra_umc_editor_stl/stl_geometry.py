@@ -25,10 +25,12 @@ _STRIDE_BYTES = _FLOATS_PER_VERTEX * 4  # float32
 
 class StlGeometry(QQuick3DGeometry):
     sourceChanged = Signal()
+    placementChanged = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self._source = ""
+        self._placement: list[float] = []
 
     @Property(str, notify=sourceChanged)
     def source(self) -> str:
@@ -40,6 +42,19 @@ class StlGeometry(QQuick3DGeometry):
             return
         self._source = value
         self.sourceChanged.emit()
+        self._rebuild()
+
+    @Property("QVariantList", notify=placementChanged)
+    def placement(self) -> list:
+        return self._placement
+
+    @placement.setter  # type: ignore[no-redef]
+    def placement(self, value: list) -> None:
+        values = [float(v) for v in value] if value else []
+        if values == self._placement:
+            return
+        self._placement = values
+        self.placementChanged.emit()
         self._rebuild()
 
     def _rebuild(self) -> None:
@@ -67,6 +82,16 @@ class StlGeometry(QQuick3DGeometry):
         # what a binary STL actually stores - never smoothed/invented).
         vertices = mesh.vectors.astype(np.float32).reshape(-1, 3)
         normals = np.repeat(mesh.normals.astype(np.float32), 3, axis=0)
+        if len(self._placement) == 12:
+            # Assembled view: the part's home-pose placement (row-major 3x3
+            # rotation, then translation) is applied to the vertices here
+            # instead of through the Model's own rotation - the placement
+            # came out wrong on screen through Quick 3D's quaternion
+            # handling (machines upside down, robot links displaced), while
+            # this plain matrix product is what the source kinematics define.
+            rotation = np.array(self._placement[:9], dtype=np.float32).reshape(3, 3)
+            vertices = vertices @ rotation.T + np.array(self._placement[9:], dtype=np.float32)
+            normals = normals @ rotation.T
         # A degenerate/zero-length normal (a real, if rare, malformed
         # facet) would otherwise light as pure black - normalized here,
         # falling back to a real "pointing up" default only for the
