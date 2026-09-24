@@ -25,6 +25,7 @@ from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
 
 from . import i18n, settings
 from . import __version__
+from .assembly import assembled_bounds, assembled_transforms
 from .catalog_push import CatalogPushError, ServerClient
 from .model_catalog import is_independent_parts_category, list_categories, list_models, load_model
 from .part_colors import DEFAULT_COLOR, load_part_colors, save_part_color
@@ -86,6 +87,8 @@ class EditorBridge(QObject):
         self._push_thread: _PushThread | None = None
         self._clipboard_path: Path | None = None
         self._clipboard_label = ""
+        self._assembled_view = True
+        self._has_assembly = False
         self._refresh_categories()
 
     # --- i18n ---------------------------------------------------------
@@ -205,6 +208,23 @@ class EditorBridge(QObject):
     def boundsRadius(self) -> float:
         return self._bounds_radius
 
+    @Property(bool, notify=partsChanged)
+    def hasAssembly(self) -> bool:
+        """True when HYDRA-UMC-SUITE's own kinematics can place this
+        model's parts at the machine's home pose (see assembly.py)."""
+        return self._has_assembly
+
+    @Property(bool, notify=partsChanged)
+    def assembledView(self) -> bool:
+        return self._assembled_view
+
+    @Slot(bool)
+    def setAssembledView(self, value: bool) -> None:
+        if value == self._assembled_view:
+            return
+        self._assembled_view = value
+        self._refresh_parts_preserving_selection()
+
     @Property(str, notify=selectionChanged)
     def selectedPart(self) -> str:
         return self._selected_part
@@ -259,8 +279,15 @@ class EditorBridge(QObject):
         model = self._load_selected_model()
         if model is None:
             self._parts = []
+            self._has_assembly = False
         else:
             colors = load_part_colors(model.path)
+            placements = None
+            if not is_independent_parts_category(self._category):
+                placements = assembled_transforms(self._ecosystem_root, self._category, self._model, model.path)
+            self._has_assembly = placements is not None
+            show_assembled = self._has_assembly and self._assembled_view
+            identity = {"asmPos": [0.0, 0.0, 0.0], "asmRot": [1.0, 0.0, 0.0, 0.0]}
             self._parts = [
                 {
                     "filename": p.filename,
@@ -268,18 +295,30 @@ class EditorBridge(QObject):
                     "editable": p.editable,
                     "absolutePath": str((model.path / p.filename).resolve()) if p.editable else "",
                     "color": colors.get(p.filename, DEFAULT_COLOR),
+                    **(
+                        {"asmPos": list(placements[p.filename].position), "asmRot": list(placements[p.filename].rotation_wxyz)}
+                        if placements is not None and p.filename in placements else identity
+                    ),
                 }
                 for p in model.parts
             ]
             editable_filenames = [p.filename for p in model.parts if p.editable]
-            box = model_bounds(model.path, editable_filenames)
+            box = None
+            if show_assembled:
+                world = assembled_bounds(model.path, placements)
+                if world is not None:
+                    from .stl_ops import BoundingBox
+                    box = BoundingBox(min_xyz=world[0], max_xyz=world[1])
+            if box is None:
+                box = model_bounds(model.path, editable_filenames)
             if box is not None:
                 self._bounds_center = [(a + b) / 2 for a, b in zip(box.min_xyz, box.max_xyz)]
                 diagonal = sum((b - a) ** 2 for a, b in zip(box.min_xyz, box.max_xyz)) ** 0.5
-                # Half the real diagonal, floored so a single tiny part
-                # (a screw) doesn't put the camera closer than a sane
-                # near-clip distance.
-                self._bounds_radius = max(diagonal / 2, 5.0)
+                # Half the real diagonal, with only a tiny floor: parts can
+                # be authored in millimeters OR meters (a 0.5 m robot is
+                # radius ~0.3 here), so a floor tuned for millimeters would
+                # push the camera far away from a meter-scale model.
+                self._bounds_radius = max(diagonal / 2, 1e-3)
         self.partsChanged.emit()
         self._selected_part = ""
         self.selectionChanged.emit()

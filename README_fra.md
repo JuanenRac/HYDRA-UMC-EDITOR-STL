@@ -106,6 +106,7 @@ contre le vrai checkout sur disque :
   réelle de chaque pièce est déjà intégrée dans ses propres sommets STL -
   jamais une pose inventée.
 - **Barre flottante du visualiseur** - Sélectionner, Déplacer (un vrai gizmo 3 axes déplaçable), Modifier (rotation/échelle), Couleur, Ajouter, Supprimer, Fixer (enregistre définitivement le déplacement/rotation/échelle), Copier, Coller et Couper, directement dans la vue 3D. Les plateaux chauffants, tables à vide et racks sont des variantes de taille indépendantes : le visualiseur n'affiche que celle sélectionnée au lieu de les empiler.
+- **Vue assemblée** - les robots, CNC, PnP et lasers s'ouvrent déjà assemblés dans leur pose de repos (lue depuis la cinématique de HYDRA-UMC-SUITE à côté de ce checkout, affichage seul) ; un bouton de la barre bascule vers les pièces brutes pour les modifier.
 
 **Rien n'est jamais supprimé de façon permanente.** Un retrait ou un
 remplacement déplace d'abord le vrai fichier original dans le propre

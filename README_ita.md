@@ -105,6 +105,7 @@ il vero checkout su disco:
   (`fixed`) per pezzo, dato che la posizione reale di ogni pezzo è già
   incorporata nei propri vertici STL - mai una posa inventata.
 - **Barra mobile del visualizzatore** - Seleziona, Sposta (un vero gizmo a 3 assi trascinabile), Modifica (ruota/scala), Colore, Aggiungi, Elimina, Fissa (salva in modo permanente spostamento/rotazione/scala), Copia, Incolla e Taglia, direttamente nella vista 3D. Piani riscaldati, tavoli a vuoto e rack sono varianti di dimensione indipendenti: il visualizzatore mostra solo quella selezionata invece di sovrapporle.
+- **Vista assemblata** - robot, CNC, PnP e laser si aprono già assemblati nella posa di riposo (letta dalla cinematica di HYDRA-UMC-SUITE accanto a questo checkout, solo visualizzazione); un pulsante della barra passa ai pezzi grezzi per modificarli.
 
 **Niente viene mai eliminato in modo permanente.** Una rimozione o una
 sostituzione sposta prima il vero file originale nella propria

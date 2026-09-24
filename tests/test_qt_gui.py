@@ -110,3 +110,29 @@ def test_selected_part_center_is_the_real_center_of_that_part_only(qt_app, ecosy
     _select_ar3_base_link(bridge)
     # conftest's cube fixture spans 0..10 on every axis.
     assert bridge.selectedPartCenter == [5.0, 5.0, 5.0]
+
+
+def test_no_suite_checkout_means_no_assembly_and_raw_parts(qt_app, ecosystem_root: Path) -> None:
+    bridge = EditorBridge(ecosystem_root)
+    _select_ar3_base_link(bridge)
+    assert not bridge.hasAssembly
+    assert bridge.parts[0]["asmPos"] == [0.0, 0.0, 0.0]
+    assert bridge.parts[0]["asmRot"] == [1.0, 0.0, 0.0, 0.0]
+
+
+def test_real_suite_kinematics_place_a_robot_and_the_toggle_reframes(qt_app) -> None:
+    import pytest
+
+    real_root = Path(__file__).resolve().parents[2]
+    if not (real_root / "HYDRA-UMC-SUITE" / "hydra_suite" / "render" / "kinematics.py").is_file() \
+            or not (real_root / "HYDRA-UMC-STUDIO" / "public" / "models" / "robots-6-dof" / "ur5e").is_dir():
+        pytest.skip("needs the sibling HYDRA-UMC-SUITE/HYDRA-UMC-STUDIO checkouts")
+    bridge = EditorBridge(real_root)
+    bridge.selectLibrary("studio")
+    bridge.selectCategory("robots-6-dof")
+    bridge.selectModel("ur5e")
+    assert bridge.hasAssembly and bridge.assembledView
+    positions = {tuple(p["asmPos"]) for p in bridge.parts if p["editable"]}
+    assert len(positions) > 1  # links are no longer all stacked at the origin
+    bridge.setAssembledView(False)
+    assert not bridge.assembledView
