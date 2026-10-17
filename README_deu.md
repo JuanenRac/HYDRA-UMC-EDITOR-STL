@@ -4,7 +4,7 @@
 
 # 🧩 HYDRA-UMC-EDITOR-STL
 
-<p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | 🇩🇪 <b>Deutsch</b> | <a href="README_zho.md">🇨🇳 简体中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a></p>
+<p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | 🇩🇪 <b>Deutsch</b> | <a href="README_zho.md">🇨🇳 简体中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
 
 ### 📦 Die Echten STL-Modellbibliotheken des HYDRA-UMC-Ökosystems Durchsuchen und Bearbeiten
 
@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick Desktop-GUI">
 </p>
 
-> **v0.0.4.** Der echte CLI/GUI-Kern unten ist wirklich implementiert
+> **v0.1.3.** Der echte CLI/GUI-Kern unten ist wirklich implementiert
 > und getestet, einschließlich eines echten Qt-Quick-3D-Viewers mit
 > Klick-Auswahl, Farbe pro Teil, Transformieren, Ersetzen, Entfernen,
 > Hinzufügen und einem echten Senden eines bearbeiteten/hinzugefügten
@@ -37,7 +37,7 @@ von Qt-Quick-3D-Geometrie) und `catalog_push.py` (echte Erzeugung
 eines Assembly-URDF plus ein echter HTTP-Client für
 `POST /api/models/submit`) sind alle gegen echte, generierte
 STL-Dateien und, wo nötig, eine echte, sitzungsweite
-`QGuiApplication` getestet (`pytest tests/`, 48 bestandene Fälle) und
+`QGuiApplication` getestet (`pytest tests/`, 74 bestandene Fälle) und
 wurden End-to-End gegen die echten `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE`-
 Checkouts dieses Ökosystems verifiziert (`--cli categories`/`models`/
 `parts` gegen die echten Bäume; `transform`/`remove` gegen eine
@@ -170,7 +170,7 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── stl_ops.py           # Echte STL-Mutation: transformieren/ersetzen/entfernen/hinzufügen, .trash/-Sicherungen
 │   ├── catalog_push.py       # Assembly-URDF + HTTP-Client für POST /api/models/submit
 │   ├── settings.py          # Persistierte Ökosystem-Wurzel und Spracheinstellung
-│   ├── i18n.py               # Echte, vollständige GUI-Übersetzungen (7 Sprachen)
+│   ├── i18n.py               # Echte, vollständige GUI-Übersetzungen (8 Sprachen)
 │   ├── qt_gui.py             # Qt-Quick-Brücke über den echten model_catalog.py/stl_ops.py-Kern
 │   ├── qml/Main.qml          # Thematisierte Desktop-Hülle, gemeinsam mit HYDRA-UMC-UPDATER
 │   └── main.py               # Dispatch: GUI standardmäßig, --cli für categories/models/parts/transform/replace/remove/add/push

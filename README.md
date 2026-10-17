@@ -4,7 +4,7 @@
 
 # 🧩 HYDRA-UMC-EDITOR-STL
 
-<p align="center">🇺🇸 <b>English</b> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 简体中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a></p>
+<p align="center">🇺🇸 <b>English</b> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 简体中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
 
 ### 📦 Browse and Edit the HYDRA-UMC Ecosystem's Own Real STL Model Libraries
 
@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick desktop GUI">
 </p>
 
-> **v0.0.4.** The real CLI/GUI core described below is genuinely
+> **v0.1.3.** The real CLI/GUI core described below is genuinely
 > implemented and tested, including a real Qt Quick 3D viewer with
 > pick-to-select, per-part color, transform, replace, remove, add and a
 > real push of an edited/added model back to HYDRA-UMC-SERVER's own
@@ -35,7 +35,7 @@ mutation via `numpy-stl` - transform/replace/remove/add, plus
 assembly-URDF generation plus a real HTTP client for
 `POST /api/models/submit`) are all tested against real, generated STL
 fixtures and a real, session-scoped `QGuiApplication` where needed
-(`pytest tests/`, 48 passing cases) and have been smoke-tested end to end
+(`pytest tests/`, 74 passing cases) and have been smoke-tested end to end
 against this ecosystem's own real
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` checkouts (`--cli categories`/
 `models`/`parts` against the real trees; `transform`/`remove` against a
@@ -147,7 +147,7 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── stl_ops.py           # Real STL mutation: transform/replace/remove/add, .trash/ backups
 │   ├── catalog_push.py       # Assembly-URDF + HTTP client for POST /api/models/submit
 │   ├── settings.py          # Persisted ecosystem root + language preference
-│   ├── i18n.py               # Real, complete GUI translations (7 languages)
+│   ├── i18n.py               # Real, complete GUI translations (8 languages)
 │   ├── qt_gui.py             # Qt Quick bridge over the real model_catalog.py/stl_ops.py core
 │   ├── qml/Main.qml          # Themed desktop shell, shared with HYDRA-UMC-UPDATER
 │   └── main.py               # Dispatch: GUI by default, --cli for categories/models/parts/transform/replace/remove/add/push

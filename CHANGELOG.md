@@ -5,6 +5,12 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.1.3] - Portuguese interface; the pure-logic tests no longer need Qt
+
+- **Portuguese interface:** `pt` joins the other seven languages in `i18n.py` (83 keys with the same placeholders as English) and the language menu offers `Português`. A README_por.md joins the other seven.
+- **Translation tests:** `tests/test_i18n.py` checks that every language has exactly the English keys and the same `{placeholders}`, that the language menu lists every table, and that an unknown language or key falls back safely.
+- **Qt-free test run:** `test_stl_geometry.py` and `test_qt_gui.py` skip themselves when PySide6 (the optional `gui` extra) is not installed, so `pip install .[dev]` runs the whole pure-logic suite (catalog discovery, STL operations, part colors, catalog push) on a machine with no Qt. 74 tests in all.
+
 ## [0.1.2] - The move gizmo only exists where its axes are the part's own
 
 - The move gizmo is hidden and cannot start a drag while the assembled view is on,

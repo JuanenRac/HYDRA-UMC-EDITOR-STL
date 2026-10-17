@@ -12,6 +12,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
+# these need the optional GUI extra (PySide6); the rest of the suite does not
+pytest.importorskip("PySide6")
+
 from hydra_umc_editor_stl.stl_geometry import StlGeometry
 
 from .conftest import make_cube_stl

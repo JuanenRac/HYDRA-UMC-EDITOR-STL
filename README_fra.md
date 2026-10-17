@@ -4,7 +4,7 @@
 
 # 🧩 HYDRA-UMC-EDITOR-STL
 
-<p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | 🇫🇷 <b>Français</b> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 简体中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a></p>
+<p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | 🇫🇷 <b>Français</b> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 简体中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
 
 ### 📦 Parcourir et Éditer les Vraies Bibliothèques de Modèles STL de l'Écosystème HYDRA-UMC
 
@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/Bureau-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="GUI bureau PySide6 Qt Quick">
 </p>
 
-> **v0.0.4.** Le vrai noyau CLI/GUI décrit ci-dessous est réellement
+> **v0.1.3.** Le vrai noyau CLI/GUI décrit ci-dessous est réellement
 > implémenté et testé, y compris une vraie visionneuse 3D Qt Quick 3D
 > avec sélection au clic, couleur par pièce, transformer, remplacer,
 > retirer, ajouter et un vrai envoi d'un modèle édité/ajouté vers le
@@ -38,7 +38,7 @@ bibliothèques de modèles), `stl_ops.py` (mutation STL réelle via
 client HTTP pour `POST /api/models/submit`) sont tous
 testés contre de vrais fichiers STL générés et une vraie
 `QGuiApplication` à portée de session quand nécessaire (`pytest tests/`,
-48 cas réussis) et ont été vérifiés de bout en bout contre les vrais
+74 cas réussis) et ont été vérifiés de bout en bout contre les vrais
 checkouts `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` de cet écosystème
 (`--cli categories`/`models`/`parts` contre les vrais arbres ;
 `transform`/`remove` contre une copie jetable, jamais le vrai checkout).
@@ -165,7 +165,7 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── stl_ops.py           # Mutation STL réelle : transformer/remplacer/retirer/ajouter, sauvegardes .trash/
 │   ├── catalog_push.py       # URDF d'assemblage + client HTTP pour POST /api/models/submit
 │   ├── settings.py          # Racine de l'écosystème et préférence de langue persistées
-│   ├── i18n.py               # Traductions réelles et complètes de la GUI (7 langues)
+│   ├── i18n.py               # Traductions réelles et complètes de la GUI (8 langues)
 │   ├── qt_gui.py             # Pont Qt Quick sur le vrai noyau model_catalog.py/stl_ops.py
 │   ├── qml/Main.qml          # Coquille de bureau à thème, partagée avec HYDRA-UMC-UPDATER
 │   └── main.py               # Répartition : GUI par défaut, --cli pour categories/models/parts/transform/replace/remove/add/push

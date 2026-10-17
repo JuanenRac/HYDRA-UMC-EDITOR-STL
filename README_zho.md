@@ -4,7 +4,7 @@
 
 # 🧩 HYDRA-UMC-EDITOR-STL
 
-<p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | 🇨🇳 <b>简体中文</b> | <a href="README_jpn.md">🇯🇵 日本語</a></p>
+<p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | 🇨🇳 <b>简体中文</b> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
 
 ### 📦 浏览并编辑 HYDRA-UMC 生态系统真实的 STL 模型库
 
@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/桌面-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick 桌面 GUI">
 </p>
 
-> **v0.0.4。** 下面描述的真实 CLI/GUI 核心是真正实现并经过测试的，包括一个
+> **v0.1.3。** 下面描述的真实 CLI/GUI 核心是真正实现并经过测试的，包括一个
 > 真实的 Qt Quick 3D 查看器，支持点击选中、按部件着色、变换、替换、移除、
 > 添加，以及把一个编辑好/新增的模型真正推送回 HYDRA-UMC-SERVER 自己真实的
 > `POST /api/models/submit` 目录（与 HYDRA-UMC-EDITOR-URDF 对 URDF 模型
@@ -32,7 +32,7 @@
 （真实生成装配用 URDF，外加一个真实的 `POST /api/models/submit` HTTP
 客户端）全部都针对真实生成的
 STL 文件、以及在需要时一个真实的、会话范围的 `QGuiApplication` 进行了
-测试（`pytest tests/`，48 个用例通过），并已针对本生态系统真实的
+测试（`pytest tests/`，74 个用例通过），并已针对本生态系统真实的
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` 检出进行了端到端的冒烟测试
 （`--cli categories`/`models`/`parts` 针对真实的目录树；`transform`/`remove`
 针对一份可丢弃的副本，绝不是真实的检出本身）。`qt_gui.py` 自己的
@@ -135,7 +135,7 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── stl_ops.py           # 真实的 STL 变更：变换/替换/移除/添加，.trash/ 备份
 │   ├── catalog_push.py       # 装配用 URDF + POST /api/models/submit 的 HTTP 客户端
 │   ├── settings.py          # 持久化的生态系统根目录和语言偏好
-│   ├── i18n.py               # 真实、完整的 GUI 翻译（7 种语言）
+│   ├── i18n.py               # 真实、完整的 GUI 翻译（8 种语言）
 │   ├── qt_gui.py             # 建立在真实 model_catalog.py/stl_ops.py 核心之上的 Qt Quick 桥接层
 │   ├── qml/Main.qml          # 主题化的桌面外壳，与 HYDRA-UMC-UPDATER 共享
 │   └── main.py               # 分发：默认 GUI，--cli 用于 categories/models/parts/transform/replace/remove/add/push

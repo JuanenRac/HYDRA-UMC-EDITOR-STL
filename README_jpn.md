@@ -4,7 +4,7 @@
 
 # 🧩 HYDRA-UMC-EDITOR-STL
 
-<p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 简体中文</a> | 🇯🇵 <b>日本語</b></p>
+<p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 简体中文</a> | 🇯🇵 <b>日本語</b> | <a href="README_por.md">🇵🇹 Português</a></p>
 
 ### 📦 HYDRA-UMC エコシステム自身の実在する STL モデルライブラリを閲覧・編集する
 
@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/デスクトップ-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick デスクトップGUI">
 </p>
 
-> **v0.0.4。** 以下で説明する実際のCLI/GUIコアは本当に実装され、テスト
+> **v0.1.3。** 以下で説明する実際のCLI/GUIコアは本当に実装され、テスト
 > されています。クリックで選択できる本物の Qt Quick 3D ビューア、
 > パーツごとの色、変換、置換、削除、追加、そして編集/追加したモデルを
 > HYDRA-UMC-SERVER 自身の実在する `POST /api/models/submit` カタログへ
@@ -35,7 +35,7 @@
 （実在の組み立て用 URDF 生成に加え、`POST /api/models/submit` 向けの
 実在の HTTP クライアント）はすべて、実際に生成した
 実在の STL ファイルと、必要に応じて実在のセッションスコープの
-`QGuiApplication` に対してテストされており（`pytest tests/`、48 件の
+`QGuiApplication` に対してテストされており（`pytest tests/`、74 件の
 ケースが合格）、本エコシステム自身の実在する
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` のチェックアウトに対してエンド
 ツーエンドでスモークテスト済みです（`--cli categories`/`models`/
@@ -158,7 +158,7 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── stl_ops.py           # 実在の STL 変更：変換/置換/削除/追加、.trash/ バックアップ
 │   ├── catalog_push.py       # 組み立て用 URDF + POST /api/models/submit 向け HTTP クライアント
 │   ├── settings.py          # 永続化されたエコシステムのルートと言語設定
-│   ├── i18n.py               # 実在の完全な GUI 翻訳（7言語）
+│   ├── i18n.py               # 実在の完全な GUI 翻訳（8言語）
 │   ├── qt_gui.py             # 実在の model_catalog.py/stl_ops.py コア上の Qt Quick ブリッジ
 │   ├── qml/Main.qml          # HYDRA-UMC-UPDATER と共有するテーマ付きデスクトップシェル
 │   └── main.py               # ディスパッチ：デフォルトは GUI、--cli は categories/models/parts/transform/replace/remove/add/push 用
