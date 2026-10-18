@@ -1,4 +1,8 @@
 @echo off
+rem Keep the window open for people, never in automation (CI / HYDRA_UMC_CI).
+set "KEEP_OPEN=pause"
+if defined CI set "KEEP_OPEN=ver >nul"
+if "%HYDRA_UMC_CI%"=="1" set "KEEP_OPEN=ver >nul"
 REM HYDRA_UMC_SCRIPT_STANDARD_HEADER_BEGIN
 REM *****************************************************************************
 REM Project   : HYDRA-UMC-EDITOR-STL
@@ -51,4 +55,4 @@ if exist .venv\Scripts\python.exe (
     python -m hydra_umc_editor_stl.main %*
 )
 
-pause
+%KEEP_OPEN%
