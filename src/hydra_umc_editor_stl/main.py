@@ -15,12 +15,14 @@
 from __future__ import annotations
 
 import argparse
+import getpass
 import json
+import os
 import sys
 from pathlib import Path
 
 from . import __version__, settings
-from .catalog_push import CatalogPushError, ServerClient
+from .catalog_push import CatalogPushError, ServerClient, push_warnings
 from .model_catalog import list_categories, list_models, load_model
 from .stl_ops import StlOpsError, add_part, remove_part, replace_part, transform_part
 
@@ -152,9 +154,12 @@ def cmd_push(args: argparse.Namespace) -> int:
     if model is None:
         print(f"No such model: {args.library}/{args.category}/{args.model}", file=sys.stderr)
         return 1
+    password = args.password or os.environ.get("HYDRA_UMC_PASSWORD") or getpass.getpass("Server password: ")
+    for warning in push_warnings(model, args.server_category or args.category):
+        print(f"Warning: {warning}", file=sys.stderr)
     client = ServerClient(args.host, args.port)
     try:
-        client.login(args.username, args.password)
+        client.login(args.username, password)
         slug = client.push_model(model, args.server_category or args.category, args.overwrite)
     except CatalogPushError as error:
         print(f"Push failed: {error}", file=sys.stderr)
@@ -227,10 +232,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     push_p = subparsers.add_parser("push", help="Push a model's editable parts to a running server's model-submission catalog.")
     _add_model_selector_args(push_p)
-    push_p.add_argument("--host", required=True, help="HYDRA-UMC-SERVER host/IP.")
+    push_p.add_argument("--host", required=True, help="HYDRA-UMC-SERVER host/IP, or a full https://host URL to avoid sending the password in clear text.")
     push_p.add_argument("--port", type=int, default=3000)
     push_p.add_argument("--username", required=True, help="Admin account username (POST /api/models/submit requires admin).")
-    push_p.add_argument("--password", required=True)
+    push_p.add_argument("--password", help="Not recommended (visible in the process list and shell history): leave it out to be prompted, or set HYDRA_UMC_PASSWORD.")
     push_p.add_argument("--server-category", help="Category to file this under on the server (default: the same folder name used locally).")
     push_p.add_argument("--overwrite", action="store_true", help="Replace an existing submission with the same name/category.")
     push_p.set_defaults(func=cmd_push)

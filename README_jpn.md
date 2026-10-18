@@ -35,7 +35,7 @@
 （実在の組み立て用 URDF 生成に加え、`POST /api/models/submit` 向けの
 実在の HTTP クライアント）はすべて、実際に生成した
 実在の STL ファイルと、必要に応じて実在のセッションスコープの
-`QGuiApplication` に対してテストされており（`pytest tests/`、74 件の
+`QGuiApplication` に対してテストされており（`pytest tests/`、86 件の
 ケースが合格）、本エコシステム自身の実在する
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` のチェックアウトに対してエンド
 ツーエンドでスモークテスト済みです（`--cli categories`/`models`/
@@ -102,6 +102,8 @@ HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
   作り出すことはありません。
 - **ビューア内フローティングツールバー** - 選択、移動（ドラッグ可能な本物の3軸ギズモ）、編集（回転/拡大縮小）、色、追加、削除、固定（移動/回転/拡大縮小を永続的に保存）、コピー、貼り付け、切り取りを 3D ビュー内で直接使えます。ヒートベッド、真空テーブル、ラックは独立したサイズバリエーションなので、ビューアは重ねずに選択した1つだけを表示します。
 - **組み立て表示** - ロボット、CNC、PnP、レーザーのモデルは、ホーム姿勢で組み立て済みの状態で開きます（このチェックアウトの隣の HYDRA-UMC-SUITE の運動学から読み取り、表示のみ）。ツールバーのボタンで編集用の生パーツ表示に切り替えられます。
+
+**送信と変換の制限：** アップロードされるのは `.stl` パーツのみ（それ以外は報告されます）。送信全体がサーバーの 50 MB リクエスト上限に収まる必要があり、モデルはサーバーのカタログにのみ保存されます（HYDRA-UMC-STUDIO はまだ読み込みません）。単位姿勢は独立した部品（ヒートベッド、ラック、真空テーブル）には正しいですが、ロボットや機械のパーツはそれぞれのリンク座標系で保存されているため、原点に重なり、ジョイントなしで届きます。`https://` ホストを推奨します（`--password` の代わりに `HYDRA_UMC_PASSWORD` またはパスワードの入力プロンプトを使用）。変換は、スケール、X・Y・Z まわりの回転、平行移動の順に適用され、回転はパーツの中心ではなくファイルの原点まわりで行われます。
 
 **何も永久には削除されません。** 削除や置換は、まず実在する元のファイル
 をそのモデル自身の `.trash/` サブフォルダへ移動します - これは本
@@ -189,7 +191,7 @@ chmod +x build.sh   # 一度だけ
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /path/new.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /path/new.stl
-./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin --password ***
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
 ```
 
 Windows では：`build.bat`、続いて `run.bat`（GUI）または

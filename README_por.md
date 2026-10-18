@@ -36,7 +36,7 @@ auxiliar real de cor por peça), o `stl_geometry.py` (carregamento real de
 geometria Qt Quick 3D) e o `catalog_push.py` (geração real de URDF de
 montagem mais um cliente HTTP real para `POST /api/models/submit`) estão
 todos testados contra fixtures STL reais e geradas e, quando necessário,
-uma `QGuiApplication` real de sessão (`pytest tests/`, 74 casos a passar) e
+uma `QGuiApplication` real de sessão (`pytest tests/`, 86 casos a passar) e
 foram testados de ponta a ponta contra as cópias reais do
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` deste ecossistema (`--cli categories`/
 `models`/`parts` contra as árvores reais; `transform`/`remove` contra uma
@@ -108,6 +108,8 @@ cópia verdadeira em disco:
   na sua pose inicial (lida da cinemática do próprio HYDRA-UMC-SUITE ao lado
   desta cópia, apenas para visualização); um botão da barra de ferramentas
   passa para as peças em bruto para edição.
+
+**Limites do envio e da transformação:** só são enviadas as peças `.stl` (as outras são indicadas), o envio completo tem de caber no limite de pedido de 50 MB do servidor e o modelo só fica guardado no catálogo do servidor (o HYDRA-UMC-STUDIO ainda não o lê). A pose identidade é correta para peças independentes (camas aquecidas, racks, mesas de vácuo); as peças de um robô ou máquina estão guardadas no seu próprio referencial de elo, pelo que chegam empilhadas na origem e sem articulações. Prefira um anfitrião `https://` (ou `HYDRA_UMC_PASSWORD` / o pedido da palavra-passe em vez de `--password`). Uma transformação escala primeiro, depois roda em X, Y e Z e por fim translada; a rotação é em torno da origem do ficheiro, não do centro da peça.
 
 **Nada é alguma vez eliminado permanentemente.** Uma remoção ou uma
 substituição move primeiro o ficheiro original real para a subpasta `.trash/`
@@ -191,7 +193,7 @@ chmod +x build.sh   # uma única vez
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /path/new.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /path/new.stl
-./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin --password ***
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
 ```
 
 No Windows: `build.bat` e depois `run.bat` (GUI) ou `run.bat --cli ...` /

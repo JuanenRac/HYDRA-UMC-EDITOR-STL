@@ -37,7 +37,7 @@ von Qt-Quick-3D-Geometrie) und `catalog_push.py` (echte Erzeugung
 eines Assembly-URDF plus ein echter HTTP-Client für
 `POST /api/models/submit`) sind alle gegen echte, generierte
 STL-Dateien und, wo nötig, eine echte, sitzungsweite
-`QGuiApplication` getestet (`pytest tests/`, 74 bestandene Fälle) und
+`QGuiApplication` getestet (`pytest tests/`, 86 bestandene Fälle) und
 wurden End-to-End gegen die echten `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE`-
 Checkouts dieses Ökosystems verifiziert (`--cli categories`/`models`/
 `parts` gegen die echten Bäume; `transform`/`remove` gegen eine
@@ -109,6 +109,8 @@ echten Checkout auf der Festplatte:
   niemals eine erfundene Pose.
 - **Schwebende Viewer-Werkzeugleiste** - Auswählen, Verschieben (ein echtes ziehbares 3-Achsen-Gizmo), Bearbeiten (drehen/skalieren), Farbe, Hinzufügen, Löschen, Fixieren (speichert Verschiebung/Drehung/Skalierung dauerhaft), Kopieren, Einfügen und Ausschneiden, direkt in der 3D-Ansicht. Heizbetten, Vakuumtische und Racks sind unabhängige Größenvarianten, daher zeigt der Viewer nur die ausgewählte statt alle übereinander.
 - **Montierte Ansicht** - Roboter, CNC, PnP und Laser öffnen sich bereits in ihrer Grundstellung montiert (aus der Kinematik von HYDRA-UMC-SUITE neben diesem Checkout gelesen, nur Anzeige); eine Schaltfläche der Leiste wechselt zu den Rohteilen zum Bearbeiten.
+
+**Grenzen von Senden und Transformation:** Es werden nur `.stl`-Teile hochgeladen (die übrigen werden gemeldet), der gesamte Upload muss in das 50-MB-Anfragelimit des Servers passen, und das Modell wird nur im Katalog des Servers gespeichert (HYDRA-UMC-STUDIO liest es noch nicht). Die Identitätspose passt für unabhängige Teile (Heizbetten, Racks, Vakuumtische); die Teile eines Roboters oder einer Maschine liegen in ihrem eigenen Link-Koordinatensystem und kommen daher am Ursprung gestapelt und ohne Gelenke an. Bevorzugen Sie einen `https://`-Host (oder `HYDRA_UMC_PASSWORD` / die Passwortabfrage statt `--password`). Eine Transformation skaliert zuerst, dreht dann um X, Y und Z und verschiebt zuletzt; die Drehung erfolgt um den Ursprung der Datei, nicht um die Mitte des Teils.
 
 **Nichts wird jemals dauerhaft gelöscht.** Ein Entfernen oder Ersetzen
 verschiebt zuerst die echte Originaldatei in den eigenen
@@ -201,7 +203,7 @@ chmod +x build.sh   # einmalig
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /pfad/neu.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /pfad/neu.stl
-./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin --password ***
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
 ```
 
 Unter Windows: `build.bat`, dann `run.bat` (GUI) oder

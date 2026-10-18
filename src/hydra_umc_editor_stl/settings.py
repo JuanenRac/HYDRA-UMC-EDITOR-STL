@@ -11,6 +11,7 @@ HYDRA-UMC-STUDIO/HYDRA-UMC-SUITE are checked out) and the UI language."""
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -34,10 +35,17 @@ def save_settings(**updates: Any) -> None:
     must never crash the GUI over a saved preference."""
     current = load_settings()
     current.update(updates)
+    temporary = SETTINGS_PATH.with_name(SETTINGS_PATH.name + ".tmp")
     try:
-        SETTINGS_PATH.write_text(json.dumps(current, indent=2), encoding="utf-8")
+        temporary.write_text(json.dumps(current, indent=2), encoding="utf-8")
+        os.replace(temporary, SETTINGS_PATH)
     except OSError:
         pass
+    finally:
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError:
+            pass
 
 
 def get_saved_ecosystem_root() -> Path | None:

@@ -35,7 +35,7 @@ mutation via `numpy-stl` - transform/replace/remove/add, plus
 assembly-URDF generation plus a real HTTP client for
 `POST /api/models/submit`) are all tested against real, generated STL
 fixtures and a real, session-scoped `QGuiApplication` where needed
-(`pytest tests/`, 74 passing cases) and have been smoke-tested end to end
+(`pytest tests/`, 86 passing cases) and have been smoke-tested end to end
 against this ecosystem's own real
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` checkouts (`--cli categories`/
 `models`/`parts` against the real trees; `transform`/`remove` against a
@@ -96,6 +96,8 @@ checkout on disk:
   already baked into its own STL vertices - never a synthetic pose.
 - **Floating viewer toolbar** - Select, Move (a real draggable 3-axis gizmo), Edit (rotate/scale), Color, Add, Delete, Pin (bakes the move/rotate/scale permanently), Copy, Paste and Cut, right inside the 3D view. Heated beds, vacuum tables and racks are independent size variants, so the viewer shows only the selected one instead of piling them up.
 - **Assembled view** - robots, CNC, PnP and laser models open already assembled at their home pose (read from HYDRA-UMC-SUITE's own kinematics next to this checkout, display only); a toolbar button switches to the raw parts for editing.
+
+**Limits of the push and of the transform:** only `.stl` parts are uploaded (the others are reported), the whole upload must fit the server's 50 MB request limit, and the model is only stored in the server's catalog (HYDRA-UMC-STUDIO does not read it yet). The identity pose is correct for independent pieces (heated beds, racks, vacuum tables); the parts of a robot or machine are stored in their own link frame, so they arrive stacked at the origin without joints. Prefer an `https://` host (or `HYDRA_UMC_PASSWORD` / the password prompt instead of `--password`). A transform scales first, then rotates about X, Y and Z, then translates, and the rotation is about the file's origin, not about the centre of the part.
 
 **Nothing is ever permanently deleted.** A remove or a replace moves the
 real original file into that model's own `.trash/` subfolder first -
@@ -178,7 +180,7 @@ chmod +x build.sh   # one-time
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /path/new.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /path/new.stl
-./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin --password ***
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
 ```
 
 On Windows: `build.bat`, then `run.bat` (GUI) or `run.bat --cli ...` /

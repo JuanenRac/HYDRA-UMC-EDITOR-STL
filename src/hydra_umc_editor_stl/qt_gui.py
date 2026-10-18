@@ -86,6 +86,7 @@ class EditorBridge(QObject):
         self._push_busy = False
         self._push_status = ""
         self._push_thread: _PushThread | None = None
+        self._push_notes: list[str] = []
         self._clipboard_path: Path | None = None
         self._clipboard_label = ""
         self._assembled_view = True
@@ -248,7 +249,7 @@ class EditorBridge(QObject):
         box = model_bounds(model.path, [self._selected_part])
         if box is None:
             return [0.0, 0.0, 0.0]
-        return [(a + b) / 2 for a, b in zip(box.min_xyz, box.max_xyz)]
+        return [(a + b) / 2 for a, b in zip(box.min_xyz, box.max_xyz, strict=True)]
 
     @Property(str, notify=statusChanged)
     def statusText(self) -> str:
@@ -313,8 +314,8 @@ class EditorBridge(QObject):
             if box is None:
                 box = model_bounds(model.path, editable_filenames)
             if box is not None:
-                self._bounds_center = [(a + b) / 2 for a, b in zip(box.min_xyz, box.max_xyz)]
-                diagonal = sum((b - a) ** 2 for a, b in zip(box.min_xyz, box.max_xyz)) ** 0.5
+                self._bounds_center = [(a + b) / 2 for a, b in zip(box.min_xyz, box.max_xyz, strict=True)]
+                diagonal = sum((b - a) ** 2 for a, b in zip(box.min_xyz, box.max_xyz, strict=True)) ** 0.5
                 # Half the real diagonal, with only a tiny floor: parts can
                 # be authored in millimeters OR meters (a 0.5 m robot is
                 # radius ~0.3 here), so a floor tuned for millimeters would
@@ -341,7 +342,7 @@ class EditorBridge(QObject):
             return
         try:
             bbox = transform_part(model.path, self._selected_part, (tx, ty, tz), (rx, ry, rz), scale)
-        except StlOpsError as error:
+        except (StlOpsError, OSError) as error:
             self._set_status(i18n.t(self._lang, "msg_transform_failed", error=str(error)))
             return
         self._set_status(i18n.t(
@@ -360,7 +361,7 @@ class EditorBridge(QObject):
         real_source = Path(QUrl(source_path).toLocalFile() or source_path)
         try:
             replace_part(model.path, self._selected_part, real_source)
-        except StlOpsError as error:
+        except (StlOpsError, OSError) as error:
             self._set_status(i18n.t(self._lang, "msg_replace_failed", error=str(error)))
             return
         self._set_status(i18n.t(self._lang, "msg_replace_done"))
@@ -374,7 +375,7 @@ class EditorBridge(QObject):
             return
         try:
             remove_part(model.path, self._selected_part)
-        except StlOpsError as error:
+        except (StlOpsError, OSError) as error:
             self._set_status(i18n.t(self._lang, "msg_remove_failed", error=str(error)))
             return
         self._set_status(i18n.t(self._lang, "msg_remove_done", name=self._selected_part))
@@ -410,7 +411,7 @@ class EditorBridge(QObject):
         real_source = Path(QUrl(source_path).toLocalFile() or source_path)
         try:
             filename = add_part(model.path, real_source, dest_filename or None)
-        except StlOpsError as error:
+        except (StlOpsError, OSError) as error:
             self._set_status(i18n.t(self._lang, "msg_add_failed", error=str(error)))
             return
         self._set_status(i18n.t(self._lang, "msg_add_done", name=filename))
@@ -465,7 +466,7 @@ class EditorBridge(QObject):
         dest_name = unique_part_filename(model.path, self._clipboard_label or self._clipboard_path.name)
         try:
             filename = add_part(model.path, self._clipboard_path, dest_name)
-        except StlOpsError as error:
+        except (StlOpsError, OSError) as error:
             self._set_status(i18n.t(self._lang, "msg_add_failed", error=str(error)))
             return
         self._set_status(i18n.t(self._lang, "msg_paste_done", name=filename))
@@ -501,10 +502,18 @@ class EditorBridge(QObject):
         if self._push_busy:
             return  # a push is already in flight - same one-at-a-time guard every other mutation here gets for free by being synchronous
 
+        target_category = category or self._category
+        self._push_notes = []
+
         def do_push() -> str:
             client = ServerClient(host, port)
             client.login(username, password)
-            return client.push_model(model, category or self._category, overwrite)
+            slug = client.push_model(model, target_category, overwrite)
+            if client.last_skipped_parts:
+                self._push_notes.append(i18n.t(self._lang, "msg_push_skipped", count=client.last_skipped_parts))
+            if not is_independent_parts_category(target_category):
+                self._push_notes.append(i18n.t(self._lang, "msg_push_no_joints"))
+            return slug
 
         self._push_busy = True
         self._push_status = ""
@@ -518,7 +527,7 @@ class EditorBridge(QObject):
 
     def _on_push_ok(self, slug: str) -> None:
         self._push_busy = False
-        self._push_status = i18n.t(self._lang, "msg_push_done", slug=slug)
+        self._push_status = " ".join([i18n.t(self._lang, "msg_push_done", slug=slug), *self._push_notes])
         self.pushStateChanged.emit()
 
     def _on_push_error(self, message: str) -> None:

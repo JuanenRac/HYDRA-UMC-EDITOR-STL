@@ -32,7 +32,7 @@
 （真实生成装配用 URDF，外加一个真实的 `POST /api/models/submit` HTTP
 客户端）全部都针对真实生成的
 STL 文件、以及在需要时一个真实的、会话范围的 `QGuiApplication` 进行了
-测试（`pytest tests/`，74 个用例通过），并已针对本生态系统真实的
+测试（`pytest tests/`，86 个用例通过），并已针对本生态系统真实的
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` 检出进行了端到端的冒烟测试
 （`--cli categories`/`models`/`parts` 针对真实的目录树；`transform`/`remove`
 针对一份可丢弃的副本，绝不是真实的检出本身）。`qt_gui.py` 自己的
@@ -88,6 +88,8 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
   STL 顶点中 —— 绝不是凭空捏造的姿态。
 - **悬浮视图工具栏** —— 选择、移动（真实可拖动的三轴 gizmo）、编辑（旋转/缩放）、颜色、添加、删除、固定（永久保存移动/旋转/缩放）、复制、粘贴和剪切，直接位于 3D 视图内。热床、真空台和机架是相互独立的尺寸变体，因此视图只显示所选的那一个，而不是全部叠在一起。
 - **装配视图** —— 机器人、CNC、PnP 和激光模型会以原位姿态直接装配好打开（读取此检出旁 HYDRA-UMC-SUITE 自己的运动学，仅用于显示）；工具栏按钮可切换到原始部件进行编辑。
+
+**推送与变换的限制：** 只会上传 `.stl` 零件（其余的会被报告），整个上传必须不超过服务器 50 MB 的请求上限，并且模型只保存在服务器的目录中（HYDRA-UMC-STUDIO 目前不会读取）。单位姿态适用于相互独立的零件（热床、机架、真空台）；机器人或机器的零件保存在各自的连杆坐标系中，因此到达时会堆叠在原点且没有关节。建议使用 `https://` 主机（用 `HYDRA_UMC_PASSWORD` 或密码提示代替 `--password`）。变换先缩放，再绕 X、Y、Z 旋转，最后平移；旋转绕文件原点进行，而不是绕零件中心。
 
 **任何东西都不会被永久删除。** 移除或替换会先把真实的原始文件移动到该
 模型自己的 `.trash/` 子文件夹中——这与本生态系统内部工作惯例早已遵循的
@@ -166,7 +168,7 @@ chmod +x build.sh   # 一次性
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /路径/new.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /路径/new.stl
-./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin --password ***
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
 ```
 
 在 Windows 上：先 `build.bat`，然后 `run.bat`（GUI）或

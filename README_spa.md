@@ -36,7 +36,7 @@ librerías de modelos), `stl_ops.py` (mutación real de STL vía
 `catalog_push.py` (generación real de un URDF de ensamblaje más un
 cliente HTTP real para `POST /api/models/submit`) están todos
 probados contra ficheros STL reales generados y una `QGuiApplication`
-real de ámbito de sesión donde hace falta (`pytest tests/`, 74 casos en
+real de ámbito de sesión donde hace falta (`pytest tests/`, 86 casos en
 verde) y se han verificado de extremo a extremo contra los checkouts
 reales de `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` de este ecosistema
 (`--cli categories`/`models`/`parts` contra los árboles reales;
@@ -106,6 +106,8 @@ contra el checkout real en disco:
   pose inventada.
 - **Barra flotante del visor** - Seleccionar, Mover (un gizmo real de 3 ejes arrastrable), Editar (rotar/escalar), Color, Añadir, Borrar, Fijar (guarda de forma permanente el movimiento/rotación/escala), Copiar, Pegar y Cortar, dentro del propio visor 3D. Las camas calientes, mesas de vacío y racks son variantes de tamaño independientes, así que el visor muestra solo la seleccionada en vez de apilarlas.
 - **Vista montada** - los robots, CNC, PnP y laser se abren ya montados en su pose de reposo (leída de la cinemática de HYDRA-UMC-SUITE junto a este checkout, solo visualización); un botón de la barra cambia a las piezas sin montar para editarlas.
+
+**Límites del envío y de la transformación:** solo se suben las piezas `.stl` (las demás se notifican), todo el envío debe caber en el límite de 50 MB de petición del servidor y el modelo solo se guarda en el catálogo del servidor (HYDRA-UMC-STUDIO aún no lo lee). La pose identidad es correcta para piezas independientes (camas calientes, racks, mesas de vacío); las piezas de un robot o máquina están en su propio marco de eslabón, así que llegan apiladas en el origen y sin articulaciones. Usa preferiblemente un host `https://` (o `HYDRA_UMC_PASSWORD` / la petición de contraseña en lugar de `--password`). Una transformación primero escala, luego rota en X, Y y Z y por último traslada; la rotación es alrededor del origen del archivo, no del centro de la pieza.
 
 **Nunca se borra nada de forma permanente.** Un "quitar" o un
 "reemplazar" mueve primero el fichero original real a la propia
@@ -195,7 +197,7 @@ chmod +x build.sh   # una sola vez
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /ruta/nuevo.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /ruta/nuevo.stl
-./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin --password ***
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
 ```
 
 En Windows: `build.bat`, luego `run.bat` (GUI) o `run.bat --cli ...` /

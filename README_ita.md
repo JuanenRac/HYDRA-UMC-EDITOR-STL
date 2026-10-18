@@ -38,7 +38,7 @@ librerie di modelli), `stl_ops.py` (mutazione STL reale via
 vero client HTTP per `POST /api/models/submit`) sono
 tutti testati contro veri file STL generati e una vera
 `QGuiApplication` con ambito di sessione dove serve (`pytest tests/`,
-74 casi superati) e sono stati verificati end-to-end contro i veri
+86 casi superati) e sono stati verificati end-to-end contro i veri
 checkout `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` di questo ecosistema
 (`--cli categories`/`models`/`parts` contro gli alberi reali;
 `transform`/`remove` contro una copia usa e getta, mai il vero
@@ -106,6 +106,8 @@ il vero checkout su disco:
   incorporata nei propri vertici STL - mai una posa inventata.
 - **Barra mobile del visualizzatore** - Seleziona, Sposta (un vero gizmo a 3 assi trascinabile), Modifica (ruota/scala), Colore, Aggiungi, Elimina, Fissa (salva in modo permanente spostamento/rotazione/scala), Copia, Incolla e Taglia, direttamente nella vista 3D. Piani riscaldati, tavoli a vuoto e rack sono varianti di dimensione indipendenti: il visualizzatore mostra solo quella selezionata invece di sovrapporle.
 - **Vista assemblata** - robot, CNC, PnP e laser si aprono già assemblati nella posa di riposo (letta dalla cinematica di HYDRA-UMC-SUITE accanto a questo checkout, solo visualizzazione); un pulsante della barra passa ai pezzi grezzi per modificarli.
+
+**Limiti dell'invio e della trasformazione:** vengono caricate solo le parti `.stl` (le altre vengono segnalate), l'intero invio deve rientrare nel limite di richiesta di 50 MB del server e il modello viene salvato solo nel catalogo del server (HYDRA-UMC-STUDIO non lo legge ancora). La posa identità è corretta per parti indipendenti (piani riscaldati, rack, tavoli a vuoto); le parti di un robot o di una macchina sono salvate nel proprio sistema di riferimento del link, quindi arrivano impilate nell'origine e senza giunti. Preferisci un host `https://` (o `HYDRA_UMC_PASSWORD` / la richiesta della password invece di `--password`). Una trasformazione scala prima, poi ruota attorno a X, Y e Z e infine trasla; la rotazione è attorno all'origine del file, non al centro della parte.
 
 **Niente viene mai eliminato in modo permanente.** Una rimozione o una
 sostituzione sposta prima il vero file originale nella propria
@@ -195,7 +197,7 @@ chmod +x build.sh   # una sola volta
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /percorso/nuovo.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /percorso/nuovo.stl
-./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin --password ***
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
 ```
 
 Su Windows: `build.bat`, poi `run.bat` (GUI) o `run.bat --cli ...` /

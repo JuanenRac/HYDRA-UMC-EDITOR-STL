@@ -18,6 +18,7 @@
 from __future__ import annotations
 
 import math
+import os
 import shutil
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -27,6 +28,7 @@ import numpy as np
 from stl import mesh as stl_mesh
 
 STL_TRASH_DIRNAME = ".trash"
+STL_SUFFIXES = (".stl",)
 
 
 class StlOpsError(RuntimeError):
@@ -93,6 +95,40 @@ def is_real_stl(path: Path) -> bool:
     return len(parsed.vectors) > 0
 
 
+def _part_path(model_dir: Path, filename: str) -> Path:
+    """`model_dir / filename`, refused when it would lead outside `model_dir`
+    (an absolute name, `..` segments or a link pointing elsewhere)."""
+    if not filename or Path(filename).is_absolute():
+        raise StlOpsError(f"not a valid part name: {filename!r}")
+    candidate = model_dir / filename
+    if not candidate.resolve().is_relative_to(model_dir.resolve()):
+        raise StlOpsError(f"part name {filename!r} leads outside the model folder")
+    return candidate
+
+
+def _read_mesh(path: Path) -> stl_mesh.Mesh:
+    try:
+        mesh = stl_mesh.Mesh.from_file(str(path))
+    except Exception as error:  # numpy-stl raises ValueError/AssertionError/struct.error on a corrupt file
+        raise StlOpsError(f"{path.name} is not a readable STL file: {error}") from error
+    if len(mesh.vectors) == 0:
+        raise StlOpsError(f"{path.name} has no triangles (empty or truncated STL)")
+    return mesh
+
+
+def _save_mesh_atomically(mesh: stl_mesh.Mesh, target: Path) -> None:
+    """Writes next to the target and replaces it in one step, so a crash mid-write cannot truncate the part."""
+    temporary = target.with_name(target.name + ".tmp")
+    try:
+        mesh.save(str(temporary))
+        os.replace(temporary, target)
+    except OSError as error:
+        raise StlOpsError(f"could not write {target.name}: {error}") from error
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
 def _unique_trash_path(model_dir: Path, filename: str) -> Path:
     trash_dir = model_dir / STL_TRASH_DIRNAME
     trash_dir.mkdir(exist_ok=True)
@@ -116,13 +152,15 @@ def transform_part(
     applied here directly to mesh vertices instead of a joint chain.
     Returns the real post-transform bounding box so a caller (CLI or
     QML) can show the operator what actually changed, not just "done"."""
+    if not all(math.isfinite(v) for v in (*translate_mm, *rotate_deg, scale)):
+        raise StlOpsError("translation, rotation and scale must be finite numbers")
     if scale <= 0:
         raise StlOpsError(f"scale must be a positive number, got {scale}")
-    target = model_dir / filename
+    target = _part_path(model_dir, filename)
     if not target.is_file():
         raise StlOpsError(f"no such part: {filename}")
 
-    mesh = stl_mesh.Mesh.from_file(str(target))
+    mesh = _read_mesh(target)
     points = mesh.points.reshape(-1, 3).astype(np.float64)
 
     points *= scale
@@ -139,12 +177,18 @@ def transform_part(
 
     points += np.array(translate_mm, dtype=np.float64)
 
-    mesh.points = points.reshape(-1, 9).astype(np.float32)
+    transformed = points.astype(np.float32)
+    if not np.isfinite(transformed).all():
+        raise StlOpsError("the transform would produce vertices that are not finite (too large?) - nothing was changed")
+    mesh.points = transformed.reshape(-1, 9)
     mesh.update_normals()
 
     backup_before_write = _unique_trash_path(model_dir, filename)
-    shutil.copy2(target, backup_before_write)
-    mesh.save(str(target))
+    try:
+        shutil.copy2(target, backup_before_write)
+    except OSError as error:
+        raise StlOpsError(f"could not back up {filename}: {error}") from error
+    _save_mesh_atomically(mesh, target)
     return _bounding_box(mesh)
 
 
@@ -156,22 +200,28 @@ def replace_part(model_dir: Path, filename: str, source_path: Path) -> None:
         raise StlOpsError(f"replacement source does not exist: {source_path}")
     if not is_real_stl(source_path):
         raise StlOpsError(f"replacement source is not a real, parseable STL file: {source_path}")
-    target = model_dir / filename
+    target = _part_path(model_dir, filename)
     if not target.is_file():
         raise StlOpsError(f"no such part to replace: {filename}")
 
-    shutil.copy2(target, _unique_trash_path(model_dir, filename))
-    shutil.copy2(source_path, target)
+    try:
+        shutil.copy2(target, _unique_trash_path(model_dir, filename))
+        shutil.copy2(source_path, target)
+    except OSError as error:
+        raise StlOpsError(f"could not replace {filename}: {error}") from error
 
 
 def remove_part(model_dir: Path, filename: str) -> Path:
     """Moves `filename` into `.trash/` (timestamped) instead of deleting
     it - returns the real path it was moved to."""
-    target = model_dir / filename
+    target = _part_path(model_dir, filename)
     if not target.is_file():
         raise StlOpsError(f"no such part: {filename}")
     destination = _unique_trash_path(model_dir, filename)
-    shutil.move(str(target), str(destination))
+    try:
+        shutil.move(str(target), str(destination))
+    except OSError as error:
+        raise StlOpsError(f"could not move {filename} to the trash: {error}") from error
     return destination
 
 
@@ -183,11 +233,13 @@ def unique_part_filename(model_dir: Path, filename: str) -> str:
     copied from) never hits `add_part`'s own "already exists" refusal."""
     if not (model_dir / filename).exists():
         return filename
-    stem, suffix = Path(filename).stem, Path(filename).suffix
-    candidate = f"{stem}_copy{suffix}"
+    original = Path(filename)
+    stem, suffix = original.stem, original.suffix
+    # keep the sub-folder (e.g. parts/foo.stl -> parts/foo_copy.stl)
+    candidate = original.with_name(f"{stem}_copy{suffix}").as_posix()
     n = 2
     while (model_dir / candidate).exists():
-        candidate = f"{stem}_copy{n}{suffix}"
+        candidate = original.with_name(f"{stem}_copy{n}{suffix}").as_posix()
         n += 1
     return candidate
 
@@ -202,9 +254,14 @@ def add_part(model_dir: Path, source_path: Path, dest_filename: str | None = Non
     if not is_real_stl(source_path):
         raise StlOpsError(f"source is not a real, parseable STL file: {source_path}")
     filename = dest_filename or source_path.name
-    target = model_dir / filename
+    if Path(filename).suffix.lower() not in STL_SUFFIXES:
+        raise StlOpsError(f"a part must be a .stl file, got {filename!r}")
+    target = _part_path(model_dir, filename)
     if target.exists():
         raise StlOpsError(f"a part named {filename!r} already exists - use replace_part instead")
-    target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(source_path, target)
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source_path, target)
+    except OSError as error:
+        raise StlOpsError(f"could not add {filename}: {error}") from error
     return filename

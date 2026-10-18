@@ -21,6 +21,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 COLORS_FILENAME = "part_colors.json"
@@ -55,4 +56,10 @@ def save_part_color(model_dir: Path, filename: str, hex_color: str) -> None:
     else:
         colors.pop(filename, None)
     path = model_dir / COLORS_FILENAME
-    path.write_text(json.dumps(colors, indent=2, sort_keys=True), encoding="utf-8")
+    temporary = path.with_name(path.name + ".tmp")
+    try:
+        temporary.write_text(json.dumps(colors, indent=2, sort_keys=True), encoding="utf-8")
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()

@@ -14,9 +14,13 @@
 # Rather than inventing a second, STL-only server endpoint, this module
 # wraps the model's own editable parts in the smallest REAL URDF that
 # contract already accepts: one root link plus one child link per part,
-# joined by a `fixed` joint at the identity origin - honest, since every
-# part's own actual position is already baked into its own STL vertices
-# by transform_part(), never a synthetic pose invented here.
+# joined by a `fixed` joint at the identity origin.
+#
+# Limit to keep in mind: that identity origin is only the right pose for
+# categories of independent pieces (heated beds, racks, vacuum tables). The
+# STL parts of a robot or machine are each stored in their OWN link frame
+# (see assembly.py), so a pushed robot arrives with every link stacked at the
+# origin and no articulation. `push_warnings()` reports this before pushing.
 # =============================================================================
 from __future__ import annotations
 
@@ -28,9 +32,13 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from xml.dom import minidom
 
-from .model_catalog import ModelInfo
+from .model_catalog import ModelInfo, is_independent_parts_category
 
 REQUEST_TIMEOUT_S = 20.0
+
+# HYDRA-UMC-SERVER accepts a JSON body of at most 50 MB (express.json);
+# stay a little under it.
+MAX_BODY_BYTES = 49 * 1024 * 1024
 
 
 class CatalogPushError(Exception):
@@ -44,6 +52,20 @@ def _upload_filename(index: int, part_filename: str) -> str:
     own `parts/` layout, for one real example) never collide once
     flattened into the server's own single `meshes/` folder."""
     return f"{index}_{Path(part_filename).name}"
+
+
+def push_warnings(model: ModelInfo, category: str) -> list[str]:
+    """What a push would leave out or get wrong, so the operator can decide first."""
+    warnings: list[str] = []
+    skipped = [p.filename for p in model.parts if not p.editable]
+    if skipped:
+        warnings.append(f"{len(skipped)} part(s) are not .stl files and will not be uploaded (for example {skipped[0]}).")
+    if not is_independent_parts_category(category):
+        warnings.append(
+            "Parts of a robot or machine are stored in their own link frame: the pushed model has every part at the "
+            "origin and no joints. Use it only for independent pieces, or articulate it with HYDRA-UMC-EDITOR-URDF."
+        )
+    return warnings
 
 
 def build_assembly_urdf(model: ModelInfo) -> str:
@@ -85,8 +107,14 @@ class ServerClient:
     two-function contract like this one."""
 
     def __init__(self, host: str, port: int = 3000):
-        self.base_url = f"http://{host}:{port}"
+        # `host` may carry a scheme (https://server) to avoid sending the
+        # password in clear text; a bare host keeps using plain http.
+        if host.startswith(("http://", "https://")):
+            self.base_url = host.rstrip("/") if host.count(":") > 1 else f"{host.rstrip('/')}:{port}"
+        else:
+            self.base_url = f"http://{host}:{port}"
         self.token: str | None = None
+        self.last_skipped_parts = 0
 
     def _request(self, method: str, path: str, body: dict | None = None, auth: bool = False) -> dict:
         url = f"{self.base_url}{path}"
@@ -133,6 +161,7 @@ class ServerClient:
         if not editable_parts:
             raise CatalogPushError("This model has no editable (.stl) parts to push.")
         urdf_xml = build_assembly_urdf(model)
+        self.last_skipped_parts = sum(1 for p in model.parts if not p.editable)
         mesh_files = []
         for index, part in enumerate(editable_parts):
             mesh_bytes = (model.path / part.filename).read_bytes()
@@ -149,6 +178,12 @@ class ServerClient:
             "meshFiles": mesh_files,
             "overwrite": overwrite,
         }
+        size = len(json.dumps(body).encode("utf-8"))
+        if size > MAX_BODY_BYTES:
+            raise CatalogPushError(
+                f"The upload would be {size / 1024 / 1024:.0f} MB, above the server's 50 MB limit - "
+                "remove parts or push fewer pieces."
+            )
         data = self._request("POST", "/api/models/submit", body, auth=True)
         slug = data.get("slug")
         if not slug:

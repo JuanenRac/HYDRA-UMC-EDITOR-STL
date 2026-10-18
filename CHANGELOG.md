@@ -5,6 +5,16 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.1.4] - Backups are not parts, part names stay inside the model, honest push
+
+- **Backup copies are no longer parts:** every transform, replace or remove leaves a copy in the model's `.trash/` folder, and the part list included those copies, so the viewer drew old versions on top of the real part and a push uploaded them. Hidden folders are skipped when a model is loaded.
+- **Part names stay inside the model:** transform, replace, remove and add refuse absolute names, `..` segments and links that lead outside the model folder, and `add` only accepts `.stl` names; a category or model name that climbs out of the library is not a model.
+- **Non-finite values are refused:** a NaN or infinite translation, rotation or scale (or a result that would overflow) is rejected before the part is touched.
+- **Safer writes:** the STL, `part_colors.json` and the settings file are written to a temporary file and replaced atomically; a corrupt or truncated STL and file-system errors are reported as messages instead of leaving the operation half done.
+- **Copying a part from a sub-folder** (`parts/foo.stl`) now creates `parts/foo_copy.stl` instead of a file in the model root.
+- **Push is honest about what it does:** parts that are not `.stl` are reported, an upload above the server's 50 MB limit is refused before it is sent, and robots or machines (whose parts are stored in their own link frame) trigger a warning because they arrive without joints. The password can come from `HYDRA_UMC_PASSWORD` or a prompt instead of `--password`, and `--host https://...` is accepted.
+- **Docs:** README (all languages), CLI reference and manifest describe the push limits and the transform order, and the push messages exist in all 8 languages (86 tests).
+
 ## [0.1.3] - Portuguese interface; the pure-logic tests no longer need Qt
 
 - **Portuguese interface:** `pt` joins the other seven languages in `i18n.py` (83 keys with the same placeholders as English) and the language menu offers `Português`. A README_por.md joins the other seven.

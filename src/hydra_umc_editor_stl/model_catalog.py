@@ -46,6 +46,14 @@ MESH_EXTENSIONS: frozenset[str] = frozenset({".stl", ".glb"})
 INDEPENDENT_PART_CATEGORIES: frozenset[str] = frozenset({"heatedbeds", "vacuum-tables", "racks"})
 
 
+def _is_inside(path: Path, base: Path) -> bool:
+    """True when `path` (after resolving `..` and links) lives under `base`."""
+    try:
+        return path.resolve().is_relative_to(base.resolve())
+    except OSError:
+        return False
+
+
 def is_independent_parts_category(category: str) -> bool:
     """True for a category whose parts should be viewed one at a time
     (the operator's own current selection only), never all overlapping."""
@@ -112,12 +120,15 @@ def load_model(ecosystem_root: Path, library: str, category: str, model_id: str)
     if root is None:
         return None
     model_dir = root / category / model_id
-    if not model_dir.is_dir():
+    if not model_dir.is_dir() or not _is_inside(model_dir, root):
         return None
 
     parts: list[PartInfo] = []
     for mesh_path in sorted(model_dir.rglob("*")):
         if not mesh_path.is_file() or mesh_path.suffix.lower() not in MESH_EXTENSIONS:
+            continue
+        # Backup copies in `.trash/` (and any other hidden folder) are not parts.
+        if any(segment.startswith(".") for segment in mesh_path.relative_to(model_dir).parts[:-1]):
             continue
         parts.append(PartInfo(
             filename=str(mesh_path.relative_to(model_dir)).replace("\\", "/"),

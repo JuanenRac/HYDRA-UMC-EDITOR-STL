@@ -110,7 +110,7 @@ def assembled_transforms(ecosystem_root: Path, category: str, model_id: str, mod
             matrices = kinematics.quat_family_mesh_world_transforms(cfg.chain, cfg.mesh_offsets, cfg.root_axis_target, cfg.base_offset, home)
         else:
             continue
-        for link_name, matrix in zip(entry.link_names, matrices):
+        for link_name, matrix in zip(entry.link_names, matrices, strict=False):
             filename = entry.mesh_files[link_name]
             part_path = model_dir / filename
             if part_path.is_file():
