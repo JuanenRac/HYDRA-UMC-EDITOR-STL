@@ -1,7 +1,7 @@
 # =============================================================================
 # HYDRA-UMC-EDITOR-STL - Qt Quick / QML GUI bridge: qt_gui.py
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0 - see LICENSE
+# GPL-3.0-or-later - see LICENSE
 #
 # The visual QML shell over model_catalog.py/stl_ops.py - QML calls this
 # bridge, the bridge calls the exact same real discovery/mutation

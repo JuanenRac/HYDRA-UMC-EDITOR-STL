@@ -1,7 +1,7 @@
 # =============================================================================
 # HYDRA-UMC-EDITOR-STL - GUI translations: i18n.py
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0 - see LICENSE
+# GPL-3.0-or-later - see LICENSE
 #
 # Real, complete translations for the windowed GUI's own UI chrome, same
 # 7 languages/codes this ecosystem's own READMEs and every other GUI
@@ -132,7 +132,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_author_label": "Author",
         "about_email_label": "Email",
         "about_license_label": "License",
-        "about_license": "GNU General Public License v3.0 (GPL-3.0)",
+        "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "Close",
         "open_github_button": "Open on GitHub",
     },
@@ -219,7 +219,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_author_label": "Autor",
         "about_email_label": "Correo",
         "about_license_label": "Licencia",
-        "about_license": "GNU General Public License v3.0 (GPL-3.0)",
+        "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "Cerrar",
         "open_github_button": "Abrir en GitHub",
     },
@@ -306,7 +306,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_author_label": "Auteur",
         "about_email_label": "E-mail",
         "about_license_label": "Licence",
-        "about_license": "GNU General Public License v3.0 (GPL-3.0)",
+        "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "Fermer",
         "open_github_button": "Ouvrir sur GitHub",
     },
@@ -393,7 +393,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_author_label": "Autore",
         "about_email_label": "Email",
         "about_license_label": "Licenza",
-        "about_license": "GNU General Public License v3.0 (GPL-3.0)",
+        "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "Chiudi",
         "open_github_button": "Apri su GitHub",
     },
@@ -480,7 +480,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_author_label": "Autor",
         "about_email_label": "E-Mail",
         "about_license_label": "Lizenz",
-        "about_license": "GNU General Public License v3.0 (GPL-3.0)",
+        "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "Schließen",
         "open_github_button": "Auf GitHub öffnen",
     },
@@ -567,7 +567,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_author_label": "作者",
         "about_email_label": "邮箱",
         "about_license_label": "许可证",
-        "about_license": "GNU 通用公共许可证 v3.0 (GPL-3.0)",
+        "about_license": "GNU 通用公共许可证 v3.0 (GPL-3.0-or-later)",
         "about_close_button": "关闭",
         "open_github_button": "在 GitHub 上打开",
     },
@@ -654,7 +654,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_author_label": "作者",
         "about_email_label": "メール",
         "about_license_label": "ライセンス",
-        "about_license": "GNU General Public License v3.0 (GPL-3.0)",
+        "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "閉じる",
         "open_github_button": "GitHubで開く",
     },
@@ -741,7 +741,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_author_label": "Autor",
         "about_email_label": "E-mail",
         "about_license_label": "Licença",
-        "about_license": "GNU General Public License v3.0 (GPL-3.0)",
+        "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "Fechar",
         "open_github_button": "Abrir no GitHub",
     },

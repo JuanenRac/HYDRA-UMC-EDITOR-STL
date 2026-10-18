@@ -9,7 +9,7 @@
 ### 📦 HYDRA-UMC エコシステム自身の実在する STL モデルライブラリを閲覧・編集する
 
 <p align="center">
-  <img src="https://img.shields.io/badge/ライセンス-GPL%203.0-blue.svg" alt="GPL 3.0">
+  <img src="https://img.shields.io/badge/ライセンス-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/言語-Python%203.10%2B-blue.svg" alt="Python">
   <img src="https://img.shields.io/badge/コア-numpy--stl-brightgreen.svg" alt="numpy-stl コア">
   <img src="https://img.shields.io/badge/デスクトップ-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick デスクトップGUI">
@@ -333,4 +333,4 @@ YouTube：[youtube.com/@electrohobby3d](https://youtube.com/@electrohobby3d)
 
 ## 📜 ライセンス
 
-GPL-3.0 - [`LICENSE`](LICENSE) / [`LICENSE.md`](LICENSE.md) を参照してください。
+GPL-3.0-or-later - [`LICENSE`](LICENSE) / [`LICENSE.md`](LICENSE.md) を参照してください。

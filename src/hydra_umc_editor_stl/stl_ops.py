@@ -1,7 +1,7 @@
 # =============================================================================
 # HYDRA-UMC-EDITOR-STL - Real STL mutation operations: stl_ops.py
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0 - see LICENSE
+# GPL-3.0-or-later - see LICENSE
 #
 # Every real edit this tool can make to a model's own STL parts -
 # transform (translate/rotate/scale, real vertex math via numpy-stl, the

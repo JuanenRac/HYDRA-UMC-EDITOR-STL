@@ -1,7 +1,7 @@
 # =============================================================================
 # HYDRA-UMC-EDITOR-STL - Push to a running server's model catalog: catalog_push.py
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0 - see LICENSE
+# GPL-3.0-or-later - see LICENSE
 #
 # This tool otherwise only ever edits STUDIO's/SUITE's own bundled model
 # libraries directly on local disk (model_catalog.py) - there was no way

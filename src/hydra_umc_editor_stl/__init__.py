@@ -1,6 +1,6 @@
 # =============================================================================
 # HYDRA-UMC-EDITOR-STL - package init
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0 - see LICENSE
+# GPL-3.0-or-later - see LICENSE
 # =============================================================================
-__version__ = "0.1.4"
+__version__ = "0.1.5"

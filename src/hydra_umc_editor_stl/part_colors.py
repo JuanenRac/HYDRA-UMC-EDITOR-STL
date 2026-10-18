@@ -1,7 +1,7 @@
 # =============================================================================
 # HYDRA-UMC-EDITOR-STL - Per-part color annotations: part_colors.py
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0 - see LICENSE
+# GPL-3.0-or-later - see LICENSE
 #
 # A binary STL carries no reliable per-part color of its own - the only
 # real convention (a VisCAM/SolidView-style header, or a per-facet RGB555

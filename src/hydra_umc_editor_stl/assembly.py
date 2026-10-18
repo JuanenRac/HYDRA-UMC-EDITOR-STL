@@ -1,7 +1,7 @@
 # =============================================================================
 # HYDRA-UMC-EDITOR-STL - Assembled (home-pose) view of a real machine: assembly.py
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0 - see LICENSE
+# GPL-3.0-or-later - see LICENSE
 #
 # A robot/CNC/PnP/laser model's STL parts are each stored in their OWN
 # local link frame - only that machine's forward kinematics puts them

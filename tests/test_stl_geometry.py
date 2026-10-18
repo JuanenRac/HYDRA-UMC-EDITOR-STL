@@ -1,7 +1,7 @@
 # =============================================================================
 # HYDRA-UMC-EDITOR-STL - tests for stl_geometry.py
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0 - see LICENSE
+# GPL-3.0-or-later - see LICENSE
 #
 # Requires a real QGuiApplication (QQuick3DGeometry is a QML/scenegraph
 # type) - conftest.py's own `qt_app` fixture provides one, headless

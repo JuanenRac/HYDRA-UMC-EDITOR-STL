@@ -5,6 +5,11 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.1.5]
+
+- Build version synchronized with `hydra-umc.project.json` and the repository-native version source.
+- The licence is written as GPL-3.0-or-later in every header and in the package metadata.
+
 ## [0.1.4] - Backups are not parts, part names stay inside the model, honest push
 
 - **Backup copies are no longer parts:** every transform, replace or remove leaves a copy in the model's `.trash/` folder, and the part list included those copies, so the viewer drew old versions on top of the real part and a push uploaded them. Hidden folders are skipped when a model is loaded.

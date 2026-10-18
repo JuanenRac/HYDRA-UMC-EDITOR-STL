@@ -1,7 +1,7 @@
 // =============================================================================
 // HYDRA-UMC-EDITOR-STL - Qt Quick visual desktop shell: Main.qml
 // Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-// GPL-3.0 - see LICENSE
+// GPL-3.0-or-later - see LICENSE
 // =============================================================================
 // Same real visual language HYDRA-UMC-UPDATER's own Main.qml established
 // for this ecosystem's PC tools (dark canvas, cyan/blue/amber/red accents,

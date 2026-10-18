@@ -1,7 +1,7 @@
 # =============================================================================
 # HYDRA-UMC-EDITOR-STL - Model library discovery: model_catalog.py
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0 - see LICENSE
+# GPL-3.0-or-later - see LICENSE
 #
 # Real, read-only discovery of the ecosystem's own model libraries -
 # HYDRA-UMC-STUDIO's own `public/models/` and HYDRA-UMC-SUITE's own

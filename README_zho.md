@@ -9,7 +9,7 @@
 ### 📦 浏览并编辑 HYDRA-UMC 生态系统真实的 STL 模型库
 
 <p align="center">
-  <img src="https://img.shields.io/badge/许可证-GPL%203.0-blue.svg" alt="GPL 3.0">
+  <img src="https://img.shields.io/badge/许可证-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/语言-Python%203.10%2B-blue.svg" alt="Python">
   <img src="https://img.shields.io/badge/核心-numpy--stl-brightgreen.svg" alt="numpy-stl 核心">
   <img src="https://img.shields.io/badge/桌面-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick 桌面 GUI">
@@ -303,4 +303,4 @@ YouTube：[youtube.com/@electrohobby3d](https://youtube.com/@electrohobby3d)
 
 ## 📜 许可证
 
-GPL-3.0 - 见 [`LICENSE`](LICENSE) / [`LICENSE.md`](LICENSE.md)。
+GPL-3.0-or-later - 见 [`LICENSE`](LICENSE) / [`LICENSE.md`](LICENSE.md)。

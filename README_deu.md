@@ -9,7 +9,7 @@
 ### 📦 Die Echten STL-Modellbibliotheken des HYDRA-UMC-Ökosystems Durchsuchen und Bearbeiten
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Lizenz-GPL%203.0-blue.svg" alt="GPL 3.0">
+  <img src="https://img.shields.io/badge/Lizenz-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Sprache-Python%203.10%2B-blue.svg" alt="Python">
   <img src="https://img.shields.io/badge/Kern-numpy--stl-brightgreen.svg" alt="numpy-stl Kern">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick Desktop-GUI">
@@ -345,4 +345,4 @@ YouTube: [youtube.com/@electrohobby3d](https://youtube.com/@electrohobby3d)
 
 ## 📜 LIZENZ
 
-GPL-3.0 - siehe [`LICENSE`](LICENSE) / [`LICENSE.md`](LICENSE.md).
+GPL-3.0-or-later - siehe [`LICENSE`](LICENSE) / [`LICENSE.md`](LICENSE.md).

@@ -1,7 +1,7 @@
 # =============================================================================
 # HYDRA-UMC-EDITOR-STL - Real STL mesh geometry for Qt Quick 3D: stl_geometry.py
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0 - see LICENSE
+# GPL-3.0-or-later - see LICENSE
 #
 # A real QQuick3DGeometry that loads an actual STL file's own triangles
 # (via numpy-stl, the same library stl_ops.py already depends on) into a

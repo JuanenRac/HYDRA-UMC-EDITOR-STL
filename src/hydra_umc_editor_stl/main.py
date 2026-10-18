@@ -1,7 +1,7 @@
 # =============================================================================
 # HYDRA-UMC-EDITOR-STL - Entry point: main.py
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0 - see LICENSE
+# GPL-3.0-or-later - see LICENSE
 #
 # Bare invocation (no arguments, or double-clicked) launches the Qt Quick
 # desktop GUI (qt_gui.py) - the same real visual shell HYDRA-UMC-UPDATER's
