@@ -50,6 +50,16 @@ README already draws for its own Qt Quick shell.
 
 ---
 
+## 📋 At a glance
+
+| | |
+|---|---|
+| Version | `0.1.5` |
+| Maturity | Functional |
+| Stack | Python / PySide6 / Qt Quick / numpy-stl |
+| Target | The PC of the person using it |
+| On real hardware | Not applicable: nothing here runs on hardware |
+
 ## 1. 🛠️ TECHNICAL OVERVIEW
 
 HYDRA-UMC-EDITOR-STL is a small desktop tool - windowed GUI by default,

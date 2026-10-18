@@ -51,6 +51,16 @@ próprio HYDRA-UMC-UPDATER já traça para o seu shell Qt Quick.
 
 ---
 
+## 📋 Num relance
+
+| | |
+|---|---|
+| Versão | `0.1.5` |
+| Maturidade | Funcional |
+| Tecnologia | Python / PySide6 / Qt Quick / numpy-stl |
+| Destino | O PC de quem o usa |
+| Em hardware real | Não aplicável: nada aqui corre em hardware |
+
 ## 1. 🛠️ VISÃO TÉCNICA GERAL
 
 O HYDRA-UMC-EDITOR-STL é uma pequena ferramenta de desktop - GUI com janela

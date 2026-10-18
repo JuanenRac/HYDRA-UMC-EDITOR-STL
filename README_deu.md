@@ -55,6 +55,16 @@ zieht.
 
 ---
 
+## 📋 Auf einen Blick
+
+| | |
+|---|---|
+| Version | `0.1.5` |
+| Reifegrad | Funktionsfähig |
+| Technik | Python / PySide6 / Qt Quick / numpy-stl |
+| Ziel | Der PC der Person, die es benutzt |
+| Auf echter Hardware | Nicht zutreffend: nichts hiervon läuft auf Hardware |
+
 ## 1. 🛠️ TECHNISCHER ÜBERBLICK
 
 HYDRA-UMC-EDITOR-STL ist ein kleines Desktop-Werkzeug - standardmäßig

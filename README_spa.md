@@ -53,6 +53,16 @@ propia capa Qt Quick.
 
 ---
 
+## 📋 De un vistazo
+
+| | |
+|---|---|
+| Versión | `0.1.5` |
+| Madurez | Funcional |
+| Tecnología | Python / PySide6 / Qt Quick / numpy-stl |
+| Destino | El PC de quien lo usa |
+| En hardware real | No aplica: nada de esto se ejecuta en hardware |
+
 ## 1. 🛠️ VISIÓN TÉCNICA
 
 HYDRA-UMC-EDITOR-STL es una pequeña herramienta de escritorio - GUI de

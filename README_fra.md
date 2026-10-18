@@ -54,6 +54,16 @@ pour sa propre couche Qt Quick.
 
 ---
 
+## 📋 En un coup d'œil
+
+| | |
+|---|---|
+| Version | `0.1.5` |
+| Maturité | Fonctionnel |
+| Technologie | Python / PySide6 / Qt Quick / numpy-stl |
+| Cible | Le PC de la personne qui l'utilise |
+| Sur matériel réel | Sans objet : rien ici ne s'exécute sur du matériel |
+
 ## 1. 🛠️ APERÇU TECHNIQUE
 
 HYDRA-UMC-EDITOR-STL est un petit outil de bureau - GUI fenêtrée par

@@ -52,6 +52,16 @@ slot、色変更後も選択状態が保持されること）。`qml/Main.qml` �
 
 ---
 
+## 📋 ひと目で
+
+| | |
+|---|---|
+| バージョン | `0.1.5` |
+| 成熟度 | 機能する |
+| 技術 | Python / PySide6 / Qt Quick / numpy-stl |
+| 対象 | 利用者の PC |
+| 実機での確認 | 対象外：ここにあるものはハードウェア上では動きません |
+
 ## 1. 🛠️ 技術概要
 
 HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
