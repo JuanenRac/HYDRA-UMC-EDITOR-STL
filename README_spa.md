@@ -36,7 +36,7 @@ librerías de modelos), `stl_ops.py` (mutación real de STL vía
 `catalog_push.py` (generación real de un URDF de ensamblaje más un
 cliente HTTP real para `POST /api/models/submit`) están todos
 probados contra ficheros STL reales generados y una `QGuiApplication`
-real de ámbito de sesión donde hace falta (`pytest tests/`, 86 casos en
+real de ámbito de sesión donde hace falta (`pytest tests/`, 194 casos en
 verde) y se han verificado de extremo a extremo contra los checkouts
 reales de `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` de este ecosistema
 (`--cli categories`/`models`/`parts` contra los árboles reales;
@@ -57,7 +57,7 @@ propia capa Qt Quick.
 
 | | |
 |---|---|
-| Versión | `0.1.5` |
+| Versión | `0.1.6` |
 | Madurez | Funcional |
 | Tecnología | Python / PySide6 / Qt Quick / numpy-stl |
 | Destino | El PC de quien lo usa |

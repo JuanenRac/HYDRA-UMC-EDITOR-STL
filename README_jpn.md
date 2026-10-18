@@ -35,7 +35,7 @@
 （実在の組み立て用 URDF 生成に加え、`POST /api/models/submit` 向けの
 実在の HTTP クライアント）はすべて、実際に生成した
 実在の STL ファイルと、必要に応じて実在のセッションスコープの
-`QGuiApplication` に対してテストされており（`pytest tests/`、86 件の
+`QGuiApplication` に対してテストされており（`pytest tests/`、194 件の
 ケースが合格）、本エコシステム自身の実在する
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` のチェックアウトに対してエンド
 ツーエンドでスモークテスト済みです（`--cli categories`/`models`/
@@ -56,7 +56,7 @@ slot、色変更後も選択状態が保持されること）。`qml/Main.qml` �
 
 | | |
 |---|---|
-| バージョン | `0.1.5` |
+| バージョン | `0.1.6` |
 | 成熟度 | 機能する |
 | 技術 | Python / PySide6 / Qt Quick / numpy-stl |
 | 対象 | 利用者の PC |

@@ -79,6 +79,25 @@ def model_bounds(model_dir: Path, filenames: list[str]) -> BoundingBox | None:
     )
 
 
+def _is_truncated_binary(path: Path) -> bool:
+    """True for a binary STL whose header promises more triangles than the file
+    holds. numpy-stl reads such a file without complaint and returns only the
+    triangles that are there, so saving it again would turn a damaged download
+    into a shorter, "valid" part. An ASCII STL is not judged by this rule."""
+    try:
+        with path.open("rb") as handle:
+            head = handle.read(2048)
+        size = path.stat().st_size
+    except OSError:
+        return False
+    if head.startswith(b"solid") and b"facet" in head:
+        return False
+    if len(head) < 84:
+        return False
+    declared = int.from_bytes(head[80:84], "little")
+    return 84 + 50 * declared > size
+
+
 def is_real_stl(path: Path) -> bool:
     """True only if `path` actually parses as a real, non-empty ASCII or
     binary STL. Real gap found writing this project's own tests:
@@ -88,6 +107,8 @@ def is_real_stl(path: Path) -> bool:
     so a bare try/except here would have let a completely non-STL file
     through. A 0-triangle mesh is rejected explicitly for the same reason
     a 0-byte file would be - it is not a usable part either way."""
+    if _is_truncated_binary(path):
+        return False
     try:
         parsed = stl_mesh.Mesh.from_file(str(path))
     except Exception:
@@ -107,6 +128,8 @@ def _part_path(model_dir: Path, filename: str) -> Path:
 
 
 def _read_mesh(path: Path) -> stl_mesh.Mesh:
+    if _is_truncated_binary(path):
+        raise StlOpsError(f"{path.name} is cut short: its header promises more triangles than the file holds")
     try:
         mesh = stl_mesh.Mesh.from_file(str(path))
     except Exception as error:  # numpy-stl raises ValueError/AssertionError/struct.error on a corrupt file

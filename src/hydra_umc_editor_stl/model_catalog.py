@@ -142,7 +142,7 @@ def load_model(ecosystem_root: Path, library: str, category: str, model_id: str)
         if metadata_path.is_file():
             try:
                 metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):
+            except (OSError, ValueError):  # ValueError: bad JSON or bytes that are not UTF-8
                 metadata = None
             break
 

@@ -35,7 +35,7 @@ mutation via `numpy-stl` - transform/replace/remove/add, plus
 assembly-URDF generation plus a real HTTP client for
 `POST /api/models/submit`) are all tested against real, generated STL
 fixtures and a real, session-scoped `QGuiApplication` where needed
-(`pytest tests/`, 86 passing cases) and have been smoke-tested end to end
+(`pytest tests/`, 194 passing cases) and have been smoke-tested end to end
 against this ecosystem's own real
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` checkouts (`--cli categories`/
 `models`/`parts` against the real trees; `transform`/`remove` against a
@@ -54,7 +54,7 @@ README already draws for its own Qt Quick shell.
 
 | | |
 |---|---|
-| Version | `0.1.5` |
+| Version | `0.1.6` |
 | Maturity | Functional |
 | Stack | Python / PySide6 / Qt Quick / numpy-stl |
 | Target | The PC of the person using it |

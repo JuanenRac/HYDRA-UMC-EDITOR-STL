@@ -38,7 +38,7 @@ bibliothèques de modèles), `stl_ops.py` (mutation STL réelle via
 client HTTP pour `POST /api/models/submit`) sont tous
 testés contre de vrais fichiers STL générés et une vraie
 `QGuiApplication` à portée de session quand nécessaire (`pytest tests/`,
-86 cas réussis) et ont été vérifiés de bout en bout contre les vrais
+194 cas réussis) et ont été vérifiés de bout en bout contre les vrais
 checkouts `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` de cet écosystème
 (`--cli categories`/`models`/`parts` contre les vrais arbres ;
 `transform`/`remove` contre une copie jetable, jamais le vrai checkout).
@@ -58,7 +58,7 @@ pour sa propre couche Qt Quick.
 
 | | |
 |---|---|
-| Version | `0.1.5` |
+| Version | `0.1.6` |
 | Maturité | Fonctionnel |
 | Technologie | Python / PySide6 / Qt Quick / numpy-stl |
 | Cible | Le PC de la personne qui l'utilise |

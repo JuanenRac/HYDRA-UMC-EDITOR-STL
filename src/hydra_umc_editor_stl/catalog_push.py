@@ -25,6 +25,7 @@
 from __future__ import annotations
 
 import base64
+import http.client
 import json
 import urllib.error
 import urllib.request
@@ -127,16 +128,23 @@ class ServerClient:
         request = urllib.request.Request(url, data=data, headers=headers, method=method)
         try:
             with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_S) as resp:
-                return json.loads(resp.read().decode("utf-8"))
+                answer = json.loads(resp.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
+            message = f"HTTP {e.code}"
             try:
                 payload = json.loads(e.read().decode("utf-8"))
-                message = payload.get("error", f"HTTP {e.code}")
-            except (ValueError, UnicodeDecodeError):
-                message = f"HTTP {e.code}"
+                if isinstance(payload, dict) and isinstance(payload.get("error"), str):
+                    message = payload["error"]
+            except (ValueError, OSError, http.client.HTTPException):
+                pass
             raise CatalogPushError(f"{self.base_url}{path}: {message}") from e
-        except OSError as e:
+        except (OSError, http.client.HTTPException) as e:
             raise CatalogPushError(f"{self.base_url}{path}: {e}") from e
+        except ValueError as e:  # not JSON, or not UTF-8: a proxy or captive portal page, say
+            raise CatalogPushError(f"{self.base_url}{path}: the answer is not valid JSON") from e
+        if not isinstance(answer, dict):
+            raise CatalogPushError(f"{self.base_url}{path}: the answer is not a JSON object")
+        return answer
 
     def login(self, username: str, password: str) -> None:
         """POST /api/login - only an admin-role token can actually use
@@ -145,7 +153,7 @@ class ServerClient:
         already documents."""
         data = self._request("POST", "/api/login", {"username": username, "password": password})
         token = data.get("token")
-        if not token:
+        if not isinstance(token, str) or not token:
             raise CatalogPushError("Login succeeded but the server returned no token.")
         self.token = token
 
@@ -186,6 +194,6 @@ class ServerClient:
             )
         data = self._request("POST", "/api/models/submit", body, auth=True)
         slug = data.get("slug")
-        if not slug:
+        if not isinstance(slug, str) or not slug:
             raise CatalogPushError("Push succeeded but the server returned no slug.")
         return slug

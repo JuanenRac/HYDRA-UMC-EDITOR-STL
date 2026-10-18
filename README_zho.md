@@ -32,7 +32,7 @@
 （真实生成装配用 URDF，外加一个真实的 `POST /api/models/submit` HTTP
 客户端）全部都针对真实生成的
 STL 文件、以及在需要时一个真实的、会话范围的 `QGuiApplication` 进行了
-测试（`pytest tests/`，86 个用例通过），并已针对本生态系统真实的
+测试（`pytest tests/`，194 个用例通过），并已针对本生态系统真实的
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` 检出进行了端到端的冒烟测试
 （`--cli categories`/`models`/`parts` 针对真实的目录树；`transform`/`remove`
 针对一份可丢弃的副本，绝不是真实的检出本身）。`qt_gui.py` 自己的
@@ -49,7 +49,7 @@ README 已经为其自身 Qt Quick 层划出的诚实界限相同。
 
 | | |
 |---|---|
-| 版本 | `0.1.5` |
+| 版本 | `0.1.6` |
 | 成熟度 | 可用 |
 | 技术栈 | Python / PySide6 / Qt Quick / numpy-stl |
 | 目标 | 使用者的电脑 |

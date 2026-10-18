@@ -24,7 +24,7 @@ def load_settings() -> dict[str, Any]:
     try:
         raw = SETTINGS_PATH.read_text(encoding="utf-8")
         data = json.loads(raw)
-    except (OSError, json.JSONDecodeError):
+    except (OSError, ValueError):  # ValueError: bad JSON or bytes that are not UTF-8
         return {}
     return data if isinstance(data, dict) else {}
 

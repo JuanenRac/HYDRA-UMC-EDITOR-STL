@@ -38,7 +38,7 @@ def load_part_colors(model_dir: Path) -> dict[str, str]:
         return {}
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, ValueError):  # ValueError: bad JSON or bytes that are not UTF-8
         return {}
     if not isinstance(data, dict):
         return {}

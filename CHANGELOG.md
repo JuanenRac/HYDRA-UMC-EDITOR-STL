@@ -5,6 +5,13 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.1.6] - Damaged files and odd server answers no longer crash the editor
+
+- **Saved files:** a settings file, a `part_colors.json` or a model `metadata.json` that is not valid UTF-8 made the editor raise instead of starting with an empty value; all three are now treated like any other damaged file.
+- **Truncated STL files:** a binary STL cut short (its header promises more triangles than the file holds) was read without complaint as a smaller mesh, so transforming it saved a shorter part, and adding or replacing a part with it was accepted. Such files are now refused, and the original is left untouched.
+- **Server push:** a login or push answer that is not a JSON object (a proxy or captive-portal page, `null`, a list), an error body that is not an object, or a token or slug that is not text, ended in an unhandled exception; each is now a readable push error.
+- 108 new tests (194 in all, 82 % line coverage, up from 61 %): the `--cli` commands, part-name confinement and links that point outside the model, finite-value checks of transforms, backups in the trash, SUITE placements and their quaternions, STL geometry placement, and a local server answering badly.
+
 ## [0.1.5]
 
 - Build version synchronized with `hydra-umc.project.json` and the repository-native version source.

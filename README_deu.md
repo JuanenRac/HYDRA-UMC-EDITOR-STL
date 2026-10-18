@@ -37,7 +37,7 @@ von Qt-Quick-3D-Geometrie) und `catalog_push.py` (echte Erzeugung
 eines Assembly-URDF plus ein echter HTTP-Client für
 `POST /api/models/submit`) sind alle gegen echte, generierte
 STL-Dateien und, wo nötig, eine echte, sitzungsweite
-`QGuiApplication` getestet (`pytest tests/`, 86 bestandene Fälle) und
+`QGuiApplication` getestet (`pytest tests/`, 194 bestandene Fälle) und
 wurden End-to-End gegen die echten `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE`-
 Checkouts dieses Ökosystems verifiziert (`--cli categories`/`models`/
 `parts` gegen die echten Bäume; `transform`/`remove` gegen eine
@@ -59,7 +59,7 @@ zieht.
 
 | | |
 |---|---|
-| Version | `0.1.5` |
+| Version | `0.1.6` |
 | Reifegrad | Funktionsfähig |
 | Technik | Python / PySide6 / Qt Quick / numpy-stl |
 | Ziel | Der PC der Person, die es benutzt |
