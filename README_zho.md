@@ -163,7 +163,7 @@ HYDRA-UMC-EDITOR-STL/
 ├── build.sh / build.bat      # venv + 可编辑安装（dev+gui 附加项）+ 编译检查 + 测试
 ├── run.sh / run.bat          # 默认 GUI / CLI 入口点
 ├── run-gui.vbs               # 无控制台窗口的 Windows 图形启动器
-├── bump_version.py           # 生态系统范围的"里程表"式版本递增（pyproject.toml + __init__.py）
+├── bump_version.py           # 里程表式版本递增（仅由显式 `bump` 命令运行）
 └── bump_manifest_version.py  # 将 hydra-umc.project.json 的版本与原生版本同步（--sync）
 ```
 

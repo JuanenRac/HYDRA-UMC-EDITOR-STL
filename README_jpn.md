@@ -186,7 +186,7 @@ HYDRA-UMC-EDITOR-STL/
 ├── build.sh / build.bat      # venv + 編集可能インストール（dev+gui エクストラ）+ コンパイルチェック + テスト
 ├── run.sh / run.bat          # デフォルトの GUI / CLI エントリポイント
 ├── run-gui.vbs               # コンソールウィンドウのない Windows 用グラフィカルランチャー
-├── bump_version.py           # エコシステム全体の「オドメーター」式バージョン更新（pyproject.toml + __init__.py）
+├── bump_version.py           # オドメーター式バージョンインクリメント（明示的な `bump` コマンドのみが実行）
 └── bump_manifest_version.py  # hydra-umc.project.json のバージョンをネイティブのものと同期（--sync）
 ```
 
