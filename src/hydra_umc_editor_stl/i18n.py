@@ -4,7 +4,7 @@
 # GPL-3.0-or-later - see LICENSE
 #
 # Real, complete translations for the windowed GUI's own UI chrome, same
-# 7 languages/codes this ecosystem's own READMEs and every other GUI
+# 8 languages/codes this ecosystem's own READMEs and every other GUI
 # tool (HYDRA-UMC-UPDATER, HYDRA-UMC-OS-REBUILDER, ...) already ship.
 # `--cli` mode (main.py) is intentionally NOT translated, same reasoning
 # as HYDRA-UMC-UPDATER's own i18n.py header.
