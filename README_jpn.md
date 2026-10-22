@@ -277,6 +277,7 @@ Windows では：`build.bat`、続いて `run.bat`（GUI）または
 - **[URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER)** — URTC ボード向けデスクトップ GUI 書き込みツール、CAN-OTA に加えてフルチップ SWD/JTAG に対応。
 - **[URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER)** — URTC ボード向けデスクトップのライブ CAN バス診断ツール、ツールプロファイルごとに1パネル。
 - **[URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO)** — ローカルインストール不要な、Web Serial API 経由のブラウザベースの URTC-TESTER 代替。
+- **[URTC-GATEWAY](https://github.com/JuanenRac/URTC-GATEWAY)** — URTC の CAN バスの前に置くゲートウェイ：許可する識別子のリスト、レート制限、セッション鍵。コンピューター上でテスト済みで、実際のバスではまだ試していません。
 
 *ビジョン AI ノード（Hailo-8）*
 - **[HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE)** — 段階ごとの実在するハードウェア準備状況チェックを備えた、Hailo-8 ビジョンパイプラインの統合ハブ。
