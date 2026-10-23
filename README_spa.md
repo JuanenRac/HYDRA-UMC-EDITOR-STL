@@ -60,7 +60,7 @@ propia capa Qt Quick.
 | | |
 |---|---|
 | Versión | `0.1.6` |
-| Madurez | Funcional |
+| Madurez | Andamiaje |
 | Tecnología | Python / PySide6 / Qt Quick / numpy-stl |
 | Destino | El PC de quien lo usa |
 | En hardware real | No aplica: nada de esto se ejecuta en hardware |

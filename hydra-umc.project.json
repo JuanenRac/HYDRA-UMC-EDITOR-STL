@@ -12,7 +12,7 @@
     "numpy-stl"
   ],
   "deployment_target": "user-pc",
-  "maturity": "functional",
+  "maturity": "scaffolding",
   "family": "Core Backend & Clients",
   "parent": "HYDRA-UMC-STUDIO",
   "build": "Desktop Python app, dependency-light core (numpy-stl only) plus an optional PySide6/Qt Quick GUI extra. run.bat/run.sh runs it from source; build.bat/build.sh creates a venv, installs the dev+gui extras and runs the real test suite; build-test.bat/build-test.sh validates sources without bumping the version.",

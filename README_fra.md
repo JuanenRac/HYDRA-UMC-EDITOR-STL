@@ -61,7 +61,7 @@ pour sa propre couche Qt Quick.
 | | |
 |---|---|
 | Version | `0.1.6` |
-| Maturité | Fonctionnel |
+| Maturité | Ébauche |
 | Technologie | Python / PySide6 / Qt Quick / numpy-stl |
 | Cible | Le PC de la personne qui l'utilise |
 | Sur matériel réel | Sans objet : rien ici ne s'exécute sur du matériel |

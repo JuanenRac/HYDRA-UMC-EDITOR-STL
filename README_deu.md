@@ -62,7 +62,7 @@ zieht.
 | | |
 |---|---|
 | Version | `0.1.6` |
-| Reifegrad | Funktionsfähig |
+| Reifegrad | Gerüst |
 | Technik | Python / PySide6 / Qt Quick / numpy-stl |
 | Ziel | Der PC der Person, die es benutzt |
 | Auf echter Hardware | Nicht zutreffend: nichts hiervon läuft auf Hardware |

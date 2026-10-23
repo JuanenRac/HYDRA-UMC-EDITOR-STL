@@ -57,7 +57,7 @@ README already draws for its own Qt Quick shell.
 | | |
 |---|---|
 | Version | `0.1.6` |
-| Maturity | Functional |
+| Maturity | Scaffolding |
 | Stack | Python / PySide6 / Qt Quick / numpy-stl |
 | Target | The PC of the person using it |
 | On real hardware | Not applicable: nothing here runs on hardware |

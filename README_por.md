@@ -58,7 +58,7 @@ próprio HYDRA-UMC-UPDATER já traça para o seu shell Qt Quick.
 | | |
 |---|---|
 | Versão | `0.1.6` |
-| Maturidade | Funcional |
+| Maturidade | Estrutura inicial |
 | Tecnologia | Python / PySide6 / Qt Quick / numpy-stl |
 | Destino | O PC de quem o usa |
 | Em hardware real | Não aplicável: nada aqui corre em hardware |
