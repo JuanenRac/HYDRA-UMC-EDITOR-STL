@@ -158,6 +158,7 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
 ```
 HYDRA-UMC-EDITOR-STL/
 ├── src/hydra_umc_editor_stl/
+│   ├── __init__.py         # 包版本
 │   ├── model_catalog.py    # 对两个模型库的真实、只读发现
 │   ├── stl_ops.py           # 真实的 STL 变更：变换/替换/移除/添加，.trash/ 备份
 │   ├── catalog_push.py       # 装配用 URDF + POST /api/models/submit 的 HTTP 客户端
@@ -166,14 +167,21 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── diagnostics.py        # 主目录中的轮转日志与窗口槽函数的保护
 │   ├── qt_gui.py             # 建立在真实 model_catalog.py/stl_ops.py 核心之上的 Qt Quick 桥接层
 │   ├── qml/Main.qml          # 主题化的桌面外壳，与 HYDRA-UMC-UPDATER 共享
-│   └── main.py               # 分发：默认 GUI，--cli 用于 categories/models/parts/transform/replace/remove/add/push
+│   ├── main.py               # 分发：默认 GUI，--cli 用于 categories/models/parts/transform/replace/remove/add/push
+│   ├── assembly.py           # 由 STL 零件组装出的机器视图 (原位姿态)
+│   ├── mesh_check.py         # 推送到目录前的网格检查
+│   ├── part_colors.py        # 按零件的颜色标注 (二进制 STL 本身不带颜色)
+│   └── stl_geometry.py       # 把 STL 文件的真实三角形作为 Qt Quick 3D 几何体
 ├── tests/                    # 针对真实生成的 STL 文件的真实测试
 ├── docs/
 │   └── CLI_REFERENCE.md      # 命令参考
 ├── images/                   # 媒体和应用图标
 ├── tools/
 │   ├── build_test.py         # 不涉及版本变更的编译检查
-│   └── ci_validate.py        # CI 使用的清单/更新日志/文档验证
+│   ├── ci_validate.py        # CI 使用的清单/更新日志/文档验证
+│   ├── _doc_policy.py        # 家族共享的文档规则 (HYDRA-UMC-SDK 的副本,保持同步)
+│   ├── _readme_parity.py     # 检查八个 README 结构一致 (HYDRA-UMC-SDK 的副本,保持同步)
+│   └── hydra_project_tool.py # 每个仓库相同的命令: validate、test、ci、version、status、bump
 ├── build.sh / build.bat      # venv + 可编辑安装（dev+gui 附加项）+ 编译检查 + 测试
 ├── run.sh / run.bat          # 默认 GUI / CLI 入口点
 ├── run-gui.vbs               # 无控制台窗口的 Windows 图形启动器

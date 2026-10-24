@@ -181,6 +181,7 @@ HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
 ```
 HYDRA-UMC-EDITOR-STL/
 ├── src/hydra_umc_editor_stl/
+│   ├── __init__.py         # パッケージバージョン
 │   ├── model_catalog.py    # 両方のモデルライブラリに対する実在の読み取り専用ディスカバリ
 │   ├── stl_ops.py           # 実在の STL 変更：変換/置換/削除/追加、.trash/ バックアップ
 │   ├── catalog_push.py       # 組み立て用 URDF + POST /api/models/submit 向け HTTP クライアント
@@ -189,14 +190,21 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── diagnostics.py        # ホームフォルダのローテーションログと、ウィンドウのスロットの保護
 │   ├── qt_gui.py             # 実在の model_catalog.py/stl_ops.py コア上の Qt Quick ブリッジ
 │   ├── qml/Main.qml          # HYDRA-UMC-UPDATER と共有するテーマ付きデスクトップシェル
-│   └── main.py               # ディスパッチ：デフォルトは GUI、--cli は categories/models/parts/transform/replace/remove/add/push 用
+│   ├── main.py               # ディスパッチ：デフォルトは GUI、--cli は categories/models/parts/transform/replace/remove/add/push 用
+│   ├── assembly.py           # STL パーツから組み立てたマシンの組立ビュー (ホーム姿勢)
+│   ├── mesh_check.py         # カタログへ送る前のメッシュ検査
+│   ├── part_colors.py        # パーツごとの色の注釈 (バイナリ STL 自体には色情報がない)
+│   └── stl_geometry.py       # STL ファイルの実際の三角形を Qt Quick 3D のジオメトリとして提供
 ├── tests/                    # 実際に生成した実在の STL ファイルに対する実在のテスト
 ├── docs/
 │   └── CLI_REFERENCE.md      # コマンドリファレンス
 ├── images/                   # メディアとアプリアイコン
 ├── tools/
 │   ├── build_test.py         # バージョンに触れないビルド/コンパイルチェック
-│   └── ci_validate.py        # CI が使用するマニフェスト/CHANGELOG/ドキュメント検証
+│   ├── ci_validate.py        # CI が使用するマニフェスト/CHANGELOG/ドキュメント検証
+│   ├── _doc_policy.py        # ファミリー共通のドキュメント規則 (HYDRA-UMC-SDK のコピーで、同期を維持)
+│   ├── _readme_parity.py     # 8つの README が同じ構造であることの検査 (HYDRA-UMC-SDK のコピーで、同期を維持)
+│   └── hydra_project_tool.py # すべてのリポジトリで共通のコマンド: validate、test、ci、version、status、bump
 ├── build.sh / build.bat      # venv + 編集可能インストール（dev+gui エクストラ）+ コンパイルチェック + テスト
 ├── run.sh / run.bat          # デフォルトの GUI / CLI エントリポイント
 ├── run-gui.vbs               # コンソールウィンドウのない Windows 用グラフィカルランチャー

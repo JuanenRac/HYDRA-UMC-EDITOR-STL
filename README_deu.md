@@ -193,6 +193,7 @@ angewendet, nicht nur als interne Gewohnheit.
 ```
 HYDRA-UMC-EDITOR-STL/
 ├── src/hydra_umc_editor_stl/
+│   ├── __init__.py         # Paketversion
 │   ├── model_catalog.py    # Echte, schreibgeschützte Erkennung beider Modellbibliotheken
 │   ├── stl_ops.py           # Echte STL-Mutation: transformieren/ersetzen/entfernen/hinzufügen, .trash/-Sicherungen
 │   ├── catalog_push.py       # Assembly-URDF + HTTP-Client für POST /api/models/submit
@@ -201,14 +202,21 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── diagnostics.py        # Rotierendes Protokoll im Home-Ordner und Schutz der Fenster-Slots
 │   ├── qt_gui.py             # Qt-Quick-Brücke über den echten model_catalog.py/stl_ops.py-Kern
 │   ├── qml/Main.qml          # Thematisierte Desktop-Hülle, gemeinsam mit HYDRA-UMC-UPDATER
-│   └── main.py               # Dispatch: GUI standardmäßig, --cli für categories/models/parts/transform/replace/remove/add/push
+│   ├── main.py               # Dispatch: GUI standardmäßig, --cli für categories/models/parts/transform/replace/remove/add/push
+│   ├── assembly.py           # Die zusammengesetzte Ansicht (Grundstellung) einer Maschine aus ihren STL-Teilen
+│   ├── mesh_check.py         # Netzprüfungen vor dem Hochladen in den Katalog
+│   ├── part_colors.py        # Farbanmerkungen pro Teil (ein binäres STL bringt keine eigenen mit)
+│   └── stl_geometry.py       # Die echten Dreiecke einer STL-Datei als Qt-Quick-3D-Geometrie
 ├── tests/                    # Echte Tests gegen echte, generierte STL-Dateien
 ├── docs/
 │   └── CLI_REFERENCE.md      # Befehlsreferenz
 ├── images/                   # Medien und App-Icons
 ├── tools/
 │   ├── build_test.py         # Kompilierprüfung ohne Versionsänderung
-│   └── ci_validate.py        # Manifest-/CHANGELOG-/Doku-Validierung, von CI genutzt
+│   ├── ci_validate.py        # Manifest-/CHANGELOG-/Doku-Validierung, von CI genutzt
+│   ├── _doc_policy.py        # Von der Familie geteilte Dokumentationsregeln (Kopie der von HYDRA-UMC-SDK, synchron gehalten)
+│   ├── _readme_parity.py     # Prüfung, dass die acht READMEs dieselbe Struktur haben (Kopie der von HYDRA-UMC-SDK, synchron gehalten)
+│   └── hydra_project_tool.py # Dieselben Befehle in jedem Repository: validate, test, ci, version, status, bump
 ├── build.sh / build.bat      # venv + editierbare Installation (dev+gui Extras) + Kompilierprüfung + Tests
 ├── run.sh / run.bat          # GUI standardmäßig / CLI-Einstiegspunkt
 ├── run-gui.vbs               # Grafischer Windows-Launcher ohne Konsolenfenster

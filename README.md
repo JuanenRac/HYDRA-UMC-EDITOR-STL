@@ -170,6 +170,7 @@ product feature, not just an internal habit.
 ```
 HYDRA-UMC-EDITOR-STL/
 ├── src/hydra_umc_editor_stl/
+│   ├── __init__.py         # Package version
 │   ├── model_catalog.py    # Real, read-only discovery of both model libraries
 │   ├── stl_ops.py           # Real STL mutation: transform/replace/remove/add, .trash/ backups
 │   ├── catalog_push.py       # Assembly-URDF + HTTP client for POST /api/models/submit
@@ -178,14 +179,21 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── diagnostics.py        # Rotating log in the home folder and the guard of the window slots
 │   ├── qt_gui.py             # Qt Quick bridge over the real model_catalog.py/stl_ops.py core
 │   ├── qml/Main.qml          # Themed desktop shell, shared with HYDRA-UMC-UPDATER
-│   └── main.py               # Dispatch: GUI by default, --cli for categories/models/parts/transform/replace/remove/add/push
+│   ├── main.py               # Dispatch: GUI by default, --cli for categories/models/parts/transform/replace/remove/add/push
+│   ├── assembly.py           # The assembled (home-pose) view of a machine from its STL parts
+│   ├── mesh_check.py         # Mesh checks before a push to the catalog
+│   ├── part_colors.py        # Per-part colour annotations (a binary STL carries none of its own)
+│   └── stl_geometry.py       # The real triangles of an STL file as Qt Quick 3D geometry
 ├── tests/                    # Real tests against real, generated STL fixtures
 ├── docs/
 │   └── CLI_REFERENCE.md      # Command reference
 ├── images/                   # Media and app icons
 ├── tools/
 │   ├── build_test.py         # Non-versioning build/compile check
-│   └── ci_validate.py        # Manifest/CHANGELOG/docs validation used by CI
+│   ├── ci_validate.py        # Manifest/CHANGELOG/docs validation used by CI
+│   ├── _doc_policy.py        # Documentation rules shared by the family (a copy of HYDRA-UMC-SDK's, kept in sync)
+│   ├── _readme_parity.py     # Check that the eight READMEs share one structure (a copy of HYDRA-UMC-SDK's, kept in sync)
+│   └── hydra_project_tool.py # The same commands in every repository: validate, test, ci, version, status, bump
 ├── build.sh / build.bat      # venv + editable install (dev+gui extras) + compile-check + tests
 ├── run.sh / run.bat          # GUI default / CLI entry point
 ├── run-gui.vbs               # Windows graphical launcher with no console window
