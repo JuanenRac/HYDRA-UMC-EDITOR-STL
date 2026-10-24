@@ -66,6 +66,19 @@ HYDRA-UMC-UPDATER traccia già per il proprio strato Qt Quick.
 | Destinazione | Il PC di chi lo usa |
 | Su hardware reale | Non applicabile: nulla qui gira su hardware |
 
+## 🚦 Stato del progetto
+
+Ogni riga è una parte di questo repository e il semaforo dice a che punto è oggi. È scritta in base a ciò che il repository può mostrare (test, compilazioni, esecuzioni), non a ciò che è previsto.
+
+🟢 Fatto e verificato · 🟡 Funziona, con limiti noti · 🟠 Fatto a metà o non ancora verificato · 🔴 Non fatto o non funzionante
+
+| Area | Stato | Cosa significa qui |
+|---|---|---|
+| Software | 🟠 | Solo struttura e primi pezzi; gran parte del lavoro è ancora da fare |
+| Test | 🟠 | Per questo repository non è ancora registrato il numero di test |
+| Hardware reale | 🟢 | Non applicabile: nulla qui gira su hardware |
+| Documentazione | 🟢 | README in otto lingue, verificato rispetto al manifesto a ogni modifica |
+
 ## 1. 🛠️ PANORAMICA TECNICA
 
 HYDRA-UMC-EDITOR-STL è un piccolo strumento desktop - GUI a finestra per

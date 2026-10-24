@@ -63,6 +63,19 @@ próprio HYDRA-UMC-UPDATER já traça para o seu shell Qt Quick.
 | Destino | O PC de quem o usa |
 | Em hardware real | Não aplicável: nada aqui corre em hardware |
 
+## 🚦 Estado do projeto
+
+Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É escrita com o que o repositório consegue demonstrar (testes, compilações, execuções), não com o que está previsto.
+
+🟢 Feito e verificado · 🟡 Funciona, com limites conhecidos · 🟠 Feito a meio ou ainda por verificar · 🔴 Por fazer ou a não funcionar
+
+| Área | Estado | O que significa aqui |
+|---|---|---|
+| Software | 🟠 | Só estrutura e as primeiras peças; falta a maior parte do trabalho |
+| Testes | 🟠 | Ainda não há registo do número de testes deste repositório |
+| Hardware real | 🟢 | Não aplicável: nada aqui corre em hardware |
+| Documentação | 🟢 | README em oito idiomas, verificado contra o manifesto a cada alteração |
+
 ## 1. 🛠️ VISÃO TÉCNICA GERAL
 
 O HYDRA-UMC-EDITOR-STL é uma pequena ferramenta de desktop - GUI com janela

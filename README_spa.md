@@ -65,6 +65,19 @@ propia capa Qt Quick.
 | Destino | El PC de quien lo usa |
 | En hardware real | No aplica: nada de esto se ejecuta en hardware |
 
+## 🚦 Estado del proyecto
+
+Cada línea es una parte de este repositorio y la luz dice hasta dónde llega hoy. Se escribe con lo que el repositorio puede demostrar (pruebas, compilaciones, ejecuciones), no con lo previsto.
+
+🟢 Hecho y verificado · 🟡 Funciona, con límites conocidos · 🟠 Hecho a medias o sin verificar · 🔴 Sin hacer o sin funcionar
+
+| Área | Estado | Qué significa aquí |
+|---|---|---|
+| Software | 🟠 | Solo estructura y primeras piezas; falta la mayor parte del trabajo |
+| Pruebas | 🟠 | Todavía no consta el número de pruebas de este repositorio |
+| Hardware real | 🟢 | No aplica: nada de esto se ejecuta en hardware |
+| Documentación | 🟢 | README en ocho idiomas, comprobado contra el manifiesto en cada cambio |
+
 ## 1. 🛠️ VISIÓN TÉCNICA
 
 HYDRA-UMC-EDITOR-STL es una pequeña herramienta de escritorio - GUI de

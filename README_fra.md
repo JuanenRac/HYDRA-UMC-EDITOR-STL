@@ -66,6 +66,19 @@ pour sa propre couche Qt Quick.
 | Cible | Le PC de la personne qui l'utilise |
 | Sur matériel réel | Sans objet : rien ici ne s'exécute sur du matériel |
 
+## 🚦 État du projet
+
+Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'hui. Elle est écrite d'après ce que le dépôt peut montrer (tests, compilations, exécutions), pas d'après ce qui est prévu.
+
+🟢 Fait et vérifié · 🟡 Fonctionne, avec des limites connues · 🟠 À moitié fait ou pas encore vérifié · 🔴 Pas fait ou ne fonctionne pas
+
+| Domaine | État | Ce que cela veut dire ici |
+|---|---|---|
+| Logiciel | 🟠 | Seulement la structure et les premières pièces ; l'essentiel du travail reste à faire |
+| Tests | 🟠 | Aucun nombre de tests n'est encore consigné pour ce dépôt |
+| Matériel réel | 🟢 | Sans objet : rien ici ne s'exécute sur du matériel |
+| Documentation | 🟢 | README en huit langues, vérifié par rapport au manifeste à chaque modification |
+
 ## 1. 🛠️ APERÇU TECHNIQUE
 
 HYDRA-UMC-EDITOR-STL est un petit outil de bureau - GUI fenêtrée par

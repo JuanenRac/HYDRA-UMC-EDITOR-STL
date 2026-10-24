@@ -62,6 +62,19 @@ README already draws for its own Qt Quick shell.
 | Target | The PC of the person using it |
 | On real hardware | Not applicable: nothing here runs on hardware |
 
+## 🚦 Project status
+
+Each line is one part of this repository and the light says how far it is today. It is written from what the repository can show (tests, builds, runs), not from what is planned.
+
+🟢 Done and verified · 🟡 Works, with known limits · 🟠 Partly done or not verified yet · 🔴 Not done or not working
+
+| Area | State | What it means here |
+|---|---|---|
+| Software | 🟠 | Structure and first pieces only; most of the work is still to do |
+| Tests | 🟠 | No test count is recorded for this repository yet |
+| Real hardware | 🟢 | Not applicable: nothing here runs on hardware |
+| Documentation | 🟢 | README in eight languages, checked against the manifest on every change |
+
 ## 1. 🛠️ TECHNICAL OVERVIEW
 
 HYDRA-UMC-EDITOR-STL is a small desktop tool - windowed GUI by default,
