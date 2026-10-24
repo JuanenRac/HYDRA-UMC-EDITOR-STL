@@ -25,6 +25,7 @@ from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
 from PySide6.QtQuickControls2 import QQuickStyle
 
 from . import i18n, settings
+from .diagnostics import guarded
 from . import __version__
 from .assembly import assembled_bounds, assembled_transforms, placement_matrix
 from .catalog_push import CatalogPushError, ServerClient
@@ -100,6 +101,7 @@ class EditorBridge(QObject):
         return self._lang
 
     @Slot(str)
+    @guarded()
     def setLanguage(self, lang: str) -> None:
         if lang == self._lang:
             return
@@ -108,6 +110,7 @@ class EditorBridge(QObject):
         self.languageChanged.emit()
 
     @Slot(str, result=str)
+    @guarded('')
     def text(self, key: str) -> str:
         return i18n.t(self._lang, key)
 
@@ -126,6 +129,7 @@ class EditorBridge(QObject):
         return str(self._ecosystem_root)
 
     @Slot(str)
+    @guarded()
     def setEcosystemRoot(self, path: str) -> None:
         # QML FolderDialog hands back a file:// URL string - QUrl strips
         # the scheme back to a real local path cleanly on every platform
@@ -147,6 +151,7 @@ class EditorBridge(QObject):
         return self._library
 
     @Slot(str)
+    @guarded()
     def selectLibrary(self, library: str) -> None:
         if library == self._library:
             return
@@ -174,6 +179,7 @@ class EditorBridge(QObject):
         return is_independent_parts_category(self._category)
 
     @Slot(str)
+    @guarded()
     def selectCategory(self, category: str) -> None:
         if category == self._category:
             return
@@ -191,6 +197,7 @@ class EditorBridge(QObject):
         return self._model
 
     @Slot(str)
+    @guarded()
     def selectModel(self, model: str) -> None:
         if model == self._model:
             return
@@ -221,6 +228,7 @@ class EditorBridge(QObject):
         return self._assembled_view
 
     @Slot(bool)
+    @guarded()
     def setAssembledView(self, value: bool) -> None:
         if value == self._assembled_view:
             return
@@ -232,6 +240,7 @@ class EditorBridge(QObject):
         return self._selected_part
 
     @Slot(str)
+    @guarded()
     def selectPart(self, filename: str) -> None:
         self._selected_part = filename
         self.selectionChanged.emit()
@@ -335,6 +344,7 @@ class EditorBridge(QObject):
     # --- real STL operations --------------------------------------------
 
     @Slot(float, float, float, float, float, float, float)
+    @guarded()
     def applyTransform(self, tx: float, ty: float, tz: float, rx: float, ry: float, rz: float, scale: float) -> None:
         model = self._load_selected_model()
         if model is None or not self._selected_part:
@@ -353,6 +363,7 @@ class EditorBridge(QObject):
         self._refresh_parts()
 
     @Slot(str)
+    @guarded()
     def replaceSelectedPart(self, source_path: str) -> None:
         model = self._load_selected_model()
         if model is None or not self._selected_part:
@@ -368,6 +379,7 @@ class EditorBridge(QObject):
         self._refresh_parts()
 
     @Slot()
+    @guarded()
     def removeSelectedPart(self) -> None:
         model = self._load_selected_model()
         if model is None or not self._selected_part:
@@ -382,6 +394,7 @@ class EditorBridge(QObject):
         self._refresh_parts()
 
     @Slot(str)
+    @guarded()
     def setSelectedPartColor(self, hex_color: str) -> None:
         model = self._load_selected_model()
         if model is None or not self._selected_part:
@@ -403,6 +416,7 @@ class EditorBridge(QObject):
         self.selectionChanged.emit()
 
     @Slot(str, str)
+    @guarded()
     def addPart(self, source_path: str, dest_filename: str) -> None:
         model = self._load_selected_model()
         if model is None:
@@ -433,6 +447,7 @@ class EditorBridge(QObject):
         return self._clipboard_label
 
     @Slot()
+    @guarded()
     def copySelectedPart(self) -> None:
         model = self._load_selected_model()
         if model is None or not self._selected_part:
@@ -455,6 +470,7 @@ class EditorBridge(QObject):
         self._set_status(i18n.t(self._lang, "msg_copy_done", name=self._selected_part))
 
     @Slot()
+    @guarded()
     def pasteClipboard(self) -> None:
         model = self._load_selected_model()
         if model is None:
@@ -473,6 +489,7 @@ class EditorBridge(QObject):
         self._refresh_parts()
 
     @Slot()
+    @guarded()
     def cutSelectedPart(self) -> None:
         if not self._selected_part:
             self._set_status(i18n.t(self._lang, "msg_select_part_first"))
@@ -493,6 +510,7 @@ class EditorBridge(QObject):
         return self._push_status
 
     @Slot(str, int, str, str, str, bool)
+    @guarded()
     def pushToServer(self, host: str, port: int, username: str, password: str, category: str, overwrite: bool) -> None:
         model = self._load_selected_model()
         if model is None:

@@ -26,6 +26,8 @@ from pathlib import Path
 import numpy as np
 from stl import mesh as stl_mesh
 
+from .stl_ops import part_box
+
 SUITE_DIRNAME = "HYDRA-UMC-SUITE"
 
 
@@ -149,14 +151,10 @@ def assembled_bounds(model_dir: Path, placements: dict[str, PartPlacement]) -> t
     in the assembled view."""
     corners_all: list[np.ndarray] = []
     for filename, placement in placements.items():
-        try:
-            raw = stl_mesh.Mesh.from_file(str(model_dir / filename))
-        except Exception:
+        box = part_box(model_dir / filename)
+        if box is None:
             continue
-        if len(raw.vectors) == 0:
-            continue
-        points = raw.vectors.reshape(-1, 3)
-        lo, hi = points.min(axis=0), points.max(axis=0)
+        lo, hi = np.array(box.min_xyz), np.array(box.max_xyz)
         corners = np.array([[x, y, z] for x in (lo[0], hi[0]) for y in (lo[1], hi[1]) for z in (lo[2], hi[2])])
         world = corners @ _rotation_matrix(placement.rotation_wxyz).T + np.array(placement.position)
         corners_all.append(world)

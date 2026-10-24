@@ -135,6 +135,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "Close",
         "open_github_button": "Open on GitHub",
+        "msg_unexpected_error": "Unexpected error: {error}. Details are in {log}.",
     },
     "es": {
         "window_title": "HYDRA-UMC Editor STL",
@@ -222,6 +223,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "Cerrar",
         "open_github_button": "Abrir en GitHub",
+        "msg_unexpected_error": "Error inesperado: {error}. Los detalles están en {log}.",
     },
     "fr": {
         "window_title": "HYDRA-UMC Editor STL",
@@ -309,6 +311,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "Fermer",
         "open_github_button": "Ouvrir sur GitHub",
+        "msg_unexpected_error": "Erreur inattendue : {error}. Les détails sont dans {log}.",
     },
     "it": {
         "window_title": "HYDRA-UMC Editor STL",
@@ -396,6 +399,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "Chiudi",
         "open_github_button": "Apri su GitHub",
+        "msg_unexpected_error": "Errore imprevisto: {error}. I dettagli sono in {log}.",
     },
     "de": {
         "window_title": "HYDRA-UMC Editor STL",
@@ -483,6 +487,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "Schließen",
         "open_github_button": "Auf GitHub öffnen",
+        "msg_unexpected_error": "Unerwarteter Fehler: {error}. Einzelheiten stehen in {log}.",
     },
     "zh": {
         "window_title": "HYDRA-UMC Editor STL",
@@ -570,6 +575,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_license": "GNU 通用公共许可证 v3.0 (GPL-3.0-or-later)",
         "about_close_button": "关闭",
         "open_github_button": "在 GitHub 上打开",
+        "msg_unexpected_error": "意外错误:{error}。详细信息见 {log}。",
     },
     "ja": {
         "window_title": "HYDRA-UMC Editor STL",
@@ -657,6 +663,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "閉じる",
         "open_github_button": "GitHubで開く",
+        "msg_unexpected_error": "予期しないエラー:{error}。詳細は {log} にあります。",
     },
     "pt": {
         "window_title": "HYDRA-UMC Editor STL",
@@ -744,6 +751,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "about_license": "GNU General Public License v3.0 or later (GPL-3.0-or-later)",
         "about_close_button": "Fechar",
         "open_github_button": "Abrir no GitHub",
+        "msg_unexpected_error": "Erro inesperado: {error}. Os detalhes estão em {log}.",
     },
 }
 

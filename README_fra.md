@@ -180,6 +180,7 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── catalog_push.py       # URDF d'assemblage + client HTTP pour POST /api/models/submit
 │   ├── settings.py          # Racine de l'écosystème et préférence de langue persistées
 │   ├── i18n.py               # Traductions réelles et complètes de la GUI (8 langues)
+│   ├── diagnostics.py        # Journal tournant dans le dossier personnel et garde des slots de la fenêtre
 │   ├── qt_gui.py             # Pont Qt Quick sur le vrai noyau model_catalog.py/stl_ops.py
 │   ├── qml/Main.qml          # Coquille de bureau à thème, partagée avec HYDRA-UMC-UPDATER
 │   └── main.py               # Répartition : GUI par défaut, --cli pour categories/models/parts/transform/replace/remove/add/push

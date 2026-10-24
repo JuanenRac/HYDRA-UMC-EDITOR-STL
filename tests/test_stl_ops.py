@@ -170,3 +170,85 @@ def test_model_bounds_returns_none_when_nothing_could_be_loaded(tmp_path: Path) 
 
 def test_model_bounds_returns_none_for_an_empty_part_list(tmp_path: Path) -> None:
     assert model_bounds(tmp_path, []) is None
+
+
+# ---- the cache of bounding boxes (a part is measured once until it changes) ------------------------------------
+
+def _count_reads(monkeypatch: pytest.MonkeyPatch) -> list[str]:
+    reads: list[str] = []
+    original = stl_mesh.Mesh.from_file
+
+    def counting(path, *args, **kwargs):
+        reads.append(str(path))
+        return original(path, *args, **kwargs)
+
+    monkeypatch.setattr(stl_mesh.Mesh, "from_file", staticmethod(counting))
+    return reads
+
+
+def test_a_part_is_measured_once_however_many_times_the_model_is_selected(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from hydra_umc_editor_stl.stl_ops import clear_box_cache, part_box
+
+    clear_box_cache()
+    make_cube_stl(tmp_path / "a.stl", size=10.0)
+    make_cube_stl(tmp_path / "b.stl", size=20.0)
+    reads = _count_reads(monkeypatch)
+    first = model_bounds(tmp_path, ["a.stl", "b.stl"])
+    second = model_bounds(tmp_path, ["a.stl", "b.stl"])
+    third = model_bounds(tmp_path, ["b.stl"])
+    assert first == second
+    assert third is not None and third.max_xyz == (20.0, 20.0, 20.0)
+    assert len(reads) == 2, "each part was parsed once"
+    assert part_box(tmp_path / "a.stl") == part_box(tmp_path / "a.stl")
+    assert len(reads) == 2
+
+
+def test_a_part_that_changes_is_measured_again(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from hydra_umc_editor_stl.stl_ops import clear_box_cache
+
+    clear_box_cache()
+    make_cube_stl(tmp_path / "a.stl", size=10.0)
+    reads = _count_reads(monkeypatch)
+    before = model_bounds(tmp_path, ["a.stl"])
+    assert before is not None and before.max_xyz == (10.0, 10.0, 10.0)
+    make_cube_stl(tmp_path / "a.stl", size=30.0)  # another size on disk
+    after = model_bounds(tmp_path, ["a.stl"])
+    assert after is not None and after.max_xyz == (30.0, 30.0, 30.0)
+    assert len(reads) == 2
+
+
+def test_an_edit_made_by_this_tool_is_seen_by_the_next_measure(tmp_path: Path) -> None:
+    from hydra_umc_editor_stl.stl_ops import clear_box_cache
+
+    clear_box_cache()
+    make_cube_stl(tmp_path / "a.stl", size=10.0)
+    assert model_bounds(tmp_path, ["a.stl"]).min_xyz == (0.0, 0.0, 0.0)  # type: ignore[union-attr]
+    transform_part(tmp_path, "a.stl", translate_mm=(5.0, 0.0, 0.0))
+    assert model_bounds(tmp_path, ["a.stl"]).min_xyz == (5.0, 0.0, 0.0)  # type: ignore[union-attr]
+
+
+def test_an_unreadable_part_is_skipped_and_tried_again_when_it_changes(tmp_path: Path) -> None:
+    from hydra_umc_editor_stl.stl_ops import clear_box_cache
+
+    clear_box_cache()
+    (tmp_path / "bad.stl").write_bytes(b"not an stl")
+    make_cube_stl(tmp_path / "ok.stl", size=4.0)
+    assert model_bounds(tmp_path, ["bad.stl", "missing.stl"]) is None
+    box = model_bounds(tmp_path, ["bad.stl", "ok.stl"])
+    assert box is not None and box.max_xyz == (4.0, 4.0, 4.0)
+    make_cube_stl(tmp_path / "bad.stl", size=9.0)  # the damaged part was replaced by a good one
+    fixed = model_bounds(tmp_path, ["bad.stl", "ok.stl"])
+    assert fixed is not None and fixed.max_xyz == (9.0, 9.0, 9.0)
+
+
+def test_the_cache_does_not_grow_without_end(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from hydra_umc_editor_stl import stl_ops
+
+    stl_ops.clear_box_cache()
+    monkeypatch.setattr(stl_ops, "_BOX_CACHE_LIMIT", 3)
+    for i in range(8):
+        make_cube_stl(tmp_path / f"p{i}.stl", size=float(i + 1))
+        assert stl_ops.part_box(tmp_path / f"p{i}.stl").max_xyz == (float(i + 1),) * 3  # type: ignore[union-attr]
+    assert len(stl_ops._box_cache) == 3, "the oldest answers were dropped"
+    # a dropped answer is simply measured again
+    assert stl_ops.part_box(tmp_path / "p0.stl").max_xyz == (1.0, 1.0, 1.0)  # type: ignore[union-attr]

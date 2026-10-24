@@ -151,3 +151,31 @@ def test_placement_matrix_is_rotation_then_translation() -> None:
     # +90 deg about X sends local +Y to world +Z and local +Z to world -Y.
     rotation = [[round(matrix[r * 3 + c], 6) for c in range(3)] for r in range(3)]
     assert rotation == [[1.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, 1.0, 0.0]]
+
+
+def test_an_unexpected_error_in_a_slot_is_shown_in_the_status_bar_instead_of_crashing(qt_app, ecosystem_root: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from hydra_umc_editor_stl import diagnostics, qt_gui
+
+    monkeypatch.setattr(diagnostics, "LOG_PATH", tmp_path / "editor.log")
+
+    def broken(*args, **kwargs):
+        raise ZeroDivisionError("scale of zero")
+
+    monkeypatch.setattr(qt_gui, "transform_part", broken)
+    bridge = EditorBridge(ecosystem_root)
+    _select_ar3_base_link(bridge)
+
+    bridge.applyTransform(0, 0, 0, 0, 0, 0, 1.0)
+
+    assert "ZeroDivisionError" in bridge.statusText
+    assert str(tmp_path / "editor.log") in bridge.statusText
+    import logging
+    import logging.handlers
+    for handler in logging.getLogger(diagnostics.LOGGER_NAME).handlers:
+        handler.flush()
+    assert "scale of zero" in (tmp_path / "editor.log").read_text(encoding="utf-8")
+    logger = logging.getLogger(diagnostics.LOGGER_NAME)
+    for handler in list(logger.handlers):
+        if isinstance(handler, logging.handlers.RotatingFileHandler):
+            handler.close()
+            logger.removeHandler(handler)

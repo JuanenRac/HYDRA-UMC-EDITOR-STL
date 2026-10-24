@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Bounding boxes are measured once.** `model_bounds()` and `assembled_bounds()` parsed every STL of a model again at each selection (seconds with the larger models). The box of a part is kept by path, modification time and size (at most 512 parts), so a part that is edited, replaced or transformed is read again and an unreadable one is tried again when its file changes.
+- **An error inside a window slot no longer vanishes or crashes the window.** Every slot of the bridge is guarded: the traceback goes to a rotating log in the home folder (`.hydra_umc_editor_stl.log`, 256 KiB, two backups) and the status bar says what happened and where the log is, in the eight languages.
 - The maturity is `scaffolding` in the manifest and the eight READMEs, as `docs/MATURITY_CRITERIA.md` already says: of its four exit criteria only the mesh validation is verified by tests today (units and dimensional limits, recorded provenance and a version check in the build test are not), so the project does not claim `functional` yet.
 - Building no longer changes the version; raising it is the explicit `bump` command (`python tools/hydra_project_tool.py bump`). The build scripts only report the version they built, and CI fails if a build script runs a bump.
 - The build and run scripts use the Python of the `.venv` directly instead of an activate script, and create the venv with the `py` launcher when there is one; CI fails if a script activates a venv.

@@ -50,6 +50,39 @@ def _bounding_box(mesh: stl_mesh.Mesh) -> BoundingBox:
     )
 
 
+_BOX_CACHE_LIMIT = 512
+_box_cache: dict[tuple[str, int, int], BoundingBox | None] = {}
+
+
+def part_box(path: Path) -> BoundingBox | None:
+    """The bounding box of the raw vertices of one STL part, or `None` when it cannot be read or holds no
+    triangle. Reading a part parses the whole file, and the same parts are measured again at every selection of
+    a model, so the answer is kept by (path, modification time, size): a part that is edited, replaced or
+    transformed has another modification time or size and is read again. A part that cannot be read is
+    remembered the same way (it is tried again as soon as the file changes)."""
+    try:
+        stat = path.stat()
+    except OSError:
+        return None
+    key = (str(path), stat.st_mtime_ns, stat.st_size)
+    if key in _box_cache:
+        return _box_cache[key]
+    try:
+        mesh = stl_mesh.Mesh.from_file(str(path))
+        box = _bounding_box(mesh) if len(mesh.vectors) > 0 else None
+    except Exception:
+        box = None
+    if len(_box_cache) >= _BOX_CACHE_LIMIT:
+        _box_cache.pop(next(iter(_box_cache)))
+    _box_cache[key] = box
+    return box
+
+
+def clear_box_cache() -> None:
+    """Forgets every measured box (used by the checks)."""
+    _box_cache.clear()
+
+
 def model_bounds(model_dir: Path, filenames: list[str]) -> BoundingBox | None:
     """Real, combined bounding box across every real, loadable part named
     in `filenames` (relative to `model_dir`) - `None` only when none of
@@ -60,13 +93,9 @@ def model_bounds(model_dir: Path, filenames: list[str]) -> BoundingBox | None:
     mins: list[tuple[float, float, float]] = []
     maxs: list[tuple[float, float, float]] = []
     for filename in filenames:
-        try:
-            mesh = stl_mesh.Mesh.from_file(str(model_dir / filename))
-        except Exception:
+        box = part_box(model_dir / filename)
+        if box is None:
             continue
-        if len(mesh.vectors) == 0:
-            continue
-        box = _bounding_box(mesh)
         mins.append(box.min_xyz)
         maxs.append(box.max_xyz)
     if not mins:
