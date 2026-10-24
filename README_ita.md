@@ -60,7 +60,7 @@ HYDRA-UMC-UPDATER traccia già per il proprio strato Qt Quick.
 
 | | |
 |---|---|
-| Versione | `0.1.6` |
+| Versione | `0.1.7` |
 | Maturità | Impalcatura |
 | Tecnologia | Python / PySide6 / Qt Quick / numpy-stl |
 | Destinazione | Il PC di chi lo usa |
