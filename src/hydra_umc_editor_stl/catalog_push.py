@@ -33,6 +33,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from xml.dom import minidom
 
+from .mesh_check import check_stl
 from .model_catalog import ModelInfo, is_independent_parts_category
 
 REQUEST_TIMEOUT_S = 20.0
@@ -66,6 +67,13 @@ def push_warnings(model: ModelInfo, category: str) -> list[str]:
             "Parts of a robot or machine are stored in their own link frame: the pushed model has every part at the "
             "origin and no joints. Use it only for independent pieces, or articulate it with HYDRA-UMC-EDITOR-URDF."
         )
+    # What is wrong with the meshes themselves, part by part (a part that cannot be read is reported by the file check).
+    for part in model.parts:
+        if not part.editable:
+            continue
+        report = check_stl(model.path / part.filename)
+        if report is not None:
+            warnings.extend(f"{part.filename}: {problem}." for problem in report.problems)
     return warnings
 
 
