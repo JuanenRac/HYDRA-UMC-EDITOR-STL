@@ -315,6 +315,71 @@ ApplicationWindow {
     }
 
     Dialog {
+        id: trashDialog
+        property var entries: []
+        modal: true
+        anchors.centerIn: parent
+        width: 480
+        padding: 22
+        background: Rectangle { color: window.panel; radius: 16; border.color: window.border; border.width: 1 }
+        contentItem: ColumnLayout {
+            spacing: 10
+            LabelText { text: ui("trash_title"); font.bold: true; Layout.fillWidth: true }
+            LabelText { text: ui("trash_note"); wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            LabelText { visible: trashDialog.entries.length === 0; text: ui("msg_trash_is_empty"); Layout.fillWidth: true }
+            ListView {
+                Layout.fillWidth: true
+                Layout.preferredHeight: Math.min(240, contentHeight)
+                clip: true
+                model: trashDialog.entries
+                delegate: RowLayout {
+                    width: ListView.view.width
+                    LabelText { text: modelData.original + "  " + modelData.stamp; elide: Text.ElideMiddle; Layout.fillWidth: true }
+                    GameButton {
+                        text: ui("btn_restore")
+                        accent: window.green
+                        onClicked: { backend.restoreTrashEntry(modelData.entry); trashDialog.entries = backend.trashEntries() }
+                    }
+                }
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                GameButton {
+                    text: ui("btn_empty_trash")
+                    accent: window.red
+                    enabled: trashDialog.entries.length > 0
+                    onClicked: emptyTrashConfirm.open()
+                }
+                Item { Layout.fillWidth: true }
+                GameButton { text: "OK"; accent: "#264966"; onClicked: trashDialog.close() }
+            }
+        }
+    }
+
+    Dialog {
+        id: emptyTrashConfirm
+        modal: true
+        anchors.centerIn: parent
+        width: 420
+        padding: 22
+        background: Rectangle { color: window.panel; radius: 16; border.color: window.border; border.width: 1 }
+        contentItem: ColumnLayout {
+            spacing: 14
+            LabelText { text: ui("msg_trash_empty_confirm"); wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            RowLayout {
+                Layout.fillWidth: true
+                Item { Layout.fillWidth: true }
+                GameButton { text: "Cancel"; accent: "#264966"; onClicked: emptyTrashConfirm.close() }
+                GameButton {
+                    text: ui("btn_empty_trash")
+                    accent: window.red
+                    onClicked: { backend.emptyTrash(true); trashDialog.entries = backend.trashEntries(); emptyTrashConfirm.close() }
+                }
+            }
+        }
+    }
+
+    Dialog {
         id: pushDialog
         modal: true
         anchors.centerIn: parent
@@ -1027,6 +1092,13 @@ ApplicationWindow {
                                 Layout.fillWidth: true
                                 enabled: !!backend.selectedPart
                                 onClicked: removeConfirmDialog.open()
+                            }
+                            GameButton {
+                                text: ui("trash_title")
+                                accent: "#264966"
+                                Layout.fillWidth: true
+                                enabled: !!backend.selectedModel
+                                onClicked: { trashDialog.entries = backend.trashEntries(); trashDialog.open() }
                             }
 
                             Rectangle { Layout.fillWidth: true; height: 1; color: window.border }

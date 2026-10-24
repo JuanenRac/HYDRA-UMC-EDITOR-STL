@@ -317,3 +317,65 @@ def add_part(model_dir: Path, source_path: Path, dest_filename: str | None = Non
     except OSError as error:
         raise StlOpsError(f"could not add {filename}: {error}") from error
     return filename
+
+
+STL_TRASH_EMPTIED_DIRNAME = ".trash-emptied"
+
+
+def list_trash(model_dir: Path) -> list[dict]:
+    """The files in this model's `.trash/`, newest first: `{"entry": <name in .trash/>, "original": <name it had>, "stamp": <UTC stamp>}`.
+    Entries that do not follow the `<stamp>_<name>` pattern are listed with an empty stamp so nothing in the folder is hidden."""
+    trash_dir = model_dir / STL_TRASH_DIRNAME
+    if not trash_dir.is_dir():
+        return []
+    entries = []
+    for item in trash_dir.iterdir():
+        if not item.is_file():
+            continue
+        stamp, sep, rest = item.name.partition("_")
+        if sep and stamp.endswith("Z") and stamp[:8].isdigit():
+            entries.append({"entry": item.name, "original": rest.replace("__", "/"), "stamp": stamp})
+        else:
+            entries.append({"entry": item.name, "original": item.name, "stamp": ""})
+    entries.sort(key=lambda e: (e["stamp"], e["entry"]), reverse=True)
+    return entries
+
+
+def restore_from_trash(model_dir: Path, entry: str) -> str:
+    """Moves a `.trash/` entry back into the model under its original name (a free `_copyN` name when that one is taken - an existing
+    part is never overwritten). Returns the name it was restored as."""
+    if not entry or "/" in entry or "\\" in entry or entry in (".", ".."):
+        raise StlOpsError(f"not a valid trash entry: {entry!r}")
+    source = model_dir / STL_TRASH_DIRNAME / entry
+    if not source.is_file():
+        raise StlOpsError(f"no such trash entry: {entry}")
+    listing = {e["entry"]: e for e in list_trash(model_dir)}
+    original = listing[entry]["original"]
+    _part_path(model_dir, original)  # refuses a name that would lead outside the model folder
+    restored = unique_part_filename(model_dir, original)
+    target = model_dir / restored
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(source), str(target))
+    except OSError as error:
+        raise StlOpsError(f"could not restore {entry}: {error}") from error
+    return restored
+
+
+def empty_trash(model_dir: Path, confirmed: bool) -> int:
+    """Clears `.trash/` after an explicit confirmation, without deleting anything for good: the files move to `.trash-emptied/<stamp>/`
+    (out of the restore list, still on disk). Returns how many files were moved."""
+    if not confirmed:
+        raise StlOpsError("emptying the trash needs an explicit confirmation")
+    entries = list_trash(model_dir)
+    if not entries:
+        return 0
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    archive = model_dir / STL_TRASH_EMPTIED_DIRNAME / stamp
+    try:
+        archive.mkdir(parents=True)
+        for item in entries:
+            shutil.move(str(model_dir / STL_TRASH_DIRNAME / item["entry"]), str(archive / item["entry"]))
+    except OSError as error:
+        raise StlOpsError(f"could not empty the trash: {error}") from error
+    return len(entries)

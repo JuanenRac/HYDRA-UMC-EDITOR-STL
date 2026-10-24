@@ -32,7 +32,18 @@ from .catalog_push import CatalogPushError, ServerClient
 from .model_catalog import is_independent_parts_category, list_categories, list_models, load_model
 from .part_colors import DEFAULT_COLOR, load_part_colors, save_part_color
 from .stl_geometry import StlGeometry
-from .stl_ops import StlOpsError, add_part, model_bounds, remove_part, replace_part, transform_part, unique_part_filename
+from .stl_ops import (
+    StlOpsError,
+    add_part,
+    empty_trash,
+    list_trash,
+    model_bounds,
+    remove_part,
+    replace_part,
+    restore_from_trash,
+    transform_part,
+    unique_part_filename,
+)
 
 
 class _PushThread(QThread):
@@ -392,6 +403,41 @@ class EditorBridge(QObject):
             return
         self._set_status(i18n.t(self._lang, "msg_remove_done", name=self._selected_part))
         self._refresh_parts()
+
+    @Slot(result="QVariantList")
+    @guarded(default=[])
+    def trashEntries(self) -> list:
+        """What is in the selected model's `.trash/`, newest first (entry, original, stamp)."""
+        model = self._load_selected_model()
+        return list_trash(model.path) if model is not None else []
+
+    @Slot(str)
+    @guarded()
+    def restoreTrashEntry(self, entry: str) -> None:
+        model = self._load_selected_model()
+        if model is None:
+            self._set_status(i18n.t(self._lang, "msg_select_part_first"))
+            return
+        try:
+            restored = restore_from_trash(model.path, entry)
+        except (StlOpsError, OSError) as error:
+            self._set_status(i18n.t(self._lang, "msg_restore_failed", error=str(error)))
+            return
+        self._set_status(i18n.t(self._lang, "msg_restore_done", name=restored))
+        self._refresh_parts()
+
+    @Slot(bool)
+    @guarded()
+    def emptyTrash(self, confirmed: bool) -> None:
+        model = self._load_selected_model()
+        if model is None:
+            return
+        try:
+            count = empty_trash(model.path, confirmed)
+        except (StlOpsError, OSError) as error:
+            self._set_status(i18n.t(self._lang, "msg_restore_failed", error=str(error)))
+            return
+        self._set_status(i18n.t(self._lang, "msg_trash_empty_done", count=count) if count else i18n.t(self._lang, "msg_trash_is_empty"))
 
     @Slot(str)
     @guarded()

@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Restore from `.trash/` and empty it.** A new window dialog lists what is in the selected model's `.trash/` (newest first), restores an entry under its original name (a free `_copyN` name when that one is taken, so nothing is overwritten) and empties the trash after an explicit confirmation. Emptying never deletes for good: the files move to `.trash-emptied/<stamp>/`. Texts in the eight languages.
 - **Bounding boxes are measured once.** `model_bounds()` and `assembled_bounds()` parsed every STL of a model again at each selection (seconds with the larger models). The box of a part is kept by path, modification time and size (at most 512 parts), so a part that is edited, replaced or transformed is read again and an unreadable one is tried again when its file changes.
 - **An error inside a window slot no longer vanishes or crashes the window.** Every slot of the bridge is guarded: the traceback goes to a rotating log in the home folder (`.hydra_umc_editor_stl.log`, 256 KiB, two backups) and the status bar says what happened and where the log is, in the eight languages.
 - The maturity is `scaffolding` in the manifest and the eight READMEs, as `docs/MATURITY_CRITERIA.md` already says: of its four exit criteria only the mesh validation is verified by tests today (units and dimensional limits, recorded provenance and a version check in the build test are not), so the project does not claim `functional` yet.

@@ -252,3 +252,26 @@ def test_the_cache_does_not_grow_without_end(tmp_path: Path, monkeypatch: pytest
     assert len(stl_ops._box_cache) == 3, "the oldest answers were dropped"
     # a dropped answer is simply measured again
     assert stl_ops.part_box(tmp_path / "p0.stl").max_xyz == (1.0, 1.0, 1.0)  # type: ignore[union-attr]
+
+
+def test_trash_list_restore_and_empty(tmp_path: Path) -> None:
+    from hydra_umc_editor_stl.stl_ops import empty_trash, list_trash, restore_from_trash
+
+    make_cube_stl(tmp_path / "a.stl", size=5.0)
+    remove_part(tmp_path, "a.stl")
+    assert not (tmp_path / "a.stl").exists()
+    entries = list_trash(tmp_path)
+    assert [e["original"] for e in entries] == ["a.stl"]
+    # the name is taken again meanwhile: restoring never overwrites it
+    make_cube_stl(tmp_path / "a.stl", size=7.0)
+    restored = restore_from_trash(tmp_path, entries[0]["entry"])
+    assert restored == "a_copy.stl" and (tmp_path / restored).is_file()
+    assert list_trash(tmp_path) == []
+    with pytest.raises(StlOpsError):
+        restore_from_trash(tmp_path, "../x")
+    remove_part(tmp_path, "a.stl")
+    with pytest.raises(StlOpsError):
+        empty_trash(tmp_path, confirmed=False)
+    assert empty_trash(tmp_path, confirmed=True) == 1
+    assert list_trash(tmp_path) == []
+    assert len(list((tmp_path / ".trash-emptied").rglob("*a.stl"))) == 1
