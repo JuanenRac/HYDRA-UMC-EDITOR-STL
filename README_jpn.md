@@ -1,30 +1,30 @@
+<!-- =============================================================================
+HYDRA-UMC-EDITOR-STL - Desktop editor for the STL model libraries of HYDRA-UMC-STUDIO and HYDRA-UMC-SUITE
+Copyright (C) JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
+GPL-3.0-or-later - see LICENSE
+============================================================================= -->
+
 <p align="center">
-  <img src="images/HYDRA_UMC_BANNER.svg" alt="HYDRA-UMC-EDITOR-STL バナー" width="100%">
+  <img src="images/HYDRA_UMC_BANNER.svg" alt="HYDRA-UMC-EDITOR-STL banner" width="100%">
 </p>
 
-# 🧩 HYDRA-UMC-EDITOR-STL
+# 📦 HYDRA-UMC-EDITOR-STL
 
 <p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 简体中文</a> | 🇯🇵 <b>日本語</b> | <a href="README_por.md">🇵🇹 Português</a></p>
 
 ### 📦 HYDRA-UMC エコシステム自身の実在する STL モデルライブラリを閲覧・編集する
 
 <p align="center">
-  <img src="https://img.shields.io/badge/ライセンス-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
-  <img src="https://img.shields.io/badge/言語-Python%203.10%2B-blue.svg" alt="Python">
-  <img src="https://img.shields.io/badge/コア-numpy--stl-brightgreen.svg" alt="numpy-stl コア">
-  <img src="https://img.shields.io/badge/デスクトップ-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="PySide6 Qt Quick デスクトップGUI">
+  <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
+  <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
+  <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
+  <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
+  <img src="https://img.shields.io/badge/Tests-215%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.1.7-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
-> **v0.1.3。** 以下で説明する実際のCLI/GUIコアは本当に実装され、テスト
-> されています。クリックで選択できる本物の Qt Quick 3D ビューア、
-> パーツごとの色、変換、置換、削除、追加、そして編集/追加したモデルを
-> HYDRA-UMC-SERVER 自身の実在する `POST /api/models/submit` カタログへ
-> 実際に送信する機能（HYDRA-UMC-EDITOR-URDF が URDF モデルに対して
-> 使っているのと同じ実在の統合ポイント）を含みます。パーツ自身が
-> 保存した色は、今では HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE 自身の実際の
-> ライブ 3D ビューアにも届きます（それぞれのリポジトリ自身の実在する
-> 変更 - 各自の CHANGELOG を参照）。したがって `part_colors.json` は
-> もはや EDITOR-STL 限定のプレビューではありません。
+---
 
 **誠実さの確認 - 今日実際に動くもの：** `model_catalog.py`
 （両方のモデルライブラリに対する実在の読み取り専用ディスカバリ）、
@@ -35,7 +35,7 @@
 （実在の組み立て用 URDF 生成に加え、`POST /api/models/submit` 向けの
 実在の HTTP クライアント）はすべて、実際に生成した
 実在の STL ファイルと、必要に応じて実在のセッションスコープの
-`QGuiApplication` に対してテストされており（`pytest tests/`、194 件の
+`QGuiApplication` に対してテストされており（`pytest tests/`、215 件の
 ケースが合格）、本エコシステム自身の実在する
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` のチェックアウトに対してエンド
 ツーエンドでスモークテスト済みです（`--cli categories`/`models`/
@@ -54,15 +54,20 @@ slot、色変更後も選択状態が保持されること）。`qml/Main.qml` �
 
 > **安全性とセキュリティの現状:** このエコシステムは認証された安全システムではありません。ハードウェアの E-STOP 経路、ファームウェアが強制する制限やインターロック、検証済みの動作コマンドはまだありません。ファームウェアイメージは CRC32 と共有鍵の HMAC-SHA256 で検査しており、非対称署名ではありません。TLS と相互 TLS は任意で、既定では無効です。独自基板はまだ実装も試験もされていません。ここに書かれた内容を人の安全のために頼る前に、[セキュリティベースライン](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md)と[脅威モデル](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md)をお読みください。
 
+---
+
 ## 📋 ひと目で
 
 | | |
 |---|---|
 | バージョン | `0.1.7` |
 | 成熟度 | 足場段階 |
+| テスト | 215 (`python -m pytest tests -q`) |
 | 技術 | Python / PySide6 / Qt Quick / numpy-stl |
 | 対象 | 利用者の PC |
 | 実機での確認 | 対象外：ここにあるものはハードウェア上では動きません |
+
+**移動：** [概要](#-概要) · [アーキテクチャ](#-アーキテクチャ) · [セキュリティと安全](#-セキュリティと安全) · [インターフェース](#-インターフェース) · [設定](#-設定) · [クイックスタート](#-クイックスタート) · [テスト](#-テスト) · [トラブルシューティング](#-トラブルシューティング) · [リポジトリの構成](#-リポジトリの構成) · [関連プロジェクト](#-関連プロジェクト)
 
 ## 🚦 プロジェクトの状況
 
@@ -73,11 +78,11 @@ slot、色変更後も選択状態が保持されること）。`qml/Main.qml` �
 | 領域 | 状態 | ここでの意味 |
 |---|---|---|
 | ソフトウェア | 🟠 | 構造と最初の部品のみで、作業の大部分はこれからです |
-| テスト | 🟠 | このリポジトリのテスト件数はまだ記録されていません |
+| テスト | 🟢 | 自動テスト 215 件。変更のたびに実行されます |
 | 実機 | 🟢 | 対象外：ここにあるものはハードウェア上では動きません |
 | ドキュメント | 🟢 | 8 言語の README。変更のたびにマニフェストと照合されます |
 
-## 1. 🛠️ 技術概要
+## 🎯 概要
 
 HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
 すべてのロボット/マシンモデルを構成する実在の STL パーツを編集するための、
@@ -136,7 +141,17 @@ HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
 という規律を、単なる内部的な習慣としてではなく、実在の製品機能として
 ここに適用したものです。
 
-## 2. 🧱 アーキテクチャと設計上の決定
+## 🧩 HYDRA-UMC での役割
+
+**HYDRA-UMC-EDITOR-STL** は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が同梱するすべてのロボットおよびマシンモデルの実際の STL パーツを編集するデスクトップツールです。両者のモデルフォルダーをそのまま読み、Qt Quick 3D ビューアーでモデルを表示し、ディスク上のパーツを変換・色変更・置換・削除・追加します。元のファイルは削除せず脇に退避します。完成したモデルは HYDRA-UMC-SERVER のモデルカタログに送信できます。
+
+## 🏛️ アーキテクチャ
+
+<p align="center">
+  <img src="images/architecture.svg" alt="HYDRA-UMC-EDITOR-STL architecture" width="100%">
+</p>
+
+### アーキテクチャと設計上の決定
 
 - **2つの実在するライブラリ、1つのディスカバリモジュール。**
   `model_catalog.py` 自身の `LIBRARIES` 定数は、本ツールが編集する
@@ -176,43 +191,57 @@ HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
   `--root`、GUI の「参照」）、GUI の起動をまたいで記憶されます
   （`settings.py`）。
 
-## 📂 ディレクトリ構造
+## 🔒 セキュリティと安全
 
-```
-HYDRA-UMC-EDITOR-STL/
-├── src/hydra_umc_editor_stl/
-│   ├── __init__.py         # パッケージバージョン
-│   ├── model_catalog.py    # 両方のモデルライブラリに対する実在の読み取り専用ディスカバリ
-│   ├── stl_ops.py           # 実在の STL 変更：変換/置換/削除/追加、.trash/ バックアップ
-│   ├── catalog_push.py       # 組み立て用 URDF + POST /api/models/submit 向け HTTP クライアント
-│   ├── settings.py          # 永続化されたエコシステムのルートと言語設定
-│   ├── i18n.py               # 実在の完全な GUI 翻訳（8言語）
-│   ├── diagnostics.py        # ホームフォルダのローテーションログと、ウィンドウのスロットの保護
-│   ├── qt_gui.py             # 実在の model_catalog.py/stl_ops.py コア上の Qt Quick ブリッジ
-│   ├── qml/Main.qml          # HYDRA-UMC-UPDATER と共有するテーマ付きデスクトップシェル
-│   ├── main.py               # ディスパッチ：デフォルトは GUI、--cli は categories/models/parts/transform/replace/remove/add/push 用
-│   ├── assembly.py           # STL パーツから組み立てたマシンの組立ビュー (ホーム姿勢)
-│   ├── mesh_check.py         # カタログへ送る前のメッシュ検査
-│   ├── part_colors.py        # パーツごとの色の注釈 (バイナリ STL 自体には色情報がない)
-│   └── stl_geometry.py       # STL ファイルの実際の三角形を Qt Quick 3D のジオメトリとして提供
-├── tests/                    # 実際に生成した実在の STL ファイルに対する実在のテスト
-├── docs/
-│   └── CLI_REFERENCE.md      # コマンドリファレンス
-├── images/                   # メディアとアプリアイコン
-├── tools/
-│   ├── build_test.py         # バージョンに触れないビルド/コンパイルチェック
-│   ├── ci_validate.py        # CI が使用するマニフェスト/CHANGELOG/ドキュメント検証
-│   ├── _doc_policy.py        # ファミリー共通のドキュメント規則 (HYDRA-UMC-SDK のコピーで、同期を維持)
-│   ├── _readme_parity.py     # 8つの README が同じ構造であることの検査 (HYDRA-UMC-SDK のコピーで、同期を維持)
-│   └── hydra_project_tool.py # すべてのリポジトリで共通のコマンド: validate、test、ci、version、status、bump
-├── build.sh / build.bat      # venv + 編集可能インストール（dev+gui エクストラ）+ コンパイルチェック + テスト
-├── run.sh / run.bat          # デフォルトの GUI / CLI エントリポイント
-├── run-gui.vbs               # コンソールウィンドウのない Windows 用グラフィカルランチャー
-├── bump_version.py           # オドメーター式バージョンインクリメント（明示的な `bump` コマンドのみが実行）
-└── bump_manifest_version.py  # hydra-umc.project.json のバージョンをネイティブのものと同期（--sync）
+| 脅威 | 防御 | 場所 |
+|---|---|---|
+| パーツを置換・削除したときに失う | 元のファイルは先にモデルの `.trash/` フォルダーへ移動され、削除されません。復元でき、ごみ箱を空にするには明示的な確認が必要です | `stl_ops.py` |
+| STL ではないファイル、またはモデルフォルダーの外へ出るパーツ名 | 置換や追加のファイルは先に解析され、三角形がない場合や途中で切れている場合は拒否されます。パーツ名はモデルフォルダー内の単純な `.stl` ファイル名でなければならず、有限でない頂点になる変換は何も変更しません | `stl_ops.py`, `mesh_check.py` |
+| シェルの履歴やプロセス一覧に残るサーバーのパスワード | `--password` は推奨されません。省略すると、パスワードは `HYDRA_UMC_PASSWORD` から読むか、エコーなしで尋ねます。`https://` のホストなら平文で送らずに済みます | `main.py`, `catalog_push.py` |
+| 大きすぎる、または止まるアップロード | アップロード全体は 49 MiB に収まる必要があり（サーバーの上限は 50 MB）、各リクエストの制限時間は 20 秒です。送られるのは `.stl` のパーツだけで、それ以外は報告されます | `catalog_push.py` |
+| 肥大化したり、データを含んだりするログ | ホームフォルダーに 256 KiB・2 世代のローテーションログが 1 つあり | `diagnostics.py` |
+
+**絶対にしないこと：** 指定したモデルフォルダーの外を編集すること、パーツを完全に削除すること。サーバーへの送信は文書化された契約に基づいて書かれており、実際のサーバーでは試していません。
+
+## 🔌 インターフェース
+
+| トピックまたはルート | 内容 |
+|---|---|
+| `--cli categories \| models \| parts <library> [...]` | 存在するものを一覧表示：カテゴリ、カテゴリ内のモデル、モデルのパーツファイル（機械向けには `--json`）。ライブラリは `studio` か `suite` |
+| `--cli transform <library> <category> <model> <part> [--tx --ty --tz --rx --ry --rz --scale]` | パーツをその場で移動・回転・拡大縮小：先に拡大縮小、次に X・Y・Z 回転、最後に移動。回転はファイルの原点を中心にします |
+| `--cli replace \| remove \| add` | パーツを別の STL で置換、1 つを `.trash/` へ移動、または新しい STL を取り込み（`--dest-filename` で名前を変更） |
+| `--cli push <library> <category> <model> --host --username` | モデルの編集可能なパーツをサーバーの `POST /api/models/submit` に送信（管理者ログイン。`--port` の既定は 3000、`--server-category`、`--overwrite`） |
+| `--root <folder>` | `HYDRA-UMC-STUDIO` と `HYDRA-UMC-SUITE` が並んでいるエコシステムのルート。既定ではこのツールの親フォルダー |
+
+## ⚙️ 設定
+
+サーバーも手で編集する設定ファイルもありません。ウィンドウは選択内容を 1 つのファイルに記憶し、各モデルは色を付随ファイルに保持します。
+
+| 変数 | 既定値 | 設定する内容 |
+|---|---|---|
+| `~/.hydra_umc_editor_stl_settings.json` | なし | ウィンドウで選んだエコシステムのルートと言語。起動をまたいで記憶されます |
+| `part_colors.json` (in each model folder) | `#9fb4c9` | 各パーツの色。バイナリ STL には色がなく、STUDIO と SUITE も同じファイルを読みます |
+| `HYDRA_UMC_PASSWORD` | 未設定 | `--cli push` 用のサーバーパスワード。コマンドラインに残さないために使います |
+| `~/.hydra_umc_editor_stl.log` | 256 KiB x 3 | ウィンドウとコマンドラインのローテーションログ |
+
+## 🚀 クイックスタート
+
+Python 3.10 以降が必要です。最初の行は GUI 用エクストラ付きの仮想環境を作り、検査とテストを実行します。Windows には `build.bat` と `run.bat` があります。
+
+```bash
+./build.sh                                    # creates .venv, installs the package with the GUI extra, checks and tests
+./run.sh                                      # the windowed editor
+./run.sh --cli categories studio              # lists the categories of the STUDIO library (use suite for the SUITE one)
+./run.sh --cli parts studio robots-6-dof ar3  # lists the part files of one model
 ```
 
-## ⚙️ ビルドと実行ガイド
+## 🧪 テスト
+
+`python -m pytest tests -q` で自動テスト 215 件を実行します。 ハードウェアも、このマシンの外にあるものも必要ありません。
+
+CI は `HYDRA_UMC_CI=1 python tools/ci_validate.py` を実行し、マニフェスト、文書、8 つの README、図を検査します。
+
+## 🏗️ ビルドとリリース
 
 ```bash
 chmod +x build.sh   # 一度だけ
@@ -237,7 +266,7 @@ Windows では：`build.bat`、続いて `run.bat`（GUI）または
 `--root` は任意の `--cli` コマンドについてエコシステムのルートを
 上書きします（デフォルト：本ツール自身の親ディレクトリ）。
 
-**トラブルシューティング**
+## 🩺 トラブルシューティング
 
 - `categories`/`models`/`parts` が何も出力しない：エコシステムの
   ルートが実際には `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` を兄弟
@@ -252,13 +281,70 @@ Windows では：`build.bat`、続いて `run.bat`（GUI）または
   現在の実在するトップレベルのファイルのみを表示し、`.trash/`
   サブフォルダは意図的にそこから除外されています。
 
-## 🚀 ロードマップ
+| 表示 | 原因 | 対処 |
+|---|---|---|
+| 「送信は成功したがサーバーがスラッグを返さなかった」、またはログインエラー | サーバーがアカウントを拒否した（送信には管理者が必要）、HYDRA-UMC-SERVER ではない、または JSON オブジェクトではない応答を返した | 実際の HYDRA-UMC-SERVER の管理者アカウントを、そのアドレスとポートとともに使う |
+| 「変換により有限でない頂点が生じる（大きすぎる？）ため、何も変更されませんでした」 | 拡大率または移動量が大きすぎて、数値が 32 ビット浮動小数点に収まらない | より小さい値を使う |
+| 「ごみ箱を空にするには明示的な確認が必要です」 | 確認しない限り、何も完全には削除されません | `.trash/` から項目を復元するか、ウィンドウで空にするのを確認する |
+
+## 📂 リポジトリの構成
+
+<p align="center">
+  <img src="images/repository-structure.svg" alt="Repository structure of HYDRA-UMC-EDITOR-STL" width="100%">
+</p>
+
+<details>
+<summary>ツリーのテキスト版</summary>
+
+```text
+HYDRA-UMC-EDITOR-STL/
+├── src/hydra_umc_editor_stl/   ソースコード
+│   ├── __init__.py             パッケージバージョン
+│   ├── model_catalog.py        両方のモデルライブラリに対する実在の読み取り専用ディスカバリ
+│   ├── stl_ops.py              実在の STL 変更：変換/置換/削除/追加、.trash/ バックアップ
+│   ├── catalog_push.py         組み立て用 URDF + POST /api/models/submit 向け HTTP クライアント
+│   ├── settings.py             永続化されたエコシステムのルートと言語設定
+│   ├── i18n.py                 実在の完全な GUI 翻訳（8言語）
+│   ├── diagnostics.py          ホームフォルダのローテーションログと、ウィンドウのスロットの保護
+│   ├── qt_gui.py               実在の model_catalog.py/stl_ops.py コア上の Qt Quick ブリッジ
+│   ├── qml/Main.qml            HYDRA-UMC-UPDATER と共有するテーマ付きデスクトップシェル
+│   ├── main.py                 ディスパッチ：デフォルトは GUI、--cli は categories/models/parts/transform/replace/remove/add/push 用
+│   ├── assembly.py             STL パーツから組み立てたマシンの組立ビュー (ホーム姿勢)
+│   ├── mesh_check.py           カタログへ送る前のメッシュ検査
+│   ├── part_colors.py          パーツごとの色の注釈 (バイナリ STL 自体には色情報がない)
+│   └── stl_geometry.py         STL ファイルの実際の三角形を Qt Quick 3D のジオメトリとして提供
+├── tests/                      実際に生成した実在の STL ファイルに対する実在のテスト
+├── docs/                       プロジェクトの文書
+├── images/                     メディアとアプリアイコン
+├── tools/                      プロジェクトのツールと CI の検査
+├── .github/                    CI ワークフローと Issue テンプレート
+├── build.sh / build.bat        venv + 編集可能インストール（dev+gui エクストラ）+ コンパイルチェック + テスト
+├── run.sh / run.bat            デフォルトの GUI / CLI エントリポイント
+├── run-gui.vbs                 コンソールウィンドウのない Windows 用グラフィカルランチャー
+├── bump_version.py             明示的なバージョン更新
+├── bump_manifest_version.py    hydra-umc.project.json のバージョンをネイティブのものと同期（--sync）
+├── CHANGELOG.md                各バージョンの変更点
+├── build-test.sh               変更を伴わないビルド確認
+├── hydra-umc.project.json      マニフェスト：バージョン、成熟度、ファミリー
+├── pyproject.toml              パッケージのメタデータ
+└── test.sh                     変更を伴わないビルド確認
+```
+
+</details>
+
+## 🗺️ ロードマップと既知の制限
+
+**現時点の既知の制限**
 
 - パッケージ化されたスタンドアロン GUI 実行ファイル
   （HYDRA-UMC-SUITE 自身の `build_exe.bat`/`.sh` の慣習に従った
   PyInstaller）。
 - 手動でのファイル復元ではなく、あるセッション自身の `.trash/`
   履歴に基づく取り消し/やり直し。
+
+## 🌍 言語
+
+この README とリポジトリの文書は、英語・スペイン語・ドイツ語・フランス語・イタリア語・日本語・中国語・ポルトガル語（ポルトガル）の 8 言語で提供されています。8 つのファイルは同時に書かれ、同じ節と同じリンクを持つことを CI が確認します。
 
 ## 🔗 関連プロジェクト
 
@@ -352,20 +438,27 @@ Windows では：`build.bat`、続いて `run.bat`（GUI）または
 - **[HYDRA-UMC-OPS-AGENT](https://github.com/JuanenRac/HYDRA-UMC-OPS-AGENT)** — メンテナンスインシデントのコーディネータ：低権限のエッジロールがサニタイズされたインベントリ/ヘルスのスナップショットを収集し、コントロールプレーンのロールがそれを読み取り専用で表示し、AI プロバイダに診断を提案するよう依頼します - パッチを適用したり何かをデプロイしたりすることは決してありません。
 - **[HYDRA-UMC-DEV-SERVER](https://github.com/JuanenRac/HYDRA-UMC-DEV-SERVER)** — エコシステムのソースを保存し、永続的なキューの下で範囲の限定されたビルド/テストタスクを実行する、再現可能な開発ホスト（Raspberry Pi 5 / CM5）。専用の開発ロールであり、明示的に稼働中の CM5 ではありません。
 
----
+## 📚 ドキュメント
 
-## 📚 ドキュメントとコミュニティ
+さらに読むには：
 
-- [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) - 実在するすべての `--cli` サブコマンドを、引数ごとに解説。
-- [`CHANGELOG.md`](CHANGELOG.md) - バージョンごとに実際に何が出荷されたか。
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) / [`SECURITY.md`](SECURITY.md) / [`SUPPORT.md`](SUPPORT.md)。
+* [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) - 実在するすべての `--cli` サブコマンドを、引数ごとに解説。
+* [エコシステムのセキュリティ基準](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md)
+* [エコシステムの脅威モデル](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md)
+* [このリポジトリの変更履歴](CHANGELOG.md)
+* [このリポジトリのライセンス](LICENSE.md)
+
+## 🤝 コントリビュートとコミュニティ
+
+* プルリクエストの前に `HYDRA_UMC_CI=1 py -3 tools/ci_validate.py`（または `HYDRA_UMC_CI=1 python3 tools/ci_validate.py`）を実行してください。`CI_VALIDATION=PASS` と表示される必要があります。この確認に `build.sh` や `build.bat` は使わないでください。ビルドは検査ではありません。
+* 8 つの README は HYDRA-UMC-DOCS の 1 つのソースから書かれます。手で編集しないでください。ソースを変更し、`tools/make_readmes.py` で書き直します。
+* 実行していないことを README に書かないでください。事実であれば「シミュレーションのみ」「実機では未確認」と書きます。
+* [CONTRIBUTING.md](CONTRIBUTING.md)、[行動規範](CODE_OF_CONDUCT.md)、[SECURITY.md](SECURITY.md)、[SUPPORT.md](SUPPORT.md) を参照してください。
 
 ## 👤 作者
 
-**JuanenRac (Electro Hobby 3D)**
-メール：`electrohobby3d@gmail.com`
-YouTube：[youtube.com/@electrohobby3d](https://youtube.com/@electrohobby3d)
+**JuanenRac (Electro Hobby 3D)** · electrohobby3d@gmail.com
 
 ## 📜 ライセンス
 
-GPL-3.0-or-later - [`LICENSE`](LICENSE) / [`LICENSE.md`](LICENSE.md) を参照してください。
+GPL-3.0-or-later - [LICENSE](LICENSE).

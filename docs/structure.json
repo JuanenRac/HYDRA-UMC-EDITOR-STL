@@ -1,0 +1,688 @@
+{
+  "repo": "HYDRA-UMC-EDITOR-STL",
+  "ecosystem": "hydra",
+  "svg": "en",
+  "exempt": [
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "SUPPORT.md",
+    "LICENSE",
+    "LICENSE.md",
+    "build-test.bat",
+    "test.bat"
+  ],
+  "cards": [
+    {
+      "name": "src/hydra_umc_editor_stl/",
+      "span": 3,
+      "accent": "a",
+      "rows": [
+        {
+          "name": "__init__.py",
+          "desc": {
+            "en": "Package version",
+            "es": "Versión del paquete",
+            "de": "Paketversion",
+            "fr": "Version du paquet",
+            "it": "Versione del pacchetto",
+            "ja": "パッケージバージョン",
+            "zh": "包版本",
+            "pt": "Versão do pacote"
+          },
+          "tree_desc": {
+            "en": "Package version",
+            "es": "Versión del paquete",
+            "de": "Paketversion",
+            "fr": "Version du paquet",
+            "it": "Versione del pacchetto",
+            "ja": "パッケージバージョン",
+            "zh": "包版本",
+            "pt": "Versão do pacote"
+          }
+        },
+        {
+          "name": "model_catalog.py",
+          "desc": {
+            "en": "Real, read-only discovery of both model",
+            "es": "Descubrimiento real",
+            "de": "Echte, schreibgeschützte Erkennung beider",
+            "fr": "Découverte réelle",
+            "it": "Scoperta reale",
+            "ja": "両方のモデルライブラリに対する実在の読み取り",
+            "zh": "对两个模型库的真实、只读发现",
+            "pt": "Descoberta real e só de leitura de ambas as"
+          },
+          "tree_desc": {
+            "en": "Real, read-only discovery of both model libraries",
+            "es": "Descubrimiento real, de solo lectura, de ambas librerías de modelos",
+            "de": "Echte, schreibgeschützte Erkennung beider Modellbibliotheken",
+            "fr": "Découverte réelle, en lecture seule, des deux bibliothèques de modèles",
+            "it": "Scoperta reale, in sola lettura, di entrambe le librerie di modelli",
+            "ja": "両方のモデルライブラリに対する実在の読み取り専用ディスカバリ",
+            "zh": "对两个模型库的真实、只读发现",
+            "pt": "Descoberta real e só de leitura de ambas as bibliotecas de modelos"
+          }
+        },
+        {
+          "name": "stl_ops.py",
+          "desc": {
+            "en": "Real STL mutation",
+            "es": "Mutación real de STL",
+            "de": "Echte STL-Mutation",
+            "fr": "Mutation STL réelle",
+            "it": "Mutazione STL reale",
+            "ja": "実在の STL 変更：変換/置換/削除/追加",
+            "zh": "真实的 STL 变更：变换/替换/移除/添加",
+            "pt": "Mutação real de STL"
+          },
+          "tree_desc": {
+            "en": "Real STL mutation: transform/replace/remove/add, .trash/ backups",
+            "es": "Mutación real de STL: transformar/reemplazar/quitar/añadir, copias de seguridad en .trash/",
+            "de": "Echte STL-Mutation: transformieren/ersetzen/entfernen/hinzufügen, .trash/-Sicherungen",
+            "fr": "Mutation STL réelle : transformer/remplacer/retirer/ajouter, sauvegardes .trash/",
+            "it": "Mutazione STL reale: trasforma/sostituisci/rimuovi/aggiungi, backup in .trash/",
+            "ja": "実在の STL 変更：変換/置換/削除/追加、.trash/ バックアップ",
+            "zh": "真实的 STL 变更：变换/替换/移除/添加，.trash/ 备份",
+            "pt": "Mutação real de STL: transformar/substituir/remover/adicionar, cópias em .trash/"
+          }
+        },
+        {
+          "name": "catalog_push.py",
+          "desc": {
+            "en": "Assembly-URDF + HTTP client for POST",
+            "es": "URDF de ensamblaje + cliente HTTP para POST",
+            "de": "Assembly-URDF + HTTP-Client für POST",
+            "fr": "URDF d'assemblage + client HTTP pour POST",
+            "it": "URDF di assemblaggio + client HTTP per POST",
+            "ja": "組み立て用 URDF + POST /api",
+            "zh": "装配用 URDF + POST /api/m",
+            "pt": "URDF de montagem + cliente HTTP para POST"
+          },
+          "tree_desc": {
+            "en": "Assembly-URDF + HTTP client for POST /api/models/submit",
+            "es": "URDF de ensamblaje + cliente HTTP para POST /api/models/submit",
+            "de": "Assembly-URDF + HTTP-Client für POST /api/models/submit",
+            "fr": "URDF d'assemblage + client HTTP pour POST /api/models/submit",
+            "it": "URDF di assemblaggio + client HTTP per POST /api/models/submit",
+            "ja": "組み立て用 URDF + POST /api/models/submit 向け HTTP クライアント",
+            "zh": "装配用 URDF + POST /api/models/submit 的 HTTP 客户端",
+            "pt": "URDF de montagem + cliente HTTP para POST /api/models/submit"
+          }
+        },
+        {
+          "name": "settings.py",
+          "desc": {
+            "en": "Persisted ecosystem root + language",
+            "es": "Raíz del ecosistema e idioma persistidos",
+            "de": "Persistierte Ökosystem-Wurzel und",
+            "fr": "Racine de l'écosystème et préférence de",
+            "it": "Radice dell'ecosistema e lingua persistite",
+            "ja": "永続化されたエコシステムのルートと言語設定",
+            "zh": "持久化的生态系统根目录和语言偏好",
+            "pt": "Raiz do ecossistema persistida +"
+          },
+          "tree_desc": {
+            "en": "Persisted ecosystem root + language preference",
+            "es": "Raíz del ecosistema e idioma persistidos",
+            "de": "Persistierte Ökosystem-Wurzel und Spracheinstellung",
+            "fr": "Racine de l'écosystème et préférence de langue persistées",
+            "it": "Radice dell'ecosistema e lingua persistite",
+            "ja": "永続化されたエコシステムのルートと言語設定",
+            "zh": "持久化的生态系统根目录和语言偏好",
+            "pt": "Raiz do ecossistema persistida + preferência de idioma"
+          }
+        },
+        {
+          "name": "i18n.py",
+          "desc": {
+            "en": "Real, complete GUI translations",
+            "es": "Traducciones reales y completas de la GUI",
+            "de": "Echte, vollständige GUI-Übersetzungen",
+            "fr": "Traductions réelles et complètes de la GUI",
+            "it": "Traduzioni reali e complete della GUI",
+            "ja": "実在の完全な GUI 翻訳（8言語）",
+            "zh": "真实、完整的 GUI 翻译（8 种语言）",
+            "pt": "Traduções reais e completas da GUI"
+          },
+          "tree_desc": {
+            "en": "Real, complete GUI translations (8 languages)",
+            "es": "Traducciones reales y completas de la GUI (8 idiomas)",
+            "de": "Echte, vollständige GUI-Übersetzungen (8 Sprachen)",
+            "fr": "Traductions réelles et complètes de la GUI (8 langues)",
+            "it": "Traduzioni reali e complete della GUI (8 lingue)",
+            "ja": "実在の完全な GUI 翻訳（8言語）",
+            "zh": "真实、完整的 GUI 翻译（8 种语言）",
+            "pt": "Traduções reais e completas da GUI (8 idiomas)"
+          }
+        },
+        {
+          "name": "diagnostics.py",
+          "desc": {
+            "en": "Rotating log in the home folder",
+            "es": "Registro rotativo en la carpeta personal y",
+            "de": "Rotierendes Protokoll im Home-Ordner und",
+            "fr": "Journal tournant dans le dossier personnel",
+            "it": "Registro a rotazione nella cartella",
+            "ja": "ホームフォルダのローテーションログと",
+            "zh": "主目录中的轮转日志与窗口槽函数的保护",
+            "pt": "Registo rotativo na pasta pessoal e"
+          },
+          "tree_desc": {
+            "en": "Rotating log in the home folder and the guard of the window slots",
+            "es": "Registro rotativo en la carpeta personal y guarda de los slots de la ventana",
+            "de": "Rotierendes Protokoll im Home-Ordner und Schutz der Fenster-Slots",
+            "fr": "Journal tournant dans le dossier personnel et garde des slots de la fenêtre",
+            "it": "Registro a rotazione nella cartella personale e protezione degli slot della finestra",
+            "ja": "ホームフォルダのローテーションログと、ウィンドウのスロットの保護",
+            "zh": "主目录中的轮转日志与窗口槽函数的保护",
+            "pt": "Registo rotativo na pasta pessoal e proteção dos slots da janela"
+          }
+        },
+        {
+          "name": "qt_gui.py",
+          "desc": {
+            "en": "Qt Quick bridge",
+            "es": "Puente Qt Quick sobre el núcleo real",
+            "de": "Qt-Quick-Brücke über den echten",
+            "fr": "Pont Qt Quick sur le vrai noyau",
+            "it": "Ponte Qt Quick sul vero nucleo",
+            "ja": "実在の model_catalog.py/s",
+            "zh": "建立在真实 model_catalog.py",
+            "pt": "Ponte Qt Quick sobre o núcleo real"
+          },
+          "tree_desc": {
+            "en": "Qt Quick bridge over the real model_catalog.py/stl_ops.py core",
+            "es": "Puente Qt Quick sobre el núcleo real model_catalog.py/stl_ops.py",
+            "de": "Qt-Quick-Brücke über den echten model_catalog.py/stl_ops.py-Kern",
+            "fr": "Pont Qt Quick sur le vrai noyau model_catalog.py/stl_ops.py",
+            "it": "Ponte Qt Quick sul vero nucleo model_catalog.py/stl_ops.py",
+            "ja": "実在の model_catalog.py/stl_ops.py コア上の Qt Quick ブリッジ",
+            "zh": "建立在真实 model_catalog.py/stl_ops.py 核心之上的 Qt Quick 桥接层",
+            "pt": "Ponte Qt Quick sobre o núcleo real model_catalog.py/stl_ops.py"
+          }
+        },
+        {
+          "name": "qml/Main.qml",
+          "desc": {
+            "en": "Themed desktop shell",
+            "es": "Capa visual de escritorio",
+            "de": "Thematisierte Desktop-Hülle",
+            "fr": "Coquille de bureau à thème",
+            "it": "Guscio desktop a tema",
+            "ja": "HYDRA-UMC-UPDATER と共有す",
+            "zh": "主题化的桌面外壳，与 HYDRA-UMC-U",
+            "pt": "Shell de desktop com tema"
+          },
+          "tree_desc": {
+            "en": "Themed desktop shell, shared with HYDRA-UMC-UPDATER",
+            "es": "Capa visual de escritorio, compartida con HYDRA-UMC-UPDATER",
+            "de": "Thematisierte Desktop-Hülle, gemeinsam mit HYDRA-UMC-UPDATER",
+            "fr": "Coquille de bureau à thème, partagée avec HYDRA-UMC-UPDATER",
+            "it": "Guscio desktop a tema, condiviso con HYDRA-UMC-UPDATER",
+            "ja": "HYDRA-UMC-UPDATER と共有するテーマ付きデスクトップシェル",
+            "zh": "主题化的桌面外壳，与 HYDRA-UMC-UPDATER 共享",
+            "pt": "Shell de desktop com tema, partilhado com o HYDRA-UMC-UPDATER"
+          }
+        },
+        {
+          "name": "main.py",
+          "desc": {
+            "en": "Dispatch: GUI by default",
+            "es": "Despacho: GUI por defecto",
+            "de": "Dispatch: GUI standardmäßig",
+            "fr": "Répartition : GUI par défaut",
+            "it": "Smistamento: GUI per impostazione",
+            "ja": "ディスパッチ：デフォルトは GUI",
+            "zh": "分发：默认 GUI，--cli 用于 cat",
+            "pt": "Despacho: GUI por defeito"
+          },
+          "tree_desc": {
+            "en": "Dispatch: GUI by default, --cli for categories/models/parts/transform/replace/remove/add/push",
+            "es": "Despacho: GUI por defecto, --cli para categories/models/parts/transform/replace/remove/add/push",
+            "de": "Dispatch: GUI standardmäßig, --cli für categories/models/parts/transform/replace/remove/add/push",
+            "fr": "Répartition : GUI par défaut, --cli pour categories/models/parts/transform/replace/remove/add/push",
+            "it": "Smistamento: GUI per impostazione predefinita, --cli per categories/models/parts/transform/replace/remove/add/push",
+            "ja": "ディスパッチ：デフォルトは GUI、--cli は categories/models/parts/transform/replace/remove/add/push 用",
+            "zh": "分发：默认 GUI，--cli 用于 categories/models/parts/transform/replace/remove/add/push",
+            "pt": "Despacho: GUI por defeito, --cli para categories/models/parts/transform/replace/remove/add/push"
+          }
+        },
+        {
+          "name": "assembly.py",
+          "desc": {
+            "en": "The assembled (home-pose) view of a machine",
+            "es": "La vista ensamblada",
+            "de": "Die zusammengesetzte Ansicht",
+            "fr": "La vue assemblée",
+            "it": "La vista assemblata",
+            "ja": "STL パーツから組み立てたマシンの組立ビュ",
+            "zh": "由 STL 零件组装出的机器视图",
+            "pt": "A vista montada"
+          },
+          "tree_desc": {
+            "en": "The assembled (home-pose) view of a machine from its STL parts",
+            "es": "La vista ensamblada (pose de inicio) de una máquina a partir de sus piezas STL",
+            "de": "Die zusammengesetzte Ansicht (Grundstellung) einer Maschine aus ihren STL-Teilen",
+            "fr": "La vue assemblée (pose de départ) d'une machine à partir de ses pièces STL",
+            "it": "La vista assemblata (posa iniziale) di una macchina a partire dai suoi pezzi STL",
+            "ja": "STL パーツから組み立てたマシンの組立ビュー (ホーム姿勢)",
+            "zh": "由 STL 零件组装出的机器视图 (原位姿态)",
+            "pt": "A vista montada (pose inicial) de uma máquina a partir das suas peças STL"
+          }
+        },
+        {
+          "name": "mesh_check.py",
+          "desc": {
+            "en": "Mesh checks before a push to the catalog",
+            "es": "Comprobaciones de la malla antes de subirla",
+            "de": "Netzprüfungen vor dem Hochladen in den",
+            "fr": "Contrôles du maillage avant l'envoi au",
+            "it": "Controlli della mesh prima dell'invio al",
+            "ja": "カタログへ送る前のメッシュ検査",
+            "zh": "推送到目录前的网格检查",
+            "pt": "Verificações da malha antes de a enviar"
+          },
+          "tree_desc": {
+            "en": "Mesh checks before a push to the catalog",
+            "es": "Comprobaciones de la malla antes de subirla al catálogo",
+            "de": "Netzprüfungen vor dem Hochladen in den Katalog",
+            "fr": "Contrôles du maillage avant l'envoi au catalogue",
+            "it": "Controlli della mesh prima dell'invio al catalogo",
+            "ja": "カタログへ送る前のメッシュ検査",
+            "zh": "推送到目录前的网格检查",
+            "pt": "Verificações da malha antes de a enviar para o catálogo"
+          }
+        },
+        {
+          "name": "part_colors.py",
+          "desc": {
+            "en": "Per-part colour annotations",
+            "es": "Anotaciones de color por pieza",
+            "de": "Farbanmerkungen pro Teil",
+            "fr": "Annotations de couleur par pièce",
+            "it": "Annotazioni di colore per pezzo",
+            "ja": "パーツごとの色の注釈 (バイナリ STL 自",
+            "zh": "按零件的颜色标注 (二进制 STL 本身不带",
+            "pt": "Anotações de cor por peça"
+          },
+          "tree_desc": {
+            "en": "Per-part colour annotations (a binary STL carries none of its own)",
+            "es": "Anotaciones de color por pieza (un STL binario no trae las suyas)",
+            "de": "Farbanmerkungen pro Teil (ein binäres STL bringt keine eigenen mit)",
+            "fr": "Annotations de couleur par pièce (un STL binaire n'en porte pas)",
+            "it": "Annotazioni di colore per pezzo (un STL binario non ne porta di proprie)",
+            "ja": "パーツごとの色の注釈 (バイナリ STL 自体には色情報がない)",
+            "zh": "按零件的颜色标注 (二进制 STL 本身不带颜色)",
+            "pt": "Anotações de cor por peça (um STL binário não traz as suas)"
+          }
+        },
+        {
+          "name": "stl_geometry.py",
+          "desc": {
+            "en": "The real triangles of an STL file as Qt",
+            "es": "Los triángulos reales de un fichero STL",
+            "de": "Die echten Dreiecke einer STL-Datei als",
+            "fr": "Les vrais triangles d'un fichier STL comme",
+            "it": "I triangoli reali di un file STL come",
+            "ja": "STL ファイルの実際の三角形を Qt Qu",
+            "zh": "把 STL 文件的真实三角形作为 Qt Qu",
+            "pt": "Os triângulos reais de um ficheiro STL como"
+          },
+          "tree_desc": {
+            "en": "The real triangles of an STL file as Qt Quick 3D geometry",
+            "es": "Los triángulos reales de un fichero STL como geometría de Qt Quick 3D",
+            "de": "Die echten Dreiecke einer STL-Datei als Qt-Quick-3D-Geometrie",
+            "fr": "Les vrais triangles d'un fichier STL comme géométrie Qt Quick 3D",
+            "it": "I triangoli reali di un file STL come geometria Qt Quick 3D",
+            "ja": "STL ファイルの実際の三角形を Qt Quick 3D のジオメトリとして提供",
+            "zh": "把 STL 文件的真实三角形作为 Qt Quick 3D 几何体",
+            "pt": "Os triângulos reais de um ficheiro STL como geometria do Qt Quick 3D"
+          }
+        }
+      ],
+      "tree_head": {
+        "en": "source code",
+        "es": "código fuente",
+        "de": "Quellcode",
+        "fr": "code source",
+        "it": "codice sorgente",
+        "ja": "ソースコード",
+        "zh": "源代码",
+        "pt": "código-fonte"
+      },
+      "sub": {
+        "en": "source code",
+        "es": "código fuente",
+        "de": "Quellcode",
+        "fr": "code source",
+        "it": "codice sorgente",
+        "ja": "ソースコード",
+        "zh": "源代码",
+        "pt": "código-fonte"
+      },
+      "columns": 2
+    },
+    {
+      "name": {
+        "en": "folders",
+        "es": "carpetas",
+        "de": "Ordner",
+        "fr": "dossiers",
+        "it": "cartelle",
+        "ja": "フォルダ",
+        "zh": "文件夹",
+        "pt": "pastas"
+      },
+      "kind": "group",
+      "span": 3,
+      "accent": "b",
+      "columns": 2,
+      "rows": [
+        {
+          "name": "tests/",
+          "desc": {
+            "en": "Real tests against real",
+            "es": "Tests reales contra ficheros STL reales",
+            "de": "Echte Tests gegen echte",
+            "fr": "Vrais tests contre de vrais fichiers STL",
+            "it": "Veri test contro veri file STL generati",
+            "ja": "実際に生成した実在の STL ファイルに対す",
+            "zh": "针对真实生成的 STL 文件的真实测试",
+            "pt": "Testes reais contra fixtures STL reais e"
+          },
+          "tree_desc": {
+            "en": "Real tests against real, generated STL fixtures",
+            "es": "Tests reales contra ficheros STL reales generados",
+            "de": "Echte Tests gegen echte, generierte STL-Dateien",
+            "fr": "Vrais tests contre de vrais fichiers STL générés",
+            "it": "Veri test contro veri file STL generati",
+            "ja": "実際に生成した実在の STL ファイルに対する実在のテスト",
+            "zh": "针对真实生成的 STL 文件的真实测试",
+            "pt": "Testes reais contra fixtures STL reais e geradas"
+          }
+        },
+        {
+          "name": "docs/",
+          "desc": {
+            "en": "documents of the project",
+            "es": "documentos del proyecto",
+            "de": "Dokumente des Projekts",
+            "fr": "documents du projet",
+            "it": "documenti del progetto",
+            "ja": "プロジェクトの文書",
+            "zh": "项目文档",
+            "pt": "documentos do projeto"
+          },
+          "tree_desc": {
+            "en": "documents of the project",
+            "es": "documentos del proyecto",
+            "de": "Dokumente des Projekts",
+            "fr": "documents du projet",
+            "it": "documenti del progetto",
+            "ja": "プロジェクトの文書",
+            "zh": "项目文档",
+            "pt": "documentos do projeto"
+          }
+        },
+        {
+          "name": "images/",
+          "desc": {
+            "en": "Media and app icons",
+            "es": "Recursos multimedia e iconos de la app",
+            "de": "Medien und App-Icons",
+            "fr": "Médias et icônes de l'application",
+            "it": "Media e icone dell'app",
+            "ja": "メディアとアプリアイコン",
+            "zh": "媒体和应用图标",
+            "pt": "Multimédia e ícones da aplicação"
+          },
+          "tree_desc": {
+            "en": "Media and app icons",
+            "es": "Recursos multimedia e iconos de la app",
+            "de": "Medien und App-Icons",
+            "fr": "Médias et icônes de l'application",
+            "it": "Media e icone dell'app",
+            "ja": "メディアとアプリアイコン",
+            "zh": "媒体和应用图标",
+            "pt": "Multimédia e ícones da aplicação"
+          }
+        },
+        {
+          "name": "tools/",
+          "desc": {
+            "en": "project tools and CI checks",
+            "es": "herramientas del proyecto y comprobaciones",
+            "de": "Projektwerkzeuge und CI-Prüfungen",
+            "fr": "outils du projet et vérifications de la CI",
+            "it": "strumenti del progetto e controlli della CI",
+            "ja": "プロジェクトのツールと CI の検査",
+            "zh": "项目工具和 CI 检查",
+            "pt": "ferramentas do projeto e verificações da CI"
+          },
+          "tree_desc": {
+            "en": "project tools and CI checks",
+            "es": "herramientas del proyecto y comprobaciones del CI",
+            "de": "Projektwerkzeuge und CI-Prüfungen",
+            "fr": "outils du projet et vérifications de la CI",
+            "it": "strumenti del progetto e controlli della CI",
+            "ja": "プロジェクトのツールと CI の検査",
+            "zh": "项目工具和 CI 检查",
+            "pt": "ferramentas do projeto e verificações da CI"
+          }
+        },
+        {
+          "name": ".github/",
+          "desc": {
+            "en": "CI workflow and issue templates",
+            "es": "flujo de CI y plantillas de incidencias",
+            "de": "CI-Workflow und Issue-Vorlagen",
+            "fr": "workflow de CI et modèles de tickets",
+            "it": "workflow di CI e modelli di segnalazione",
+            "ja": "CI ワークフローと Issue テンプレート",
+            "zh": "CI 工作流和 Issue 模板",
+            "pt": "fluxo de CI e modelos de problemas"
+          }
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "project files",
+        "es": "ficheros del proyecto",
+        "de": "Projektdateien",
+        "fr": "fichiers du projet",
+        "it": "file del progetto",
+        "ja": "プロジェクトのファイル",
+        "zh": "项目文件",
+        "pt": "ficheiros do projeto"
+      },
+      "kind": "group",
+      "span": 3,
+      "accent": "c",
+      "columns": 2,
+      "rows": [
+        {
+          "name": "build.sh / build.bat",
+          "desc": {
+            "en": "venv + editable install",
+            "es": "venv + instalación editable",
+            "de": "venv + editierbare Installation",
+            "fr": "venv + installation éditable",
+            "it": "venv + installazione editabile",
+            "ja": "venv + 編集可能インストール",
+            "zh": "venv + 可编辑安装（dev+gui 附",
+            "pt": "venv + instalação editável"
+          },
+          "tree_desc": {
+            "en": "venv + editable install (dev+gui extras) + compile-check + tests",
+            "es": "venv + instalación editable (extras dev+gui) + comprobación de compilación + tests",
+            "de": "venv + editierbare Installation (dev+gui Extras) + Kompilierprüfung + Tests",
+            "fr": "venv + installation éditable (extras dev+gui) + vérification de compilation + tests",
+            "it": "venv + installazione editabile (extra dev+gui) + controllo compilazione + test",
+            "ja": "venv + 編集可能インストール（dev+gui エクストラ）+ コンパイルチェック + テスト",
+            "zh": "venv + 可编辑安装（dev+gui 附加项）+ 编译检查 + 测试",
+            "pt": "venv + instalação editável (extras dev+gui) + verificação de compilação + testes"
+          }
+        },
+        {
+          "name": "run.sh / run.bat",
+          "desc": {
+            "en": "GUI default / CLI entry point",
+            "es": "GUI por defecto / punto de entrada de la CLI",
+            "de": "GUI standardmäßig / CLI-Einstiegspunkt",
+            "fr": "GUI par défaut / point d'entrée CLI",
+            "it": "GUI predefinita / punto di ingresso CLI",
+            "ja": "デフォルトの GUI / CLI エントリポ",
+            "zh": "默认 GUI / CLI 入口点",
+            "pt": "GUI por defeito / ponto de entrada da CLI"
+          },
+          "tree_desc": {
+            "en": "GUI default / CLI entry point",
+            "es": "GUI por defecto / punto de entrada de la CLI",
+            "de": "GUI standardmäßig / CLI-Einstiegspunkt",
+            "fr": "GUI par défaut / point d'entrée CLI",
+            "it": "GUI predefinita / punto di ingresso CLI",
+            "ja": "デフォルトの GUI / CLI エントリポイント",
+            "zh": "默认 GUI / CLI 入口点",
+            "pt": "GUI por defeito / ponto de entrada da CLI"
+          }
+        },
+        {
+          "name": "run-gui.vbs",
+          "desc": {
+            "en": "Windows graphical launcher with no console",
+            "es": "Lanzador gráfico para Windows sin ventana",
+            "de": "Grafischer Windows-Launcher ohne",
+            "fr": "Lanceur graphique Windows sans fenêtre de",
+            "it": "Launcher grafico Windows senza finestra",
+            "ja": "コンソールウィンドウのない Windows",
+            "zh": "无控制台窗口的 Windows 图形启动器",
+            "pt": "Lançador gráfico para Windows sem janela de"
+          },
+          "tree_desc": {
+            "en": "Windows graphical launcher with no console window",
+            "es": "Lanzador gráfico para Windows sin ventana de consola",
+            "de": "Grafischer Windows-Launcher ohne Konsolenfenster",
+            "fr": "Lanceur graphique Windows sans fenêtre de console",
+            "it": "Launcher grafico Windows senza finestra console",
+            "ja": "コンソールウィンドウのない Windows 用グラフィカルランチャー",
+            "zh": "无控制台窗口的 Windows 图形启动器",
+            "pt": "Lançador gráfico para Windows sem janela de consola"
+          }
+        },
+        {
+          "name": "bump_version.py",
+          "desc": {
+            "en": "explicit version bump",
+            "es": "Incremento de versión tipo cuentakilómetros",
+            "de": "ausdrückliche Versionserhöhung",
+            "fr": "Incrément de version type compteur",
+            "it": "Incremento di versione stile contachilometri",
+            "ja": "明示的なバージョン更新",
+            "zh": "显式提升版本",
+            "pt": "Subida de versão ao estilo conta-quilómetros"
+          },
+          "tree_desc": {
+            "en": "explicit version bump",
+            "es": "Incremento de versión tipo cuentakilómetros (solo lo ejecuta el comando `bump` explícito)",
+            "de": "ausdrückliche Versionserhöhung",
+            "fr": "Incrément de version type compteur kilométrique (exécuté seulement par la commande `bump` explicite)",
+            "it": "Incremento di versione stile contachilometri (eseguito solo dal comando `bump` esplicito)",
+            "ja": "明示的なバージョン更新",
+            "zh": "显式提升版本",
+            "pt": "Subida de versão ao estilo conta-quilómetros (executada só pelo comando `bump` explícito)"
+          }
+        },
+        {
+          "name": "bump_manifest_version.py",
+          "desc": {
+            "en": "Syncs hydra-umc.project.json's version",
+            "es": "Sincroniza la versión de",
+            "de": "Synchronisiert die Version von",
+            "fr": "Synchronise la version de",
+            "it": "Sincronizza la versione di",
+            "ja": "hydra-umc.project.json",
+            "zh": "将 hydra-umc.project.js",
+            "pt": "Sincroniza a versão do"
+          },
+          "tree_desc": {
+            "en": "Syncs hydra-umc.project.json's version to the native one (--sync)",
+            "es": "Sincroniza la versión de hydra-umc.project.json con la nativa (--sync)",
+            "de": "Synchronisiert die Version von hydra-umc.project.json mit der nativen (--sync)",
+            "fr": "Synchronise la version de hydra-umc.project.json avec la native (--sync)",
+            "it": "Sincronizza la versione di hydra-umc.project.json con quella nativa (--sync)",
+            "ja": "hydra-umc.project.json のバージョンをネイティブのものと同期（--sync）",
+            "zh": "将 hydra-umc.project.json 的版本与原生版本同步（--sync）",
+            "pt": "Sincroniza a versão do hydra-umc.project.json com a nativa (--sync)"
+          }
+        },
+        {
+          "name": "CHANGELOG.md",
+          "desc": {
+            "en": "what changed in each version",
+            "es": "qué cambió en cada versión",
+            "de": "was sich in jeder Version geändert hat",
+            "fr": "ce qui a changé à chaque version",
+            "it": "cosa è cambiato in ogni versione",
+            "ja": "各バージョンの変更点",
+            "zh": "每个版本的变更",
+            "pt": "o que mudou em cada versão"
+          }
+        },
+        {
+          "name": "build-test.sh",
+          "desc": {
+            "en": "non-mutating build check",
+            "es": "comprobación de compilación sin cambios",
+            "de": "Build-Prüfung ohne Änderungen",
+            "fr": "vérification de build sans modification",
+            "it": "controllo di build senza modifiche",
+            "ja": "変更を伴わないビルド確認",
+            "zh": "不修改内容的构建检查",
+            "pt": "verificação de compilação sem alterações"
+          }
+        },
+        {
+          "name": "hydra-umc.project.json",
+          "desc": {
+            "en": "manifest: version, maturity, family",
+            "es": "manifiesto: versión, madurez, familia",
+            "de": "Manifest: Version, Reifegrad, Familie",
+            "fr": "manifeste : version, maturité, famille",
+            "it": "manifesto: versione, maturità, famiglia",
+            "ja": "マニフェスト：バージョン、成熟度、ファミリー",
+            "zh": "清单：版本、成熟度、系列",
+            "pt": "manifesto: versão, maturidade, família"
+          }
+        },
+        {
+          "name": "pyproject.toml",
+          "desc": {
+            "en": "package metadata",
+            "es": "metadatos del paquete",
+            "de": "Paketmetadaten",
+            "fr": "métadonnées du paquet",
+            "it": "metadati del pacchetto",
+            "ja": "パッケージのメタデータ",
+            "zh": "包的元数据",
+            "pt": "metadados do pacote"
+          }
+        },
+        {
+          "name": "test.sh",
+          "desc": {
+            "en": "non-mutating build check",
+            "es": "comprobación de compilación sin cambios",
+            "de": "Build-Prüfung ohne Änderungen",
+            "fr": "vérification de build sans modification",
+            "it": "controllo di build senza modifiche",
+            "ja": "変更を伴わないビルド確認",
+            "zh": "不修改内容的构建检查",
+            "pt": "verificação de compilação sem alterações"
+          }
+        }
+      ]
+    }
+  ]
+}

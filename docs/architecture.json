@@ -1,0 +1,189 @@
+{
+  "repo": "HYDRA-UMC-EDITOR-STL",
+  "ecosystem": "hydra",
+  "tagline": "One core that only mutates files through one module, shared by the window and by the command line.",
+  "description": "HYDRA-UMC-EDITOR-STL discovers the model folders of STUDIO and SUITE read-only, changes them only through stl_ops, shows them in a Qt Quick 3D viewer, and can push a model to the catalogue of a HYDRA-UMC-SERVER.",
+  "columns": [
+    "WHO USES IT",
+    "THIS REPOSITORY",
+    "WHAT IT TOUCHES"
+  ],
+  "nodes": [
+    {
+      "id": "gui",
+      "column": 0,
+      "level": "tested",
+      "title": "The window",
+      "lines": [
+        "Qt Quick editor with a 3D",
+        "viewer and a toolbar"
+      ],
+      "code": [
+        "src/hydra_umc_editor_stl/qt_gui.py",
+        "src/hydra_umc_editor_stl/qml/Main.qml"
+      ]
+    },
+    {
+      "id": "cli",
+      "column": 0,
+      "level": "tested",
+      "title": "The command line",
+      "lines": [
+        "--cli categories, models,",
+        "parts, transform, push..."
+      ],
+      "code": [
+        "src/hydra_umc_editor_stl/main.py"
+      ]
+    },
+    {
+      "id": "lib",
+      "column": 2,
+      "level": "contract",
+      "title": "STUDIO and SUITE",
+      "lines": [
+        "public/models and",
+        "assets/meshes: the two folders"
+      ]
+    },
+    {
+      "id": "srv",
+      "column": 2,
+      "level": "untested",
+      "title": "HYDRA-UMC-SERVER",
+      "lines": [
+        "POST /api/models/submit,",
+        "not tried on a real server"
+      ]
+    },
+    {
+      "id": "cat",
+      "column": 1,
+      "level": "tested",
+      "title": "model_catalog",
+      "lines": [
+        "read-only discovery of",
+        "both libraries"
+      ],
+      "code": [
+        "src/hydra_umc_editor_stl/model_catalog.py"
+      ]
+    },
+    {
+      "id": "col",
+      "column": 1,
+      "level": "tested",
+      "title": "part_colors",
+      "lines": [
+        "the colour of each part",
+        "in a sidecar file"
+      ],
+      "code": [
+        "src/hydra_umc_editor_stl/part_colors.py"
+      ]
+    },
+    {
+      "id": "ops",
+      "column": 1,
+      "level": "tested",
+      "title": "stl_ops",
+      "lines": [
+        "the only module that writes;",
+        "originals go to .trash/"
+      ],
+      "code": [
+        "src/hydra_umc_editor_stl/stl_ops.py"
+      ]
+    },
+    {
+      "id": "geo",
+      "column": 1,
+      "level": "tested",
+      "title": "stl_geometry",
+      "lines": [
+        "the triangles of a part as",
+        "Qt Quick 3D geometry"
+      ],
+      "code": [
+        "src/hydra_umc_editor_stl/stl_geometry.py",
+        "src/hydra_umc_editor_stl/assembly.py"
+      ]
+    },
+    {
+      "id": "chk",
+      "column": 1,
+      "level": "tested",
+      "title": "mesh_check",
+      "lines": [
+        "degenerate triangles, size",
+        "range, open edges"
+      ],
+      "code": [
+        "src/hydra_umc_editor_stl/mesh_check.py"
+      ]
+    },
+    {
+      "id": "pus",
+      "column": 1,
+      "level": "tested",
+      "title": "catalog_push",
+      "lines": [
+        "assembly URDF and the",
+        "model-submission client"
+      ],
+      "code": [
+        "src/hydra_umc_editor_stl/catalog_push.py"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "gui",
+      "to": "cat",
+      "level": "tested"
+    },
+    {
+      "from": "cli",
+      "to": "cat",
+      "level": "tested"
+    },
+    {
+      "from": "cat",
+      "to": "ops",
+      "level": "tested"
+    },
+    {
+      "from": "ops",
+      "to": "chk",
+      "level": "tested"
+    },
+    {
+      "from": "cat",
+      "to": "col",
+      "level": "tested"
+    },
+    {
+      "from": "col",
+      "to": "geo",
+      "level": "tested"
+    },
+    {
+      "from": "geo",
+      "to": "pus",
+      "level": "tested"
+    },
+    {
+      "from": "ops",
+      "to": "lib",
+      "level": "contract",
+      "label": "edits"
+    },
+    {
+      "from": "pus",
+      "to": "srv",
+      "level": "untested",
+      "label": "HTTP"
+    }
+  ],
+  "footer": "Tested with generated STL files; the push was never tried against a real HYDRA-UMC-SERVER."
+}

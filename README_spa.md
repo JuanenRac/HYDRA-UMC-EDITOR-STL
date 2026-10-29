@@ -1,30 +1,30 @@
+<!-- =============================================================================
+HYDRA-UMC-EDITOR-STL - Desktop editor for the STL model libraries of HYDRA-UMC-STUDIO and HYDRA-UMC-SUITE
+Copyright (C) JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
+GPL-3.0-or-later - see LICENSE
+============================================================================= -->
+
 <p align="center">
-  <img src="images/HYDRA_UMC_BANNER.svg" alt="Banner de HYDRA-UMC-EDITOR-STL" width="100%">
+  <img src="images/HYDRA_UMC_BANNER.svg" alt="HYDRA-UMC-EDITOR-STL banner" width="100%">
 </p>
 
-# 🧩 HYDRA-UMC-EDITOR-STL
+# 📦 HYDRA-UMC-EDITOR-STL
 
 <p align="center"><a href="README.md">🇺🇸 English</a> | 🇪🇸 <b>Español</b> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 简体中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
 
 ### 📦 Explora y Edita las Librerías de Modelos STL Reales del Ecosistema HYDRA-UMC
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Licencia-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
-  <img src="https://img.shields.io/badge/Lenguaje-Python%203.10%2B-blue.svg" alt="Python">
-  <img src="https://img.shields.io/badge/Núcleo-numpy--stl-brightgreen.svg" alt="núcleo numpy-stl">
-  <img src="https://img.shields.io/badge/Escritorio-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="GUI de escritorio PySide6 Qt Quick">
+  <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
+  <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
+  <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
+  <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
+  <img src="https://img.shields.io/badge/Tests-215%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.1.7-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
-> **v0.1.3.** El núcleo real de CLI/GUI descrito abajo está implementado
-> y probado de verdad, incluido un visor 3D real en Qt Quick 3D con
-> selección por clic, color por pieza, transformar, reemplazar, quitar,
-> añadir y un envío real de un modelo editado/añadido de vuelta al
-> catálogo real `POST /api/models/submit` de HYDRA-UMC-SERVER (el mismo
-> punto de integración real que usa HYDRA-UMC-EDITOR-URDF con los modelos
-> URDF). El color guardado de una pieza ahora también llega a los visores
-> 3D en vivo de HYDRA-UMC-STUDIO y HYDRA-UMC-SUITE (cambios reales
-> propios de esos repos - ver sus propios CHANGELOG), así que
-> `part_colors.json` ya no es una vista previa exclusiva de EDITOR-STL.
+---
 
 **Comprobación de honestidad - qué funciona de verdad hoy:**
 `model_catalog.py` (descubrimiento real, de solo lectura, de las dos
@@ -36,7 +36,7 @@ librerías de modelos), `stl_ops.py` (mutación real de STL vía
 `catalog_push.py` (generación real de un URDF de ensamblaje más un
 cliente HTTP real para `POST /api/models/submit`) están todos
 probados contra ficheros STL reales generados y una `QGuiApplication`
-real de ámbito de sesión donde hace falta (`pytest tests/`, 194 casos en
+real de ámbito de sesión donde hace falta (`pytest tests/`, 215 casos en
 verde) y se han verificado de extremo a extremo contra los checkouts
 reales de `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` de este ecosistema
 (`--cli categories`/`models`/`parts` contra los árboles reales;
@@ -55,15 +55,20 @@ propia capa Qt Quick.
 
 > **Estado de seguridad física y de ciberseguridad:** este ecosistema no es un sistema de seguridad certificado. Todavía no existe una ruta de E-STOP por hardware, ni límites ni enclavamientos aplicados por el firmware, ni un comando de movimiento verificado; las imágenes de firmware se comprueban con CRC32 y un HMAC-SHA256 de clave compartida, no con una firma asimétrica; TLS y TLS mutuo son opcionales y están desactivados por defecto; aún no se ha poblado ni probado ninguna placa propia. Lee la [línea base de seguridad](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md) y el [modelo de amenazas](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md) antes de fiarte de cualquier afirmación de aquí para la seguridad de una persona.
 
+---
+
 ## 📋 De un vistazo
 
 | | |
 |---|---|
 | Versión | `0.1.7` |
 | Madurez | Andamiaje |
+| Tests | 215 (`python -m pytest tests -q`) |
 | Tecnología | Python / PySide6 / Qt Quick / numpy-stl |
 | Destino | El PC de quien lo usa |
 | En hardware real | No aplica: nada de esto se ejecuta en hardware |
+
+**Ir a:** [Resumen](#-resumen) · [Arquitectura](#-arquitectura) · [Seguridad y protección](#-seguridad-y-protección) · [Interfaces](#-interfaces) · [Configuración](#-configuración) · [Inicio rápido](#-inicio-rápido) · [Pruebas](#-pruebas) · [Resolución de problemas](#-resolución-de-problemas) · [Estructura del repositorio](#-estructura-del-repositorio) · [Proyectos relacionados](#-proyectos-relacionados)
 
 ## 🚦 Estado del proyecto
 
@@ -74,11 +79,11 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 | Área | Estado | Qué significa aquí |
 |---|---|---|
 | Software | 🟠 | Solo estructura y primeras piezas; falta la mayor parte del trabajo |
-| Pruebas | 🟠 | Todavía no consta el número de pruebas de este repositorio |
+| Pruebas | 🟢 | 215 pruebas automáticas, ejecutadas en cada cambio |
 | Hardware real | 🟢 | No aplica: nada de esto se ejecuta en hardware |
 | Documentación | 🟢 | README en ocho idiomas, comprobado contra el manifiesto en cada cambio |
 
-## 1. 🛠️ VISIÓN TÉCNICA
+## 🎯 Resumen
 
 HYDRA-UMC-EDITOR-STL es una pequeña herramienta de escritorio - GUI de
 ventana por defecto, CLI completa con `--cli` - para editar las piezas
@@ -141,7 +146,17 @@ destruir, mover a un lado" que ya siguen las convenciones internas de
 trabajo de este ecosistema, aplicada aquí como una funcionalidad real
 del producto, no solo como un hábito interno.
 
-## 2. 🧱 ARQUITECTURA Y DECISIONES DE DISEÑO
+## 🧩 Papel en HYDRA-UMC
+
+**HYDRA-UMC-EDITOR-STL** es la herramienta de escritorio que edita las piezas STL reales de cada modelo de robot y máquina que incluyen HYDRA-UMC-STUDIO y HYDRA-UMC-SUITE. Lee sus dos carpetas de modelos tal cual, muestra un modelo en un visor Qt Quick 3D, y transforma, recolorea, reemplaza, quita o añade una pieza en disco, apartando el original en lugar de borrarlo. Un modelo terminado se puede enviar al catálogo de modelos de un HYDRA-UMC-SERVER.
+
+## 🏛️ Arquitectura
+
+<p align="center">
+  <img src="images/architecture.svg" alt="HYDRA-UMC-EDITOR-STL architecture" width="100%">
+</p>
+
+### ARQUITECTURA Y DECISIONES DE DISEÑO
 
 - **Dos librerías reales, un solo módulo de descubrimiento.** La propia
   constante `LIBRARIES` de `model_catalog.py` nombra los dos árboles
@@ -182,43 +197,57 @@ del producto, no solo como un hábito interno.
   "Examinar" en la GUI) y recordado entre lanzamientos de la GUI
   (`settings.py`).
 
-## 📂 ESTRUCTURA DE DIRECTORIOS
+## 🔒 Seguridad y protección
 
-```
-HYDRA-UMC-EDITOR-STL/
-├── src/hydra_umc_editor_stl/
-│   ├── __init__.py         # Versión del paquete
-│   ├── model_catalog.py    # Descubrimiento real, de solo lectura, de ambas librerías de modelos
-│   ├── stl_ops.py           # Mutación real de STL: transformar/reemplazar/quitar/añadir, copias de seguridad en .trash/
-│   ├── catalog_push.py       # URDF de ensamblaje + cliente HTTP para POST /api/models/submit
-│   ├── settings.py          # Raíz del ecosistema e idioma persistidos
-│   ├── i18n.py               # Traducciones reales y completas de la GUI (8 idiomas)
-│   ├── diagnostics.py        # Registro rotativo en la carpeta personal y guarda de los slots de la ventana
-│   ├── qt_gui.py             # Puente Qt Quick sobre el núcleo real model_catalog.py/stl_ops.py
-│   ├── qml/Main.qml          # Capa visual de escritorio, compartida con HYDRA-UMC-UPDATER
-│   ├── main.py               # Despacho: GUI por defecto, --cli para categories/models/parts/transform/replace/remove/add/push
-│   ├── assembly.py           # La vista ensamblada (pose de inicio) de una máquina a partir de sus piezas STL
-│   ├── mesh_check.py         # Comprobaciones de la malla antes de subirla al catálogo
-│   ├── part_colors.py        # Anotaciones de color por pieza (un STL binario no trae las suyas)
-│   └── stl_geometry.py       # Los triángulos reales de un fichero STL como geometría de Qt Quick 3D
-├── tests/                    # Tests reales contra ficheros STL reales generados
-├── docs/
-│   └── CLI_REFERENCE.md      # Referencia de comandos
-├── images/                   # Recursos multimedia e iconos de la app
-├── tools/
-│   ├── build_test.py         # Comprobación de compilación sin tocar versiones
-│   ├── ci_validate.py        # Validación de manifiesto/CHANGELOG/docs usada por CI
-│   ├── _doc_policy.py        # Reglas de documentación compartidas por la familia (copia de la de HYDRA-UMC-SDK, mantenida en sincronía)
-│   ├── _readme_parity.py     # Comprobación de que los ocho README comparten estructura (copia de la de HYDRA-UMC-SDK, mantenida en sincronía)
-│   └── hydra_project_tool.py # Los mismos comandos en todos los repositorios: validate, test, ci, version, status, bump
-├── build.sh / build.bat      # venv + instalación editable (extras dev+gui) + comprobación de compilación + tests
-├── run.sh / run.bat          # GUI por defecto / punto de entrada de la CLI
-├── run-gui.vbs               # Lanzador gráfico para Windows sin ventana de consola
-├── bump_version.py           # Incremento de versión tipo cuentakilómetros (solo lo ejecuta el comando `bump` explícito)
-└── bump_manifest_version.py  # Sincroniza la versión de hydra-umc.project.json con la nativa (--sync)
+| Amenaza | Defensa | Dónde |
+|---|---|---|
+| Perder una pieza al reemplazarla o quitarla | El original se mueve primero a la carpeta `.trash/` del modelo y nunca se borra; se puede restaurar, y vaciar la papelera exige una confirmación explícita | `stl_ops.py` |
+| Un fichero que no es un STL, o un nombre de pieza que sale de la carpeta del modelo | Un reemplazo o adición se analiza primero y se rechaza si no tiene triángulos o está truncado; el nombre de una pieza debe ser un nombre `.stl` simple dentro de la carpeta del modelo; una transformación que daría vértices no finitos no cambia nada | `stl_ops.py`, `mesh_check.py` |
+| La contraseña del servidor en el historial de la shell o en la lista de procesos | `--password` no se recomienda; sin él la contraseña se lee de `HYDRA_UMC_PASSWORD` o se pide sin eco; un servidor `https://` evita enviarla en claro | `main.py`, `catalog_push.py` |
+| Una subida demasiado grande o que se queda colgada | La subida completa debe caber en 49 MiB (el límite del servidor es 50 MB) y cada petición tiene un límite de 20 s; solo se envían las piezas `.stl` y se informa de las demás | `catalog_push.py` |
+| Registros que crecen o guardan datos | Un único registro rotativo en la carpeta personal de 256 KiB con dos copias | `diagnostics.py` |
+
+**Lo que nunca hace:** editar nada fuera de las carpetas de modelos que le indiques, ni borrar una pieza para siempre. El envío a un servidor se escribió contra su contrato documentado y no se ha probado con un servidor real.
+
+## 🔌 Interfaces
+
+| Topic o ruta | Qué lleva |
+|---|---|
+| `--cli categories \| models \| parts <library> [...]` | lista lo que hay: las categorías, los modelos de una categoría, los ficheros de piezas de un modelo (`--json` para máquinas); la biblioteca es `studio` o `suite` |
+| `--cli transform <library> <category> <model> <part> [--tx --ty --tz --rx --ry --rz --scale]` | traslada, rota y escala una pieza en su sitio: escala primero, luego rota sobre X, Y y Z, y después traslada, respecto al origen del fichero |
+| `--cli replace \| remove \| add` | reemplaza una pieza por otro STL, mueve una a `.trash/` o trae un STL nuevo (`--dest-filename` lo renombra) |
+| `--cli push <library> <category> <model> --host --username` | envía las piezas editables de un modelo a `POST /api/models/submit` de un servidor (inicio de sesión de administrador; `--port` 3000 por defecto, `--server-category`, `--overwrite`) |
+| `--root <folder>` | la raíz del ecosistema que contiene `HYDRA-UMC-STUDIO` y `HYDRA-UMC-SUITE` juntos; por defecto, la carpeta padre de esta herramienta |
+
+## ⚙️ Configuración
+
+No hay servidor ni fichero de configuración que editar a mano: la ventana recuerda sus elecciones en un fichero y cada modelo guarda sus colores en un fichero lateral.
+
+| Variable | Por defecto | Qué fija |
+|---|---|---|
+| `~/.hydra_umc_editor_stl_settings.json` | ninguno | la raíz del ecosistema y el idioma elegido en la ventana, recordados entre arranques |
+| `part_colors.json` (in each model folder) | `#9fb4c9` | el color de cada pieza; un STL binario no lleva ninguno, y STUDIO y SUITE leen el mismo fichero |
+| `HYDRA_UMC_PASSWORD` | sin definir | la contraseña del servidor para `--cli push`, para que no vaya en la línea de órdenes |
+| `~/.hydra_umc_editor_stl.log` | 256 KiB x 3 | el registro rotativo de la ventana y la línea de órdenes |
+
+## 🚀 Inicio rápido
+
+Requiere Python 3.10 o superior. La primera línea crea un entorno virtual con el extra de la interfaz y ejecuta las comprobaciones y las pruebas; Windows tiene `build.bat` y `run.bat`.
+
+```bash
+./build.sh                                    # creates .venv, installs the package with the GUI extra, checks and tests
+./run.sh                                      # the windowed editor
+./run.sh --cli categories studio              # lists the categories of the STUDIO library (use suite for the SUITE one)
+./run.sh --cli parts studio robots-6-dof ar3  # lists the part files of one model
 ```
 
-## ⚙️ GUÍA DE COMPILACIÓN Y EJECUCIÓN
+## 🧪 Pruebas
+
+215 pruebas automáticas se ejecutan con `python -m pytest tests -q`. No necesitan hardware ni nada fuera de esta máquina.
+
+El CI ejecuta `HYDRA_UMC_CI=1 python tools/ci_validate.py`, que comprueba el manifiesto, los documentos, los ocho README y las imágenes.
+
+## 🏗️ Compilación y publicación
 
 ```bash
 chmod +x build.sh   # una sola vez
@@ -242,7 +271,7 @@ nombres reales de carpeta que acaban de imprimir `categories`/`models`.
 `--root` sobreescribe la raíz del ecosistema para cualquier comando
 `--cli` (por defecto: el directorio padre propio de esta herramienta).
 
-**Solución de problemas**
+## 🩺 Resolución de problemas
 
 - `categories`/`models`/`parts` no imprime nada: la raíz del ecosistema
   en realidad no contiene `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` como
@@ -256,14 +285,71 @@ nombres reales de carpeta que acaban de imprimir `categories`/`models`.
   muestra ficheros reales del nivel superior actual, y una subcarpeta
   `.trash/` queda excluida de ella a propósito.
 
-## 🚀 HOJA DE RUTA
+| Ves | Porque | Haz |
+|---|---|---|
+| «El envío tuvo éxito pero el servidor no devolvió identificador», o un error de inicio de sesión | El servidor rechazó la cuenta (el envío necesita un administrador), no es un HYDRA-UMC-SERVER o respondió algo que no es un objeto JSON | Usa una cuenta de administrador de un HYDRA-UMC-SERVER real, con su dirección y puerto |
+| «la transformación produciría vértices no finitos (¿demasiado grande?): no se cambió nada» | La escala o la traslación es tan grande que los números ya no caben en un decimal de 32 bits | Usa valores menores |
+| «vaciar la papelera exige una confirmación explícita» | Nada se borra para siempre si no lo confirmas | Restaura la entrada desde `.trash/`, o confirma el vaciado en la ventana |
+
+## 📂 Estructura del repositorio
+
+<p align="center">
+  <img src="images/repository-structure.svg" alt="Repository structure of HYDRA-UMC-EDITOR-STL" width="100%">
+</p>
+
+<details>
+<summary>Versión en texto del árbol</summary>
+
+```text
+HYDRA-UMC-EDITOR-STL/
+├── src/hydra_umc_editor_stl/   código fuente
+│   ├── __init__.py             Versión del paquete
+│   ├── model_catalog.py        Descubrimiento real, de solo lectura, de ambas librerías de modelos
+│   ├── stl_ops.py              Mutación real de STL: transformar/reemplazar/quitar/añadir, copias de seguridad en .trash/
+│   ├── catalog_push.py         URDF de ensamblaje + cliente HTTP para POST /api/models/submit
+│   ├── settings.py             Raíz del ecosistema e idioma persistidos
+│   ├── i18n.py                 Traducciones reales y completas de la GUI (8 idiomas)
+│   ├── diagnostics.py          Registro rotativo en la carpeta personal y guarda de los slots de la ventana
+│   ├── qt_gui.py               Puente Qt Quick sobre el núcleo real model_catalog.py/stl_ops.py
+│   ├── qml/Main.qml            Capa visual de escritorio, compartida con HYDRA-UMC-UPDATER
+│   ├── main.py                 Despacho: GUI por defecto, --cli para categories/models/parts/transform/replace/remove/add/push
+│   ├── assembly.py             La vista ensamblada (pose de inicio) de una máquina a partir de sus piezas STL
+│   ├── mesh_check.py           Comprobaciones de la malla antes de subirla al catálogo
+│   ├── part_colors.py          Anotaciones de color por pieza (un STL binario no trae las suyas)
+│   └── stl_geometry.py         Los triángulos reales de un fichero STL como geometría de Qt Quick 3D
+├── tests/                      Tests reales contra ficheros STL reales generados
+├── docs/                       documentos del proyecto
+├── images/                     Recursos multimedia e iconos de la app
+├── tools/                      herramientas del proyecto y comprobaciones del CI
+├── .github/                    flujo de CI y plantillas de incidencias
+├── build.sh / build.bat        venv + instalación editable (extras dev+gui) + comprobación de compilación + tests
+├── run.sh / run.bat            GUI por defecto / punto de entrada de la CLI
+├── run-gui.vbs                 Lanzador gráfico para Windows sin ventana de consola
+├── bump_version.py             Incremento de versión tipo cuentakilómetros (solo lo ejecuta el comando `bump` explícito)
+├── bump_manifest_version.py    Sincroniza la versión de hydra-umc.project.json con la nativa (--sync)
+├── CHANGELOG.md                qué cambió en cada versión
+├── build-test.sh               comprobación de compilación sin cambios
+├── hydra-umc.project.json      manifiesto: versión, madurez, familia
+├── pyproject.toml              metadatos del paquete
+└── test.sh                     comprobación de compilación sin cambios
+```
+
+</details>
+
+## 🗺️ Hoja de ruta y límites conocidos
+
+**Límites conocidos hoy**
 
 - Un ejecutable de GUI independiente empaquetado (PyInstaller, siguiendo
   la misma convención `build_exe.bat`/`.sh` de HYDRA-UMC-SUITE).
 - Deshacer/rehacer sobre el propio historial `.trash/` de una sesión, en
   vez de una restauración manual de ficheros.
 
-## 🔗 Proyectos Relacionados
+## 🌍 Idiomas
+
+Este README y los documentos del repositorio existen en ocho idiomas: inglés, español, alemán, francés, italiano, japonés, chino y portugués (Portugal). Se escriben a la vez y el CI comprueba que los ocho ficheros tengan las mismas secciones y los mismos enlaces.
+
+## 🔗 Proyectos relacionados
 
 Este proyecto forma parte del ecosistema de robótica HYDRA-UMC del mismo autor (JuanenRac / Electro Hobby 3D). Vale la pena conocerlo, ya que una petición podría en realidad ser sobre uno de estos en vez de sobre este repositorio.
 
@@ -355,20 +441,27 @@ Este proyecto forma parte del ecosistema de robótica HYDRA-UMC del mismo autor 
 - **[HYDRA-UMC-OPS-AGENT](https://github.com/JuanenRac/HYDRA-UMC-OPS-AGENT)** — coordinador de incidencias de mantenimiento: un rol de borde de bajo privilegio recoge una instantánea saneada de inventario/salud, un rol de plano de control la muestra en solo lectura y pide a un proveedor de IA que sugiera un diagnóstico - nunca aplica un parche ni despliega nada.
 - **[HYDRA-UMC-DEV-SERVER](https://github.com/JuanenRac/HYDRA-UMC-DEV-SERVER)** — host de desarrollo reproducible (Raspberry Pi 5 / CM5) que almacena el código fuente del ecosistema y ejecuta tareas de build/test acotadas bajo una cola durable; un rol de desarrollo dedicado, explícitamente no una CM5 operativa.
 
----
+## 📚 Documentación
 
-## 📚 Documentación y Comunidad
+Dónde leer más:
 
-- [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) - cada subcomando real de `--cli`, argumento por argumento.
-- [`CHANGELOG.md`](CHANGELOG.md) - qué se ha entregado realmente, versión por versión.
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) / [`SECURITY.md`](SECURITY.md) / [`SUPPORT.md`](SUPPORT.md).
+* [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) - cada subcomando real de `--cli`, argumento por argumento.
+* [Base de seguridad del ecosistema](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md)
+* [Modelo de amenazas del ecosistema](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md)
+* [Historial de cambios de este repositorio](CHANGELOG.md)
+* [Licencia de este repositorio](LICENSE.md)
+
+## 🤝 Contribuir y comunidad
+
+* Antes de un pull request ejecuta `HYDRA_UMC_CI=1 py -3 tools/ci_validate.py` (o `HYDRA_UMC_CI=1 python3 tools/ci_validate.py`): debe imprimir `CI_VALIDATION=PASS`. No ejecutes `build.sh` ni `build.bat` para esta comprobación; compilar no es comprobar.
+* Los ocho README se escriben desde una sola fuente en HYDRA-UMC-DOCS; no los edites a mano. Cambia la fuente y vuelve a escribirlos con `tools/make_readmes.py`.
+* No afirmes en un README lo que no se ha ejecutado: di «simulado» o «sin probar en hardware» cuando esa sea la verdad.
+* Mira [CONTRIBUTING.md](CONTRIBUTING.md), el [código de conducta](CODE_OF_CONDUCT.md), [SECURITY.md](SECURITY.md) y [SUPPORT.md](SUPPORT.md).
 
 ## 👤 AUTOR
 
-**JuanenRac (Electro Hobby 3D)**
-Email: `electrohobby3d@gmail.com`
-YouTube: [youtube.com/@electrohobby3d](https://youtube.com/@electrohobby3d)
+**JuanenRac (Electro Hobby 3D)** · electrohobby3d@gmail.com
 
 ## 📜 LICENCIA
 
-GPL-3.0-or-later - ver [`LICENSE`](LICENSE) / [`LICENSE.md`](LICENSE.md).
+GPL-3.0-or-later - [LICENSE](LICENSE).
