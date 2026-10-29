@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The assembled view only runs the kinematics code of a real git checkout:** the editor imports Python from the `HYDRA-UMC-SUITE` folder next to the saved ecosystem root, so it now does so only if that folder has a `.git` entry, and the folder is on `sys.path` only while the import runs instead of for the rest of the process.
 - **README in the universal layout:** the README and its seven translations follow the layout that the four families share (22 sections in a fixed order), with an architecture picture and a repository-structure picture drawn from `docs/architecture.json` and `docs/structure.json`; the CI validator checks both pictures and the file tree.
 
 - **The layout of the README is checked in the CI:** the validator runs `tools/universal_readme_check.py` and lists, as a warning, what differs from the universal layout of the README.

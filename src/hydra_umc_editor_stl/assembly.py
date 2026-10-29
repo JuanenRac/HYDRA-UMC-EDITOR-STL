@@ -38,16 +38,31 @@ class PartPlacement:
 
 
 def _load_suite_modules(ecosystem_root: Path):
+    """Import the kinematics code of the SUITE checkout next to `ecosystem_root`, or None.
+
+    This runs Python code from that folder, so it only does so for a real git checkout (a `.git` entry) that has the
+    kinematics module, never for any folder a setting happens to point at. `sys.path` gets the folder only while the
+    import runs and is restored afterwards.
+    """
     suite_root = ecosystem_root / SUITE_DIRNAME
+    if not (suite_root / ".git").exists():
+        return None
     if not (suite_root / "hydra_suite" / "render" / "kinematics.py").is_file():
         return None
     root_str = str(suite_root)
-    if root_str not in sys.path:
+    added = root_str not in sys.path
+    if added:
         sys.path.append(root_str)
     try:
         from hydra_suite.render import kinematics, pnp_rig
     except Exception:
         return None
+    finally:
+        if added:
+            try:
+                sys.path.remove(root_str)
+            except ValueError:
+                pass
     return kinematics, pnp_rig
 
 
