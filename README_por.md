@@ -86,7 +86,7 @@ O HYDRA-UMC-EDITOR-STL é uma pequena ferramenta de desktop - GUI com janela
 por defeito, CLI completa com `--cli` - para editar as peças STL reais que
 compõem cada modelo de robô/máquina que o HYDRA-UMC-STUDIO e o
 HYDRA-UMC-SUITE distribuem. Ambas as aplicações reorganizaram as suas
-próprias pastas de modelos em 2026-09 na mesma disposição real de categorias
+próprias pastas de modelos na mesma disposição real de categorias
 (`robots-5-dof`/`robots-6-dof`/`robots-7-dof`, `machine-pnp`/`machine-cnc`/
 `machine-laser`, `heatedbeds`/`racks`/`vacuum-tables`, cada modelo com o seu
 `metadata.json` ao lado do `ATTRIBUTION.txt`) - esta ferramenta lê essa

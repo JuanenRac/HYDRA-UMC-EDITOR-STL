@@ -82,7 +82,7 @@ README 已经为其自身 Qt Quick 层划出的诚实界限相同。
 HYDRA-UMC-EDITOR-STL 是一个小型桌面工具——默认是窗口化 GUI，也可用
 `--cli` 使用完整的命令行——用于编辑构成 HYDRA-UMC-STUDIO 和
 HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。这两个应用都
-在 2026-09 把各自的模型文件夹重新整理成了同一套真实的分类结构
+把各自的模型文件夹重新整理成了同一套真实的分类结构
 （`robots-5-dof`/`robots-6-dof`/`robots-7-dof`、
 `machine-pnp`/`machine-cnc`/`machine-laser`、
 `heatedbeds`/`racks`/`vacuum-tables`，每个模型都有自己的

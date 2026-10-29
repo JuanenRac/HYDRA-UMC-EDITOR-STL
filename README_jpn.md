@@ -87,7 +87,7 @@ slot、色変更後も選択状態が保持されること）。`qml/Main.qml` �
 HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
 すべてのロボット/マシンモデルを構成する実在の STL パーツを編集するための、
 小さなデスクトップツールです - デフォルトはウィンドウ GUI、`--cli` で
-完全な CLI も使えます。両方のアプリは 2026-09 に自分たち自身のモデル
+完全な CLI も使えます。両方のアプリは自分たち自身のモデル
 フォルダを同じ実在のカテゴリ構造（`robots-5-dof`/`robots-6-dof`/
 `robots-7-dof`、`machine-pnp`/`machine-cnc`/`machine-laser`、
 `heatedbeds`/`racks`/`vacuum-tables`、各モデルは自身の

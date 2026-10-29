@@ -85,7 +85,7 @@ Each line is one part of this repository and the light says how far it is today.
 HYDRA-UMC-EDITOR-STL is a small desktop tool - windowed GUI by default,
 full CLI with `--cli` - for editing the real STL parts that make up
 every robot/machine model HYDRA-UMC-STUDIO and HYDRA-UMC-SUITE ship.
-Both of those apps reorganized their own model folders in 2026-09 into
+Both of those apps reorganized their own model folders into
 the same real category layout (`robots-5-dof`/`robots-6-dof`/
 `robots-7-dof`, `machine-pnp`/`machine-cnc`/`machine-laser`,
 `heatedbeds`/`racks`/`vacuum-tables`, each model with its own
