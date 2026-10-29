@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+- **The layout of the README is checked in the CI:** the validator runs `tools/universal_readme_check.py` and lists, as a warning, what differs from the universal layout of the README.
+
 ## [0.1.7] - A mesh check before a push and restore from `.trash/` and empty it
 
 - **A mesh check before a push.** `mesh_check.py` reads each part and reports triangles without area, coordinates that are not numbers, a mesh that is not closed (edges that belong to one triangle or to more than two), faces that point inwards, stored normals that disagree with the winding of most faces and a size that looks like the wrong unit; `push_warnings()` lists the findings per part before anything is uploaded. Vectorised with numpy; tested on a cube in both orientations, with a missing face, with damaged triangles and in the wrong unit.
