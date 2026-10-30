@@ -80,9 +80,9 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
 | Software | 🟠 | Nur Struktur und erste Teile; der größte Teil der Arbeit steht noch aus |
-| Tests | 🟢 | 222 automatische Tests, bei jeder Änderung ausgeführt |
-| Echte Hardware | 🟢 | Nicht zutreffend: nichts hiervon läuft auf Hardware |
-| Dokumentation | 🟢 | README in acht Sprachen, bei jeder Änderung gegen das Manifest geprüft |
+| Tests | 🟡 | 222 automatische Tests, bei jeder Änderung ausgeführt |
+| Echte Hardware | 🟡 | Nicht zutreffend: nichts hiervon läuft auf Hardware |
+| Dokumentation | 🟡 | README in acht Sprachen, bei jeder Änderung gegen das Manifest geprüft |
 
 ## 🎯 Überblick
 

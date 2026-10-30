@@ -76,9 +76,9 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Software | 🟠 | Structure and first pieces only; most of the work is still to do |
-| Tests | 🟢 | 222 automated tests, run on every change |
-| Real hardware | 🟢 | Not applicable: nothing here runs on hardware |
-| Documentation | 🟢 | README in eight languages, checked against the manifest on every change |
+| Tests | 🟡 | 222 automated tests, run on every change |
+| Real hardware | 🟡 | Not applicable: nothing here runs on hardware |
+| Documentation | 🟡 | README in eight languages, checked against the manifest on every change |
 
 ## 🎯 Overview
 
