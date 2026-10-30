@@ -555,9 +555,11 @@ class EditorBridge(QObject):
     def pushStatus(self) -> str:
         return self._push_status
 
-    @Slot(str, int, str, str, str, bool)
+    @Slot(str, int, str, str, str, bool, bool)
     @guarded()
-    def pushToServer(self, host: str, port: int, username: str, password: str, category: str, overwrite: bool) -> None:
+    def pushToServer(
+        self, host: str, port: int, username: str, password: str, category: str, overwrite: bool, force: bool = False
+    ) -> None:
         model = self._load_selected_model()
         if model is None:
             self._push_status = i18n.t(self._lang, "msg_select_model_first")
@@ -572,7 +574,7 @@ class EditorBridge(QObject):
         def do_push() -> str:
             client = ServerClient(host, port)
             client.login(username, password)
-            slug = client.push_model(model, target_category, overwrite)
+            slug = client.push_model(model, target_category, overwrite, allow_stacked=force)
             if client.last_skipped_parts:
                 self._push_notes.append(i18n.t(self._lang, "msg_push_skipped", count=client.last_skipped_parts))
             if not is_independent_parts_category(target_category):

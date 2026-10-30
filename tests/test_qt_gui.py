@@ -179,3 +179,36 @@ def test_an_unexpected_error_in_a_slot_is_shown_in_the_status_bar_instead_of_cra
         if isinstance(handler, logging.handlers.RotatingFileHandler):
             handler.close()
             logger.removeHandler(handler)
+
+
+def _fake_client(calls: list):
+    class FakeClient:
+        last_skipped_parts = 0
+
+        def __init__(self, host, port):
+            pass
+
+        def login(self, username, password):
+            pass
+
+        def push_model(self, model, category, overwrite=False, allow_stacked=False):
+            calls.append({"overwrite": overwrite, "allow_stacked": allow_stacked})
+            return "slug"
+
+    return FakeClient
+
+
+@pytest.mark.parametrize("force", [False, True])
+def test_the_push_window_passes_the_force_box_as_allow_stacked(qt_app, ecosystem_root: Path, monkeypatch, force: bool) -> None:
+    from hydra_umc_editor_stl import qt_gui
+
+    calls: list = []
+    monkeypatch.setattr(qt_gui, "ServerClient", _fake_client(calls))
+    bridge = EditorBridge(ecosystem_root)
+    _select_ar3_base_link(bridge)
+
+    bridge.pushToServer("host", 3000, "admin", "pw", "robots-6-dof", False, force)
+    assert bridge._push_thread.wait(10000)
+    qt_app.processEvents()
+
+    assert calls == [{"overwrite": False, "allow_stacked": force}]

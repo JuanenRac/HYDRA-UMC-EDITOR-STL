@@ -109,7 +109,7 @@ baked into its own STL vertices, never a synthetic pose invented here. That hold
 | `--password` | Not recommended: it is visible in the process list and the shell history. Leave it out to be prompted, or set `HYDRA_UMC_PASSWORD` | prompt |
 | `--server-category` | Category to file this under server-side | same as `<category>` |
 | `--overwrite` | Replace an existing submission with the same name/category | off |
-| `--allow-stacked-push` | Send a robot or machine although its parts arrive stacked at the origin without joints (blocked by default; independent pieces such as heated beds are never blocked) | off |
+| `--allow-stacked-push` | Send a robot or machine although its parts arrive stacked at the origin without joints (blocked by default; independent pieces such as heated beds are never blocked; the **Force** box of the push window does the same) | off |
 
 ```bash
 hydra-umc-editor-stl --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin

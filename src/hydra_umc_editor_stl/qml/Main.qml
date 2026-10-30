@@ -405,6 +405,10 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 CheckBox { id: pushOverwriteCheck; text: ui("push_overwrite_checkbox") }
             }
+            RowLayout {
+                Layout.fillWidth: true
+                CheckBox { id: pushForceCheck; checked: false; text: ui("push_force_checkbox") }
+            }
             LabelText {
                 text: backend.pushStatus
                 visible: backend.pushStatus.length > 0
@@ -424,7 +428,7 @@ ApplicationWindow {
                     onClicked: backend.pushToServer(
                         pushHostField.text, parseInt(pushPortField.text) || 3000,
                         pushUsernameField.text, pushPasswordField.text,
-                        pushCategoryField.text, pushOverwriteCheck.checked
+                        pushCategoryField.text, pushOverwriteCheck.checked, pushForceCheck.checked
                     )
                 }
             }

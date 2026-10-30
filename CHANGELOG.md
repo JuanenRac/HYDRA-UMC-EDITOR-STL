@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A "Force" box in the push window:** the push window has a box (off by default, with its text in all eight languages) that sends a robot or machine model to the catalog although its parts would arrive stacked at the origin, the same as `--allow-stacked-push` on the command line.
 - **A robot or machine is no longer pushed to the catalog by default:** its parts are stored in their own link frames, so the pushed model arrived as a pile at the origin with no joints. The push is now refused with a clear message for those categories (independent pieces such as heated beds are unaffected); `push --allow-stacked-push` (or `allow_stacked=True` in code) sends it anyway, and the existing warnings about skipped parts and mesh problems are unchanged.
 - **The assembled view only runs the kinematics code of a real git checkout:** the editor imports Python from the `HYDRA-UMC-SUITE` folder next to the saved ecosystem root, so it now does so only if that folder has a `.git` entry, and the folder is on `sys.path` only while the import runs instead of for the rest of the process.
 - **README in the universal layout:** the README and its seven translations follow the layout that the four families share (22 sections in a fixed order), with an architecture picture and a repository-structure picture drawn from `docs/architecture.json` and `docs/structure.json`; the CI validator checks both pictures and the file tree.
