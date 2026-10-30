@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-215%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-218%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.7-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -35,7 +35,7 @@ GPL-3.0-or-later - see LICENSE
 （実在の組み立て用 URDF 生成に加え、`POST /api/models/submit` 向けの
 実在の HTTP クライアント）はすべて、実際に生成した
 実在の STL ファイルと、必要に応じて実在のセッションスコープの
-`QGuiApplication` に対してテストされており（`pytest tests/`、215 件の
+`QGuiApplication` に対してテストされており（`pytest tests/`、218 件の
 ケースが合格）、本エコシステム自身の実在する
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` のチェックアウトに対してエンド
 ツーエンドでスモークテスト済みです（`--cli categories`/`models`/
@@ -62,7 +62,7 @@ slot、色変更後も選択状態が保持されること）。`qml/Main.qml` �
 |---|---|
 | バージョン | `0.1.7` |
 | 成熟度 | 足場段階 |
-| テスト | 215 (`python -m pytest tests -q`) |
+| テスト | 218 (`python -m pytest tests -q`) |
 | 技術 | Python / PySide6 / Qt Quick / numpy-stl |
 | 対象 | 利用者の PC |
 | 実機での確認 | 対象外：ここにあるものはハードウェア上では動きません |
@@ -78,7 +78,7 @@ slot、色変更後も選択状態が保持されること）。`qml/Main.qml` �
 | 領域 | 状態 | ここでの意味 |
 |---|---|---|
 | ソフトウェア | 🟠 | 構造と最初の部品のみで、作業の大部分はこれからです |
-| テスト | 🟢 | 自動テスト 215 件。変更のたびに実行されます |
+| テスト | 🟢 | 自動テスト 218 件。変更のたびに実行されます |
 | 実機 | 🟢 | 対象外：ここにあるものはハードウェア上では動きません |
 | ドキュメント | 🟢 | 8 言語の README。変更のたびにマニフェストと照合されます |
 
@@ -203,6 +203,8 @@ HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
 
 **絶対にしないこと：** 指定したモデルフォルダーの外を編集すること、パーツを完全に削除すること。サーバーへの送信は文書化された契約に基づいて書かれており、実際のサーバーでは試していません。
 
+ロボットや機械のモデルをカタログへ送ることは、パーツが原点に重なって届いてしまうため、既定では拒否されます。通せるのは独立したパーツのカテゴリ（ベッド、ラックなど）だけです。拒否時には理由が示され、`.stl` ではないパーツは報告されます。
+
 ## 🔌 インターフェース
 
 | トピックまたはルート | 内容 |
@@ -212,6 +214,8 @@ HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
 | `--cli replace \| remove \| add` | パーツを別の STL で置換、1 つを `.trash/` へ移動、または新しい STL を取り込み（`--dest-filename` で名前を変更） |
 | `--cli push <library> <category> <model> --host --username` | モデルの編集可能なパーツをサーバーの `POST /api/models/submit` に送信（管理者ログイン。`--port` の既定は 3000、`--server-category`、`--overwrite`） |
 | `--root <folder>` | `HYDRA-UMC-STUDIO` と `HYDRA-UMC-SUITE` が並んでいるエコシステムのルート。既定ではこのツールの親フォルダー |
+
+`--cli push` の `--allow-stacked-push` と、送信ウィンドウの **強制** チェックボックス（既定ではオフ、8 言語対応）を使うと、パーツが原点に重なって届く場合でも、ロボットや機械のモデルをカタログへ送れます。
 
 ## ⚙️ 設定
 
@@ -237,7 +241,7 @@ Python 3.10 以降が必要です。最初の行は GUI 用エクストラ付き
 
 ## 🧪 テスト
 
-`python -m pytest tests -q` で自動テスト 215 件を実行します。 ハードウェアも、このマシンの外にあるものも必要ありません。
+`python -m pytest tests -q` で自動テスト 218 件を実行します。 ハードウェアも、このマシンの外にあるものも必要ありません。
 
 CI は `HYDRA_UMC_CI=1 python tools/ci_validate.py` を実行し、マニフェスト、文書、8 つの README、図を検査します。
 

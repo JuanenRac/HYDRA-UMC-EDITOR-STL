@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-215%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-218%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.7-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -35,7 +35,7 @@ mutation via `numpy-stl` - transform/replace/remove/add, plus
 assembly-URDF generation plus a real HTTP client for
 `POST /api/models/submit`) are all tested against real, generated STL
 fixtures and a real, session-scoped `QGuiApplication` where needed
-(`pytest tests/`, 215 passing cases) and have been smoke-tested end to end
+(`pytest tests/`, 218 passing cases) and have been smoke-tested end to end
 against this ecosystem's own real
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` checkouts (`--cli categories`/
 `models`/`parts` against the real trees; `transform`/`remove` against a
@@ -60,7 +60,7 @@ README already draws for its own Qt Quick shell.
 |---|---|
 | Version | `0.1.7` |
 | Maturity | Scaffolding |
-| Tests | 215 (`python -m pytest tests -q`) |
+| Tests | 218 (`python -m pytest tests -q`) |
 | Stack | Python / PySide6 / Qt Quick / numpy-stl |
 | Target | The PC of the person using it |
 | On real hardware | Not applicable: nothing here runs on hardware |
@@ -76,7 +76,7 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Software | 🟠 | Structure and first pieces only; most of the work is still to do |
-| Tests | 🟢 | 215 automated tests, run on every change |
+| Tests | 🟢 | 218 automated tests, run on every change |
 | Real hardware | 🟢 | Not applicable: nothing here runs on hardware |
 | Documentation | 🟢 | README in eight languages, checked against the manifest on every change |
 
@@ -192,6 +192,8 @@ product feature, not just an internal habit.
 
 **What it never does:** edit anything outside the model folders you point it at, or delete a part for good. The push to a server was written against its documented contract and has not been tried against a real server.
 
+Sending a robot or machine model to a catalogue is refused by default, because its parts would arrive stacked at the origin; only categories of independent parts (beds, racks) go through. The refusal says why, and the parts that are not `.stl` are reported.
+
 ## 🔌 Interfaces
 
 | Topic or route | What it carries |
@@ -201,6 +203,8 @@ product feature, not just an internal habit.
 | `--cli replace \| remove \| add` | replace a part with another STL, move one to `.trash/`, or bring in a new STL (`--dest-filename` renames it) |
 | `--cli push <library> <category> <model> --host --username` | sends the editable parts of a model to `POST /api/models/submit` of a server (administrator login; `--port` 3000 by default, `--server-category`, `--overwrite`) |
 | `--root <folder>` | the ecosystem root that holds `HYDRA-UMC-STUDIO` and `HYDRA-UMC-SUITE` side by side; by default the parent folder of this tool |
+
+`--allow-stacked-push` on `--cli push`, and the **Force** box of the push window (off by default, shown in all eight languages), let a robot or machine model go to the catalogue although its parts would arrive stacked at the origin.
 
 ## ⚙️ Configuration
 
@@ -226,7 +230,7 @@ Requires Python 3.10 or newer. The first line builds a virtual environment with 
 
 ## 🧪 Testing
 
-215 automated tests run with `python -m pytest tests -q`. They need no hardware and nothing outside this machine.
+218 automated tests run with `python -m pytest tests -q`. They need no hardware and nothing outside this machine.
 
 The CI runs `HYDRA_UMC_CI=1 python tools/ci_validate.py`, which checks the manifest, the documents, the eight READMEs and the pictures.
 
