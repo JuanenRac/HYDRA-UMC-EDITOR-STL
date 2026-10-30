@@ -370,6 +370,27 @@ def test_meshes_over_five_units_are_millimeters(tmp_path: Path) -> None:
     assert not _mesh_is_millimeters(tmp_path / "missing.stl")
 
 
+def test_the_unit_declared_by_the_model_decides_and_the_size_is_only_the_fallback(tmp_path: Path) -> None:
+    from hydra_umc_editor_stl.assembly import model_unit, unit_from_metadata
+
+    make_cube_stl(tmp_path / "nozzle.stl", size=3.0)  # a 3 mm nozzle: below the size guess
+    make_cube_stl(tmp_path / "hall.stl", size=8.0)  # 8 m: over the size guess
+    assert not _mesh_is_millimeters(tmp_path / "nozzle.stl")
+    assert _mesh_is_millimeters(tmp_path / "hall.stl")
+    assert _mesh_is_millimeters(tmp_path / "nozzle.stl", "mm")
+    assert not _mesh_is_millimeters(tmp_path / "hall.stl", "m")
+
+    assert unit_from_metadata({"unit": "Millimetres"}) == "mm"
+    assert unit_from_metadata({"units": "m"}) == "m"
+    assert unit_from_metadata({"unit": "furlong"}) is None
+    assert unit_from_metadata(None) is None
+    assert model_unit(tmp_path) is None
+    (tmp_path / "metadata.json").write_text('{"unit": "mm"}', encoding="utf-8")
+    assert model_unit(tmp_path) == "mm"
+    (tmp_path / "metadata.json").write_text("{broken", encoding="utf-8")
+    assert model_unit(tmp_path) is None
+
+
 def test_assembled_bounds_follow_each_placement(tmp_path: Path) -> None:
     make_cube_stl(tmp_path / "a.stl", size=10.0)
     make_cube_stl(tmp_path / "b.stl", size=10.0)

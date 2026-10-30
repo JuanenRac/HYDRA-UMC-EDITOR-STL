@@ -19,6 +19,7 @@
 # =============================================================================
 from __future__ import annotations
 
+import json
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -82,11 +83,42 @@ def _quaternion_wxyz(rotation: np.ndarray) -> tuple[float, float, float, float]:
     return (float((m[1, 0] - m[0, 1]) / s), float((m[0, 2] + m[2, 0]) / s), float((m[1, 2] + m[2, 1]) / s), 0.25 * s)
 
 
-def _mesh_is_millimeters(path: Path) -> bool:
-    """Same mm-vs-m rule SUITE's own render/mesh.py and STUDIO's
-    useRealScaleSTL() apply to these exact files (a span over 5 units is
-    millimeters) - so the meter-based kinematics translations are scaled
-    into whatever unit each STL was really authored in."""
+FALLBACK_MILLIMETER_SPAN = 5.0
+_UNIT_NAMES = {
+    "mm": "mm", "millimeter": "mm", "millimeters": "mm", "millimetre": "mm", "millimetres": "mm",
+    "m": "m", "meter": "m", "meters": "m", "metre": "m", "metres": "m",
+}
+
+
+def unit_from_metadata(metadata: object) -> str | None:
+    """"mm" or "m" when the `metadata.json` of a model declares the unit of its meshes (`"unit"`), else None."""
+    if not isinstance(metadata, dict):
+        return None
+    value = metadata.get("unit", metadata.get("units"))
+    return _UNIT_NAMES.get(value.strip().lower()) if isinstance(value, str) else None
+
+
+def model_unit(model_dir: Path) -> str | None:
+    """The unit the model folder declares in its `metadata.json` (or `catalog.json`), None when it does not say."""
+    for name in ("metadata.json", "catalog.json"):
+        path = model_dir / name
+        if path.is_file():
+            try:
+                return unit_from_metadata(json.loads(path.read_text(encoding="utf-8")))
+            except (OSError, ValueError):
+                return None
+    return None
+
+
+def _mesh_is_millimeters(path: Path, unit: str | None = None) -> bool:
+    """Whether an STL is in millimeters. The unit the model declares decides; only when it declares none is the
+    mm-vs-m rule SUITE's own render/mesh.py and STUDIO's useRealScaleSTL() apply to these exact files used as the
+    fallback (a span over 5 units is millimeters) - so the meter-based kinematics translations are scaled into
+    whatever unit each STL was really authored in."""
+    if unit == "mm":
+        return True
+    if unit == "m":
+        return False
     try:
         raw = stl_mesh.Mesh.from_file(str(path))
     except Exception:
@@ -94,7 +126,7 @@ def _mesh_is_millimeters(path: Path) -> bool:
     if len(raw.vectors) == 0:
         return False
     points = raw.vectors.reshape(-1, 3)
-    return float(np.max(points.max(axis=0) - points.min(axis=0))) > 5.0
+    return float(np.max(points.max(axis=0) - points.min(axis=0))) > FALLBACK_MILLIMETER_SPAN
 
 
 def _placement(matrix: np.ndarray, millimeters: bool) -> PartPlacement:
@@ -113,6 +145,7 @@ def assembled_transforms(ecosystem_root: Path, category: str, model_id: str, mod
         return None
     kinematics, pnp_rig = modules
     relative_dir = f"{category}/{model_id}"
+    unit = model_unit(model_dir)
 
     placements: dict[str, PartPlacement] = {}
 
@@ -131,7 +164,7 @@ def assembled_transforms(ecosystem_root: Path, category: str, model_id: str, mod
             filename = entry.mesh_files[link_name]
             part_path = model_dir / filename
             if part_path.is_file():
-                placements[filename] = _placement(matrix, _mesh_is_millimeters(part_path))
+                placements[filename] = _placement(matrix, _mesh_is_millimeters(part_path, unit))
         return placements or None
 
     if relative_dir in pnp_rig.MACHINE_MESH_DIRS.values():
@@ -140,12 +173,12 @@ def assembled_transforms(ecosystem_root: Path, category: str, model_id: str, mod
             filename = pnp_rig.PNP_MESH_FILES[link_name]
             part_path = model_dir / filename
             if part_path.is_file():
-                placements[filename] = _placement(transforms[link_name], _mesh_is_millimeters(part_path))
+                placements[filename] = _placement(transforms[link_name], _mesh_is_millimeters(part_path, unit))
         for part_name, owner in pnp_rig.PNP_STATIC_PART_OWNER.items():
             filename = pnp_rig.PNP_STATIC_PART_FILES[part_name]
             part_path = model_dir / filename
             if part_path.is_file():
-                placements[filename] = _placement(transforms[owner], _mesh_is_millimeters(part_path))
+                placements[filename] = _placement(transforms[owner], _mesh_is_millimeters(part_path, unit))
         return placements or None
 
     return None

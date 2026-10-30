@@ -39,7 +39,7 @@ from xml.dom import minidom
 
 import numpy as np
 
-from .assembly import PartPlacement, _mesh_is_millimeters, _rotation_matrix, assembled_transforms
+from .assembly import PartPlacement, _mesh_is_millimeters, _rotation_matrix, assembled_transforms, unit_from_metadata
 from .mesh_check import check_stl
 from .model_catalog import ModelInfo, is_independent_parts_category
 
@@ -79,7 +79,7 @@ def _unplaced_parts(model: ModelInfo, placements: dict[str, PartPlacement] | Non
 
 def _origin_attributes(model: ModelInfo, part_filename: str, placement: PartPlacement) -> tuple[str, str]:
     """(xyz, rpy) of a joint origin: meters and radians, as a URDF wants them."""
-    scale = 0.001 if _mesh_is_millimeters(model.path / part_filename) else 1.0
+    scale = 0.001 if _mesh_is_millimeters(model.path / part_filename, unit_from_metadata(model.metadata)) else 1.0
     xyz = " ".join(f"{v * scale:.9g}" for v in placement.position)
     r = _rotation_matrix(placement.rotation_wxyz)
     pitch = float(np.arcsin(-np.clip(r[2, 0], -1.0, 1.0)))

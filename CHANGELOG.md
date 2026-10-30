@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The unit of a model comes from its `metadata.json`:** `"unit": "mm"` or `"m"` decides whether the meshes of a model are in millimeters, both when the home pose is placed and when a robot is sent to the catalogue. A small part in millimeters (a screw, a nozzle of less than 5 mm) is no longer taken for meters. Only when the model declares no unit is the size of the mesh used to guess it, as before.
+
 ## [0.1.8] - A robot or machine is pushed to the catalog assembled, with a Force box in the push window, and the universal README
 
 - **A robot or machine is pushed to the catalog assembled:** when the model is uploaded to the server catalog, each part's joint now carries its home-pose position and rotation from the kinematics of the `HYDRA-UMC-SUITE` checkout (the placement the assembled view already shows, in meters and radians) instead of the identity, so the model no longer arrives as a pile at the origin. If that placement is not known (no `HYDRA-UMC-SUITE` next to the checkout, or a model it has no kinematics for) the push is still refused, and `--allow-stacked-push` / the Force box still send it; parts without a known placement are named in the warning. 4 new tests (222 in all).
