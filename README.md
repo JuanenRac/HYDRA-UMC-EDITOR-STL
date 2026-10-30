@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-218%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-222%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.7-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -35,7 +35,7 @@ mutation via `numpy-stl` - transform/replace/remove/add, plus
 assembly-URDF generation plus a real HTTP client for
 `POST /api/models/submit`) are all tested against real, generated STL
 fixtures and a real, session-scoped `QGuiApplication` where needed
-(`pytest tests/`, 218 passing cases) and have been smoke-tested end to end
+(`pytest tests/`, 222 passing cases) and have been smoke-tested end to end
 against this ecosystem's own real
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` checkouts (`--cli categories`/
 `models`/`parts` against the real trees; `transform`/`remove` against a
@@ -60,7 +60,7 @@ README already draws for its own Qt Quick shell.
 |---|---|
 | Version | `0.1.7` |
 | Maturity | Scaffolding |
-| Tests | 218 (`python -m pytest tests -q`) |
+| Tests | 222 (`python -m pytest tests -q`) |
 | Stack | Python / PySide6 / Qt Quick / numpy-stl |
 | Target | The PC of the person using it |
 | On real hardware | Not applicable: nothing here runs on hardware |
@@ -76,7 +76,7 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Software | 🟠 | Structure and first pieces only; most of the work is still to do |
-| Tests | 🟢 | 218 automated tests, run on every change |
+| Tests | 🟢 | 222 automated tests, run on every change |
 | Real hardware | 🟢 | Not applicable: nothing here runs on hardware |
 | Documentation | 🟢 | README in eight languages, checked against the manifest on every change |
 
@@ -127,7 +127,7 @@ checkout on disk:
 - **Floating viewer toolbar** - Select, Move (a real draggable 3-axis gizmo), Edit (rotate/scale), Color, Add, Delete, Pin (bakes the move/rotate/scale permanently), Copy, Paste and Cut, right inside the 3D view. Heated beds, vacuum tables and racks are independent size variants, so the viewer shows only the selected one instead of piling them up.
 - **Assembled view** - robots, CNC, PnP and laser models open already assembled at their home pose (read from HYDRA-UMC-SUITE's own kinematics next to this checkout, display only); a toolbar button switches to the raw parts for editing.
 
-**Limits of the push and of the transform:** only `.stl` parts are uploaded (the others are reported), the whole upload must fit the server's 50 MB request limit, and the model is only stored in the server's catalog (HYDRA-UMC-STUDIO does not read it yet). The identity pose is correct for independent pieces (heated beds, racks, vacuum tables); the parts of a robot or machine are stored in their own link frame, so they arrive stacked at the origin without joints. Prefer an `https://` host (or `HYDRA_UMC_PASSWORD` / the password prompt instead of `--password`). A transform scales first, then rotates about X, Y and Z, then translates, and the rotation is about the file's origin, not about the centre of the part.
+**Limits of the push and of the transform:** only `.stl` parts are uploaded (the others are reported), the whole upload must fit the server's 50 MB request limit, and the model is only stored in the server's catalog (HYDRA-UMC-STUDIO does not read it yet). The identity pose is correct for independent pieces (heated beds, racks, vacuum tables); the parts of a robot or machine are stored in their own link frame, so they are sent at their home-pose position from the kinematics of HYDRA-UMC-SUITE, fixed and without joints (stacked at the origin only if that placement is not known). Prefer an `https://` host (or `HYDRA_UMC_PASSWORD` / the password prompt instead of `--password`). A transform scales first, then rotates about X, Y and Z, then translates, and the rotation is about the file's origin, not about the centre of the part.
 
 **Nothing is ever permanently deleted.** A remove or a replace moves the
 real original file into that model's own `.trash/` subfolder first -
@@ -192,7 +192,7 @@ product feature, not just an internal habit.
 
 **What it never does:** edit anything outside the model folders you point it at, or delete a part for good. The push to a server was written against its documented contract and has not been tried against a real server.
 
-Sending a robot or machine model to a catalogue is refused by default, because its parts would arrive stacked at the origin; only categories of independent parts (beds, racks) go through. The refusal says why, and the parts that are not `.stl` are reported.
+A robot or machine model goes to the catalogue with each part at its home-pose position, taken from the kinematics of `HYDRA-UMC-SUITE` next to this checkout (the same placement the assembled view shows); the joints stay fixed. If that placement is not known for the model, the push is refused, because its parts would arrive stacked at the origin; independent parts (beds, racks) always go through. The refusal says why, and the parts that are not `.stl` are reported.
 
 ## 🔌 Interfaces
 
@@ -204,7 +204,7 @@ Sending a robot or machine model to a catalogue is refused by default, because i
 | `--cli push <library> <category> <model> --host --username` | sends the editable parts of a model to `POST /api/models/submit` of a server (administrator login; `--port` 3000 by default, `--server-category`, `--overwrite`) |
 | `--root <folder>` | the ecosystem root that holds `HYDRA-UMC-STUDIO` and `HYDRA-UMC-SUITE` side by side; by default the parent folder of this tool |
 
-`--allow-stacked-push` on `--cli push`, and the **Force** box of the push window (off by default, shown in all eight languages), let a robot or machine model go to the catalogue although its parts would arrive stacked at the origin.
+`--allow-stacked-push` on `--cli push`, and the **Force** box of the push window (off by default, shown in all eight languages), let a robot or machine model go to the catalogue even when the home-pose placement of its parts is not known, so that they arrive stacked at the origin.
 
 ## ⚙️ Configuration
 
@@ -230,7 +230,7 @@ Requires Python 3.10 or newer. The first line builds a virtual environment with 
 
 ## 🧪 Testing
 
-218 automated tests run with `python -m pytest tests -q`. They need no hardware and nothing outside this machine.
+222 automated tests run with `python -m pytest tests -q`. They need no hardware and nothing outside this machine.
 
 The CI runs `HYDRA_UMC_CI=1 python tools/ci_validate.py`, which checks the manifest, the documents, the eight READMEs and the pictures.
 

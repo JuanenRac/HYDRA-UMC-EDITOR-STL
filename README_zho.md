@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-218%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-222%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.7-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -34,7 +34,7 @@ GPL-3.0-or-later - see LICENSE
 （真实生成装配用 URDF，外加一个真实的 `POST /api/models/submit` HTTP
 客户端）全部都针对真实生成的
 STL 文件、以及在需要时一个真实的、会话范围的 `QGuiApplication` 进行了
-测试（`pytest tests/`，218 个用例通过），并已针对本生态系统真实的
+测试（`pytest tests/`，222 个用例通过），并已针对本生态系统真实的
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` 检出进行了端到端的冒烟测试
 （`--cli categories`/`models`/`parts` 针对真实的目录树；`transform`/`remove`
 针对一份可丢弃的副本，绝不是真实的检出本身）。`qt_gui.py` 自己的
@@ -57,7 +57,7 @@ README 已经为其自身 Qt Quick 层划出的诚实界限相同。
 |---|---|
 | 版本 | `0.1.7` |
 | 成熟度 | 雏形 |
-| 测试 | 218 (`python -m pytest tests -q`) |
+| 测试 | 222 (`python -m pytest tests -q`) |
 | 技术栈 | Python / PySide6 / Qt Quick / numpy-stl |
 | 目标 | 使用者的电脑 |
 | 真实硬件 | 不适用：这里的内容不在硬件上运行 |
@@ -73,7 +73,7 @@ README 已经为其自身 Qt Quick 层划出的诚实界限相同。
 | 领域 | 状态 | 在这里的含义 |
 |---|---|---|
 | 软件 | 🟠 | 目前只有结构和最初的部分，大部分工作尚未完成 |
-| 测试 | 🟢 | 218 项自动测试，每次变更都会运行 |
+| 测试 | 🟢 | 222 项自动测试，每次变更都会运行 |
 | 真实硬件 | 🟢 | 不适用：这里的内容不在硬件上运行 |
 | 文档 | 🟢 | 八种语言的 README，每次变更都会与清单核对 |
 
@@ -121,7 +121,7 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
 - **悬浮视图工具栏** —— 选择、移动（真实可拖动的三轴 gizmo）、编辑（旋转/缩放）、颜色、添加、删除、固定（永久保存移动/旋转/缩放）、复制、粘贴和剪切，直接位于 3D 视图内。热床、真空台和机架是相互独立的尺寸变体，因此视图只显示所选的那一个，而不是全部叠在一起。
 - **装配视图** —— 机器人、CNC、PnP 和激光模型会以原位姿态直接装配好打开（读取此检出旁 HYDRA-UMC-SUITE 自己的运动学，仅用于显示）；工具栏按钮可切换到原始部件进行编辑。
 
-**推送与变换的限制：** 只会上传 `.stl` 零件（其余的会被报告），整个上传必须不超过服务器 50 MB 的请求上限，并且模型只保存在服务器的目录中（HYDRA-UMC-STUDIO 目前不会读取）。单位姿态适用于相互独立的零件（热床、机架、真空台）；机器人或机器的零件保存在各自的连杆坐标系中，因此到达时会堆叠在原点且没有关节。建议使用 `https://` 主机（用 `HYDRA_UMC_PASSWORD` 或密码提示代替 `--password`）。变换先缩放，再绕 X、Y、Z 旋转，最后平移；旋转绕文件原点进行，而不是绕零件中心。
+**推送与变换的限制：** 只会上传 `.stl` 零件（其余的会被报告），整个上传必须不超过服务器 50 MB 的请求上限，并且模型只保存在服务器的目录中（HYDRA-UMC-STUDIO 目前不会读取）。单位姿态适用于相互独立的零件（热床、机架、真空台）；机器人或机器的零件保存在各自的连杆坐标系中，因此按 HYDRA-UMC-SUITE 运动学给出的初始姿态位置发送，固定且没有关节（仅当该摆放未知时才堆叠在原点）。建议使用 `https://` 主机（用 `HYDRA_UMC_PASSWORD` 或密码提示代替 `--password`）。变换先缩放，再绕 X、Y、Z 旋转，最后平移；旋转绕文件原点进行，而不是绕零件中心。
 
 **任何东西都不会被永久删除。** 移除或替换会先把真实的原始文件移动到该
 模型自己的 `.trash/` 子文件夹中——这与本生态系统内部工作惯例早已遵循的
@@ -182,7 +182,7 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
 
 **它绝不做的事：** 编辑你所指定的模型文件夹之外的任何内容，或永久删除零件。向服务器的推送是按其文档化的契约编写的，尚未在真实服务器上试过。
 
-默认情况下，把机器人或机器模型发送到目录会被拒绝，因为其零件会堆叠在原点；只有独立零件的类别（床、机架）可以通过。拒绝时会说明原因，非 `.stl` 的零件会被报告。
+机器人或机器模型发送到目录时，每个零件都位于其初始姿态位置，取自本仓库旁边 `HYDRA-UMC-SUITE` 的运动学（与装配视图相同的摆放）；关节保持固定。如果该模型的摆放未知，则拒绝发送，因为其零件会堆叠在原点；相互独立的零件（热床、机架）始终可以发送。拒绝时会说明原因，并报告非 `.stl` 的零件。
 
 ## 🔌 接口
 
@@ -194,7 +194,7 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
 | `--cli push <library> <category> <model> --host --username` | 把模型的可编辑零件发送到服务器的 `POST /api/models/submit`（需管理员登录；`--port` 默认 3000，`--server-category`，`--overwrite`） |
 | `--root <folder>` | 并排包含 `HYDRA-UMC-STUDIO` 和 `HYDRA-UMC-SUITE` 的生态系统根目录；默认是本工具的上级文件夹 |
 
-`--cli push` 的 `--allow-stacked-push` 以及推送窗口中的 **强制** 复选框（默认关闭，支持八种语言），可让机器人或机器模型即使零件会堆叠在原点也能发送到目录。
+`--cli push` 的 `--allow-stacked-push` 以及推送窗口中的 **强制** 复选框（默认关闭，支持八种语言），可让机器人或机器模型即使其零件的初始摆放未知、会堆叠在原点，也能发送到目录。
 
 ## ⚙️ 配置
 
@@ -220,7 +220,7 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
 
 ## 🧪 测试
 
-运行 `python -m pytest tests -q` 会执行 218 个自动测试。 不需要硬件，也不需要这台机器以外的任何东西。
+运行 `python -m pytest tests -q` 会执行 222 个自动测试。 不需要硬件，也不需要这台机器以外的任何东西。
 
 CI 运行 `HYDRA_UMC_CI=1 python tools/ci_validate.py`，检查清单、文档、八个 README 和图片。
 

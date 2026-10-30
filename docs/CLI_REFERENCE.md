@@ -99,7 +99,7 @@ admin-role account (that endpoint's own `requireAdmin`). Since the
 endpoint's own contract is URDF-shaped, this wraps the parts in the
 smallest real URDF it accepts: one root link plus one un-jointed
 (`fixed`) child link per part - each part's actual position is already
-baked into its own STL vertices, never a synthetic pose invented here. That holds for independent pieces (heated beds, racks, vacuum tables) only: the parts of a robot or machine are stored in their own link frame, so they arrive stacked at the origin without joints (a warning is printed). Only `.stl` parts are uploaded, the rest is reported, and an upload above the server's 50 MB limit is refused before it is sent.
+baked into its own STL vertices, never a synthetic pose invented here. That holds for independent pieces (heated beds, racks, vacuum tables) only: the parts of a robot or machine are stored in their own link frame, so each joint origin is the part's home-pose position from the kinematics of the `HYDRA-UMC-SUITE` checkout next to this one (the placement of the assembled view; the joints stay `fixed`). If that placement is not known for the model the parts would arrive stacked at the origin: a warning is printed and the push is refused unless it is forced. Only `.stl` parts are uploaded, the rest is reported, and an upload above the server's 50 MB limit is refused before it is sent.
 
 | Option | Meaning | Default |
 | --- | --- | --- |
@@ -109,7 +109,7 @@ baked into its own STL vertices, never a synthetic pose invented here. That hold
 | `--password` | Not recommended: it is visible in the process list and the shell history. Leave it out to be prompted, or set `HYDRA_UMC_PASSWORD` | prompt |
 | `--server-category` | Category to file this under server-side | same as `<category>` |
 | `--overwrite` | Replace an existing submission with the same name/category | off |
-| `--allow-stacked-push` | Send a robot or machine although its parts arrive stacked at the origin without joints (blocked by default; independent pieces such as heated beds are never blocked; the **Force** box of the push window does the same) | off |
+| `--allow-stacked-push` | Send a robot or machine although the home-pose placement of its parts is not known here and they arrive stacked at the origin (refused by default only in that case; independent pieces such as heated beds are never refused; the **Force** box of the push window does the same) | off |
 
 ```bash
 hydra-umc-editor-stl --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin

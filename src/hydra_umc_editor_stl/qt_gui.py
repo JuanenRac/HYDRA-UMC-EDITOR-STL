@@ -574,7 +574,7 @@ class EditorBridge(QObject):
         def do_push() -> str:
             client = ServerClient(host, port)
             client.login(username, password)
-            slug = client.push_model(model, target_category, overwrite, allow_stacked=force)
+            slug = client.push_model(model, target_category, overwrite, allow_stacked=force, ecosystem_root=self._ecosystem_root)
             if client.last_skipped_parts:
                 self._push_notes.append(i18n.t(self._lang, "msg_push_skipped", count=client.last_skipped_parts))
             if not is_independent_parts_category(target_category):

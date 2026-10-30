@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import pytest
@@ -137,3 +138,77 @@ def test_a_robot_push_is_blocked_unless_stacking_is_allowed(tmp_path: Path) -> N
     with pytest.raises(CatalogPushError) as info:
         client.push_model(model, "robots-6-dof", allow_stacked=True)
     assert "stacked" not in str(info.value)
+
+
+def test_a_robot_with_known_home_placements_is_pushed_assembled_not_stacked(tmp_path: Path, monkeypatch) -> None:
+    from hydra_umc_editor_stl import catalog_push
+    from hydra_umc_editor_stl.assembly import PartPlacement
+
+    root, model_dir = _library(tmp_path)
+    model = load_model(root, "studio", "robots-6-dof", "arm")
+    # 10 mm cube: a placement of 250 mm along x, turned a quarter of a turn about z
+    quarter_z = (0.7071067811865476, 0.0, 0.0, 0.7071067811865476)
+    monkeypatch.setattr(catalog_push, "assembled_transforms", lambda *a, **k: {"base.stl": PartPlacement((0.25, 0.0, 0.5), quarter_z)})
+    placements = catalog_push.home_placements(model, root)
+    urdf = build_assembly_urdf(model, placements)
+    origin = ET.fromstring(urdf).find("joint/origin")
+    assert origin is not None
+    xyz = [float(v) for v in origin.get("xyz").split()]
+    rpy = [float(v) for v in origin.get("rpy").split()]
+    # the cube spans 10 units (not more than 5 mm-units rule: 10 > 5 so it is millimeters): 0.25 mm -> 0.00025 m
+    assert xyz == pytest.approx([0.00025, 0.0, 0.0005])
+    assert rpy == pytest.approx([0.0, 0.0, 1.5707963], abs=1e-6)
+    # no refusal any more: the push gets as far as the (unreachable) server
+    client = ServerClient("127.0.0.1", 1)
+    client.token = "x"
+    with pytest.raises(CatalogPushError) as info:
+        client.push_model(model, "robots-6-dof", ecosystem_root=root)
+    assert "stacked" not in str(info.value)
+    assert client.last_placed_parts == 1
+    assert not any("link frame" in w for w in catalog_push.push_warnings(model, "robots-6-dof", root))
+
+
+def test_parts_without_a_known_placement_are_reported_and_a_model_with_none_is_still_refused(tmp_path: Path, monkeypatch) -> None:
+    from hydra_umc_editor_stl import catalog_push
+    from hydra_umc_editor_stl.assembly import PartPlacement
+
+    root, model_dir = _library(tmp_path)
+    make_cube_stl(model_dir / "arm2.stl", size=10.0)
+    model = load_model(root, "studio", "robots-6-dof", "arm")
+    monkeypatch.setattr(catalog_push, "assembled_transforms", lambda *a, **k: {"base.stl": PartPlacement((0.0, 0.0, 0.0), (1.0, 0.0, 0.0, 0.0))})
+    warnings = catalog_push.push_warnings(model, "robots-6-dof", root)
+    assert any("1 part(s)" in w and "arm2.stl" in w for w in warnings)
+    monkeypatch.setattr(catalog_push, "assembled_transforms", lambda *a, **k: None)
+    client = ServerClient("127.0.0.1", 1)
+    client.token = "x"
+    with pytest.raises(CatalogPushError, match="stacked"):
+        client.push_model(model, "robots-6-dof", ecosystem_root=root)
+
+
+def test_a_failing_kinematics_module_counts_as_no_placement(tmp_path: Path, monkeypatch) -> None:
+    from hydra_umc_editor_stl import catalog_push
+
+    root, _ = _library(tmp_path)
+    model = load_model(root, "studio", "robots-6-dof", "arm")
+
+    def boom(*a, **k):
+        raise RuntimeError("kinematics broke")
+
+    monkeypatch.setattr(catalog_push, "assembled_transforms", boom)
+    assert catalog_push.home_placements(model, root) is None
+    assert catalog_push.home_placements(model, None) is None
+
+
+def test_the_real_suite_places_a_ur5e_with_distinct_origins_in_the_pushed_urdf() -> None:
+    from hydra_umc_editor_stl import catalog_push
+
+    real_root = Path(__file__).resolve().parents[2]
+    if not (real_root / "HYDRA-UMC-SUITE" / "hydra_suite" / "render" / "kinematics.py").is_file() \
+            or not (real_root / "HYDRA-UMC-STUDIO" / "public" / "models" / "robots-6-dof" / "ur5e").is_dir():
+        pytest.skip("needs the sibling HYDRA-UMC-SUITE/HYDRA-UMC-STUDIO checkouts")
+    model = load_model(real_root, "studio", "robots-6-dof", "ur5e")
+    placements = catalog_push.home_placements(model, real_root)
+    assert placements
+    root = ET.fromstring(build_assembly_urdf(model, placements))
+    origins = {o.get("xyz") for o in root.findall("joint/origin")}
+    assert len(origins) > 1

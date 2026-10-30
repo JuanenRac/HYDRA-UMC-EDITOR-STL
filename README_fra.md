@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-218%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-222%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.7-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -37,7 +37,7 @@ bibliothèques de modèles), `stl_ops.py` (mutation STL réelle via
 client HTTP pour `POST /api/models/submit`) sont tous
 testés contre de vrais fichiers STL générés et une vraie
 `QGuiApplication` à portée de session quand nécessaire (`pytest tests/`,
-218 cas réussis) et ont été vérifiés de bout en bout contre les vrais
+222 cas réussis) et ont été vérifiés de bout en bout contre les vrais
 checkouts `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` de cet écosystème
 (`--cli categories`/`models`/`parts` contre les vrais arbres ;
 `transform`/`remove` contre une copie jetable, jamais le vrai checkout).
@@ -63,7 +63,7 @@ pour sa propre couche Qt Quick.
 |---|---|
 | Version | `0.1.7` |
 | Maturité | Ébauche |
-| Tests | 218 (`python -m pytest tests -q`) |
+| Tests | 222 (`python -m pytest tests -q`) |
 | Technologie | Python / PySide6 / Qt Quick / numpy-stl |
 | Cible | Le PC de la personne qui l'utilise |
 | Sur matériel réel | Sans objet : rien ici ne s'exécute sur du matériel |
@@ -79,7 +79,7 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 | Domaine | État | Ce que cela veut dire ici |
 |---|---|---|
 | Logiciel | 🟠 | Seulement la structure et les premières pièces ; l'essentiel du travail reste à faire |
-| Tests | 🟢 | 218 tests automatiques, exécutés à chaque modification |
+| Tests | 🟢 | 222 tests automatiques, exécutés à chaque modification |
 | Matériel réel | 🟢 | Sans objet : rien ici ne s'exécute sur du matériel |
 | Documentation | 🟢 | README en huit langues, vérifié par rapport au manifeste à chaque modification |
 
@@ -137,7 +137,7 @@ contre le vrai checkout sur disque :
 - **Barre flottante du visualiseur** - Sélectionner, Déplacer (un vrai gizmo 3 axes déplaçable), Modifier (rotation/échelle), Couleur, Ajouter, Supprimer, Fixer (enregistre définitivement le déplacement/rotation/échelle), Copier, Coller et Couper, directement dans la vue 3D. Les plateaux chauffants, tables à vide et racks sont des variantes de taille indépendantes : le visualiseur n'affiche que celle sélectionnée au lieu de les empiler.
 - **Vue assemblée** - les robots, CNC, PnP et lasers s'ouvrent déjà assemblés dans leur pose de repos (lue depuis la cinématique de HYDRA-UMC-SUITE à côté de ce checkout, affichage seul) ; un bouton de la barre bascule vers les pièces brutes pour les modifier.
 
-**Limites de l'envoi et de la transformation :** seules les pièces `.stl` sont envoyées (les autres sont signalées), l'envoi complet doit tenir dans la limite de requête de 50 Mo du serveur, et le modèle n'est stocké que dans le catalogue du serveur (HYDRA-UMC-STUDIO ne le lit pas encore). La pose identité convient aux pièces indépendantes (plateaux chauffants, racks, tables à vide) ; les pièces d'un robot ou d'une machine sont stockées dans leur propre repère de lien, elles arrivent donc empilées à l'origine et sans articulations. Préférez un hôte `https://` (ou `HYDRA_UMC_PASSWORD` / la saisie du mot de passe plutôt que `--password`). Une transformation met d'abord à l'échelle, puis tourne autour de X, Y et Z, puis translate ; la rotation se fait autour de l'origine du fichier, pas du centre de la pièce.
+**Limites de l'envoi et de la transformation :** seules les pièces `.stl` sont envoyées (les autres sont signalées), l'envoi complet doit tenir dans la limite de requête de 50 Mo du serveur, et le modèle n'est stocké que dans le catalogue du serveur (HYDRA-UMC-STUDIO ne le lit pas encore). La pose identité convient aux pièces indépendantes (plateaux chauffants, racks, tables à vide) ; les pièces d'un robot ou d'une machine sont stockées dans leur propre repère de lien, elles sont donc envoyées à leur position de pose initiale d'après la cinématique de HYDRA-UMC-SUITE, fixes et sans articulations (empilées à l'origine seulement si ce placement n'est pas connu). Préférez un hôte `https://` (ou `HYDRA_UMC_PASSWORD` / la saisie du mot de passe plutôt que `--password`). Une transformation met d'abord à l'échelle, puis tourne autour de X, Y et Z, puis translate ; la rotation se fait autour de l'origine du fichier, pas du centre de la pièce.
 
 **Rien n'est jamais supprimé de façon permanente.** Un retrait ou un
 remplacement déplace d'abord le vrai fichier original dans le propre
@@ -209,7 +209,7 @@ produit, pas seulement comme une habitude interne.
 
 **Ce qu'il ne fait jamais :** modifier quoi que ce soit hors des dossiers de modèles que vous lui indiquez, ni supprimer une pièce définitivement. L'envoi à un serveur a été écrit selon son contrat documenté et n'a pas été essayé sur un vrai serveur.
 
-L'envoi d'un modèle de robot ou de machine à un catalogue est refusé par défaut, car ses pièces arriveraient empilées à l'origine ; seules passent les catégories de pièces indépendantes (plateaux, racks). Le refus en donne la raison, et les pièces qui ne sont pas des `.stl` sont signalées.
+Un modèle de robot ou de machine part au catalogue avec chaque pièce à sa position de pose initiale, prise dans la cinématique de `HYDRA-UMC-SUITE` placé à côté de ce dépôt (le même placement que la vue assemblée) ; les articulations restent fixes. Si ce placement n'est pas connu pour le modèle, l'envoi est refusé, car ses pièces arriveraient empilées à l'origine ; les pièces indépendantes (plateaux, racks) passent toujours. Le refus explique pourquoi, et les pièces qui ne sont pas des `.stl` sont signalées.
 
 ## 🔌 Interfaces
 
@@ -221,7 +221,7 @@ L'envoi d'un modèle de robot ou de machine à un catalogue est refusé par déf
 | `--cli push <library> <category> <model> --host --username` | envoie les pièces modifiables d'un modèle à `POST /api/models/submit` d'un serveur (connexion administrateur ; `--port` 3000 par défaut, `--server-category`, `--overwrite`) |
 | `--root <folder>` | la racine de l'écosystème qui contient `HYDRA-UMC-STUDIO` et `HYDRA-UMC-SUITE` côte à côte ; par défaut, le dossier parent de cet outil |
 
-`--allow-stacked-push` sur `--cli push` et la case **Forcer** de la fenêtre d'envoi (décochée par défaut, dans les huit langues) permettent d'envoyer au catalogue un modèle de robot ou de machine même si ses pièces arrivent empilées à l'origine.
+`--allow-stacked-push` sur `--cli push` et la case **Forcer** de la fenêtre d'envoi (décochée par défaut, dans les huit langues) permettent d'envoyer au catalogue un modèle de robot ou de machine même si le placement initial de ses pièces n'est pas connu, qui arrivent alors empilées à l'origine.
 
 ## ⚙️ Configuration
 
@@ -247,7 +247,7 @@ Nécessite Python 3.10 ou plus récent. La première ligne crée un environnemen
 
 ## 🧪 Tests
 
-218 tests automatiques s'exécutent avec `python -m pytest tests -q`. Ils n'ont besoin ni de matériel ni de rien en dehors de cette machine.
+222 tests automatiques s'exécutent avec `python -m pytest tests -q`. Ils n'ont besoin ni de matériel ni de rien en dehors de cette machine.
 
 La CI exécute `HYDRA_UMC_CI=1 python tools/ci_validate.py`, qui vérifie le manifeste, les documents, les huit README et les images.
 

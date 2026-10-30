@@ -191,7 +191,7 @@ def _fake_client(calls: list):
         def login(self, username, password):
             pass
 
-        def push_model(self, model, category, overwrite=False, allow_stacked=False):
+        def push_model(self, model, category, overwrite=False, allow_stacked=False, ecosystem_root=None):
             calls.append({"overwrite": overwrite, "allow_stacked": allow_stacked})
             return "slug"
 

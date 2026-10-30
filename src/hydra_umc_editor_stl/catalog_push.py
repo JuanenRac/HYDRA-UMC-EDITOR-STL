@@ -16,11 +16,15 @@
 # contract already accepts: one root link plus one child link per part,
 # joined by a `fixed` joint at the identity origin.
 #
-# Limit to keep in mind: that identity origin is only the right pose for
-# categories of independent pieces (heated beds, racks, vacuum tables). The
-# STL parts of a robot or machine are each stored in their OWN link frame
-# (see assembly.py), so a pushed robot arrives with every link stacked at the
-# origin and no articulation. `push_warnings()` reports this before pushing.
+# The identity origin is the right pose for categories of independent pieces
+# (heated beds, racks, vacuum tables). The STL parts of a robot or machine are
+# each stored in their OWN link frame (see assembly.py), so for those the joint
+# origin of every part is its home-pose placement from the kinematics of
+# HYDRA-UMC-SUITE (the same placement the assembled view shows): the pushed
+# robot arrives assembled, still without articulation. Only when those
+# placements cannot be found (no SUITE checkout, or a model it has no
+# kinematics for) would the parts arrive stacked at the origin, and then the
+# push is refused unless it is forced. `push_warnings()` reports this first.
 # =============================================================================
 from __future__ import annotations
 
@@ -33,6 +37,9 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from xml.dom import minidom
 
+import numpy as np
+
+from .assembly import PartPlacement, _mesh_is_millimeters, _rotation_matrix, assembled_transforms
 from .mesh_check import check_stl
 from .model_catalog import ModelInfo, is_independent_parts_category
 
@@ -56,17 +63,47 @@ def _upload_filename(index: int, part_filename: str) -> str:
     return f"{index}_{Path(part_filename).name}"
 
 
-def push_warnings(model: ModelInfo, category: str) -> list[str]:
+def home_placements(model: ModelInfo, ecosystem_root: Path | None) -> dict[str, PartPlacement] | None:
+    """Where each part of a robot or machine sits at its home pose, or None when that is not known here."""
+    if ecosystem_root is None:
+        return None
+    try:
+        return assembled_transforms(ecosystem_root, model.category, model.model_id, model.path)
+    except Exception:  # noqa: BLE001 - a kinematics module that fails is the same as having none
+        return None
+
+
+def _unplaced_parts(model: ModelInfo, placements: dict[str, PartPlacement] | None) -> list[str]:
+    return [p.filename for p in model.parts if p.editable and (placements is None or p.filename not in placements)]
+
+
+def _origin_attributes(model: ModelInfo, part_filename: str, placement: PartPlacement) -> tuple[str, str]:
+    """(xyz, rpy) of a joint origin: meters and radians, as a URDF wants them."""
+    scale = 0.001 if _mesh_is_millimeters(model.path / part_filename) else 1.0
+    xyz = " ".join(f"{v * scale:.9g}" for v in placement.position)
+    r = _rotation_matrix(placement.rotation_wxyz)
+    pitch = float(np.arcsin(-np.clip(r[2, 0], -1.0, 1.0)))
+    if abs(r[2, 0]) < 0.999999:
+        roll, yaw = float(np.arctan2(r[2, 1], r[2, 2])), float(np.arctan2(r[1, 0], r[0, 0]))
+    else:  # gimbal lock: the roll is folded into the yaw
+        roll, yaw = 0.0, float(np.arctan2(-r[0, 1], r[1, 1]))
+    return xyz, " ".join(f"{v:.9g}" for v in (roll, pitch, yaw))
+
+
+def push_warnings(model: ModelInfo, category: str, ecosystem_root: Path | None = None) -> list[str]:
     """What a push would leave out or get wrong, so the operator can decide first."""
     warnings: list[str] = []
     skipped = [p.filename for p in model.parts if not p.editable]
     if skipped:
         warnings.append(f"{len(skipped)} part(s) are not .stl files and will not be uploaded (for example {skipped[0]}).")
     if not is_independent_parts_category(category):
-        warnings.append(
-            "Parts of a robot or machine are stored in their own link frame: the pushed model has every part at the "
-            "origin and no joints. Use it only for independent pieces, or articulate it with HYDRA-UMC-EDITOR-URDF."
-        )
+        unplaced = _unplaced_parts(model, home_placements(model, ecosystem_root))
+        if unplaced:
+            warnings.append(
+                f"Parts of a robot or machine are stored in their own link frame and the home-pose placement of "
+                f"{len(unplaced)} part(s) is not known here (for example {unplaced[0]}): they would sit at the origin. "
+                "Articulate the model with HYDRA-UMC-EDITOR-URDF, or check that HYDRA-UMC-SUITE is next to this checkout."
+            )
     # What is wrong with the meshes themselves, part by part (a part that cannot be read is reported by the file check).
     for part in model.parts:
         if not part.editable:
@@ -77,10 +114,11 @@ def push_warnings(model: ModelInfo, category: str) -> list[str]:
     return warnings
 
 
-def build_assembly_urdf(model: ModelInfo) -> str:
+def build_assembly_urdf(model: ModelInfo, placements: dict[str, PartPlacement] | None = None) -> str:
     """A real, minimal URDF for this model's own editable (.stl) parts -
     see this module's own header for why a rigid, un-articulated assembly
-    like this is a legitimate URDF rather than a hack."""
+    like this is a legitimate URDF rather than a hack. With `placements`
+    each part's joint carries its home-pose origin instead of the identity."""
     editable_parts = [p for p in model.parts if p.editable]
     root = ET.Element("robot")
     root.set("name", model.model_id)
@@ -101,6 +139,11 @@ def build_assembly_urdf(model: ModelInfo) -> str:
         joint_el.set("type", "fixed")
         ET.SubElement(joint_el, "parent").set("link", "base_link")
         ET.SubElement(joint_el, "child").set("link", link_name)
+        if placements is not None and part.filename in placements:
+            xyz, rpy = _origin_attributes(model, part.filename, placements[part.filename])
+            origin_el = ET.SubElement(joint_el, "origin")
+            origin_el.set("xyz", xyz)
+            origin_el.set("rpy", rpy)
 
     rough = ET.tostring(root, encoding="unicode")
     return minidom.parseString(rough).toprettyxml(indent="  ")
@@ -124,6 +167,7 @@ class ServerClient:
             self.base_url = f"http://{host}:{port}"
         self.token: str | None = None
         self.last_skipped_parts = 0
+        self.last_placed_parts = 0
 
     def _request(self, method: str, path: str, body: dict | None = None, auth: bool = False) -> dict:
         url = f"{self.base_url}{path}"
@@ -166,7 +210,12 @@ class ServerClient:
         self.token = token
 
     def push_model(
-        self, model: ModelInfo, category: str, overwrite: bool = False, allow_stacked: bool = False
+        self,
+        model: ModelInfo,
+        category: str,
+        overwrite: bool = False,
+        allow_stacked: bool = False,
+        ecosystem_root: Path | None = None,
     ) -> str:
         """POST /api/models/submit - builds the assembly URDF above,
         base64-encodes every editable part's own current STL bytes
@@ -178,13 +227,19 @@ class ServerClient:
         editable_parts = [p for p in model.parts if p.editable]
         if not editable_parts:
             raise CatalogPushError("This model has no editable (.stl) parts to push.")
-        if not allow_stacked and not is_independent_parts_category(category):
-            raise CatalogPushError(
-                "Not pushed: the parts of a robot or machine would arrive stacked at the origin with no joints. "
-                "Articulate it with HYDRA-UMC-EDITOR-URDF, or pass allow_stacked=True (--allow-stacked-push) "
-                "to send it anyway."
-            )
-        urdf_xml = build_assembly_urdf(model)
+        placements = None
+        self.last_placed_parts = 0
+        if not is_independent_parts_category(category):
+            placements = home_placements(model, ecosystem_root)
+            self.last_placed_parts = len(editable_parts) - len(_unplaced_parts(model, placements))
+            if self.last_placed_parts == 0 and not allow_stacked:
+                raise CatalogPushError(
+                    "Not pushed: the home-pose placement of this robot or machine is not known here, so its parts "
+                    "would arrive stacked at the origin. Articulate it with HYDRA-UMC-EDITOR-URDF, check that "
+                    "HYDRA-UMC-SUITE is next to this checkout, or pass allow_stacked=True (--allow-stacked-push) "
+                    "to send it anyway."
+                )
+        urdf_xml = build_assembly_urdf(model, placements)
         self.last_skipped_parts = sum(1 for p in model.parts if not p.editable)
         mesh_files = []
         for index, part in enumerate(editable_parts):

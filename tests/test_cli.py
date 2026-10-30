@@ -116,7 +116,7 @@ def test_push_reads_the_password_from_the_environment(monkeypatch, capsys, ecosy
         def login(self, username: str, password: str) -> None:
             seen.append(password)
 
-        def push_model(self, model, category, overwrite, allow_stacked=False) -> str:
+        def push_model(self, model, category, overwrite, allow_stacked=False, ecosystem_root=None) -> str:
             return "slug-1"
 
     monkeypatch.setattr(main_module, "ServerClient", FakeClient)

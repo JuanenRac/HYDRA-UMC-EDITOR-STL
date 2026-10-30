@@ -155,13 +155,14 @@ def cmd_push(args: argparse.Namespace) -> int:
         print(f"No such model: {args.library}/{args.category}/{args.model}", file=sys.stderr)
         return 1
     password = args.password or os.environ.get("HYDRA_UMC_PASSWORD") or getpass.getpass("Server password: ")
-    for warning in push_warnings(model, args.server_category or args.category):
+    for warning in push_warnings(model, args.server_category or args.category, root):
         print(f"Warning: {warning}", file=sys.stderr)
     client = ServerClient(args.host, args.port)
     try:
         client.login(args.username, password)
         slug = client.push_model(
-            model, args.server_category or args.category, args.overwrite, allow_stacked=args.allow_stacked_push
+            model, args.server_category or args.category, args.overwrite, allow_stacked=args.allow_stacked_push,
+            ecosystem_root=root,
         )
     except CatalogPushError as error:
         print(f"Push failed: {error}", file=sys.stderr)
@@ -242,7 +243,7 @@ def build_parser() -> argparse.ArgumentParser:
     push_p.add_argument(
         "--allow-stacked-push",
         action="store_true",
-        help="Send a robot or machine even though its parts arrive stacked at the origin without joints.",
+        help="Send a robot or machine even when the home-pose placement of its parts is not known here (they would arrive stacked at the origin).",
     )
     push_p.add_argument("--overwrite", action="store_true", help="Replace an existing submission with the same name/category.")
     push_p.set_defaults(func=cmd_push)
