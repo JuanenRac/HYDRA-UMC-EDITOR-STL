@@ -160,7 +160,9 @@ def cmd_push(args: argparse.Namespace) -> int:
     client = ServerClient(args.host, args.port)
     try:
         client.login(args.username, password)
-        slug = client.push_model(model, args.server_category or args.category, args.overwrite)
+        slug = client.push_model(
+            model, args.server_category or args.category, args.overwrite, allow_stacked=args.allow_stacked_push
+        )
     except CatalogPushError as error:
         print(f"Push failed: {error}", file=sys.stderr)
         return 1
@@ -237,6 +239,11 @@ def build_parser() -> argparse.ArgumentParser:
     push_p.add_argument("--username", required=True, help="Admin account username (POST /api/models/submit requires admin).")
     push_p.add_argument("--password", help="Not recommended (visible in the process list and shell history): leave it out to be prompted, or set HYDRA_UMC_PASSWORD.")
     push_p.add_argument("--server-category", help="Category to file this under on the server (default: the same folder name used locally).")
+    push_p.add_argument(
+        "--allow-stacked-push",
+        action="store_true",
+        help="Send a robot or machine even though its parts arrive stacked at the origin without joints.",
+    )
     push_p.add_argument("--overwrite", action="store_true", help="Replace an existing submission with the same name/category.")
     push_p.set_defaults(func=cmd_push)
 

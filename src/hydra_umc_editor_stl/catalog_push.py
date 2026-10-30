@@ -165,7 +165,9 @@ class ServerClient:
             raise CatalogPushError("Login succeeded but the server returned no token.")
         self.token = token
 
-    def push_model(self, model: ModelInfo, category: str, overwrite: bool = False) -> str:
+    def push_model(
+        self, model: ModelInfo, category: str, overwrite: bool = False, allow_stacked: bool = False
+    ) -> str:
         """POST /api/models/submit - builds the assembly URDF above,
         base64-encodes every editable part's own current STL bytes
         (already reflecting any transform/replace/add this tool applied),
@@ -176,6 +178,12 @@ class ServerClient:
         editable_parts = [p for p in model.parts if p.editable]
         if not editable_parts:
             raise CatalogPushError("This model has no editable (.stl) parts to push.")
+        if not allow_stacked and not is_independent_parts_category(category):
+            raise CatalogPushError(
+                "Not pushed: the parts of a robot or machine would arrive stacked at the origin with no joints. "
+                "Articulate it with HYDRA-UMC-EDITOR-URDF, or pass allow_stacked=True (--allow-stacked-push) "
+                "to send it anyway."
+            )
         urdf_xml = build_assembly_urdf(model)
         self.last_skipped_parts = sum(1 for p in model.parts if not p.editable)
         mesh_files = []

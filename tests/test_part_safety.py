@@ -112,7 +112,7 @@ def test_a_push_above_the_server_limit_is_refused_before_sending(tmp_path: Path,
     client = ServerClient("127.0.0.1", 1)
     client.token = "x"
     with pytest.raises(CatalogPushError, match="50 MB"):
-        client.push_model(model, "robots-6-dof")
+        client.push_model(model, "robots-6-dof", allow_stacked=True)
     assert MAX_BODY_BYTES > 100 and json.dumps({})
 
 
@@ -120,3 +120,20 @@ def test_a_server_url_with_https_is_kept() -> None:
     assert ServerClient("https://srv", 3000).base_url == "https://srv:3000"
     assert ServerClient("https://srv:8443", 3000).base_url == "https://srv:8443"
     assert ServerClient("10.0.0.5", 3000).base_url == "http://10.0.0.5:3000"
+
+
+def test_a_robot_push_is_blocked_unless_stacking_is_allowed(tmp_path: Path) -> None:
+    root, _ = _library(tmp_path)
+    model = load_model(root, "studio", "robots-6-dof", "arm")
+    client = ServerClient("127.0.0.1", 1)
+    client.token = "x"
+    with pytest.raises(CatalogPushError, match="stacked"):
+        client.push_model(model, "robots-6-dof")
+    # Independent pieces are never blocked: this one only fails later, on the unreachable server.
+    heated = load_model(root, "studio", "robots-6-dof", "arm")
+    with pytest.raises(CatalogPushError) as info:
+        client.push_model(heated, "heatedbeds")
+    assert "stacked" not in str(info.value)
+    with pytest.raises(CatalogPushError) as info:
+        client.push_model(model, "robots-6-dof", allow_stacked=True)
+    assert "stacked" not in str(info.value)
