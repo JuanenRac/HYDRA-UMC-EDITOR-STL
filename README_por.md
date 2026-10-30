@@ -20,7 +20,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
   <img src="https://img.shields.io/badge/Tests-222%20passing-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.1.7-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.1.8-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -58,7 +58,7 @@ próprio HYDRA-UMC-UPDATER já traça para o seu shell Qt Quick.
 
 | | |
 |---|---|
-| Versão | `0.1.7` |
+| Versão | `0.1.8` |
 | Maturidade | Estrutura inicial |
 | Testes | 222 (`python -m pytest tests -q`) |
 | Tecnologia | Python / PySide6 / Qt Quick / numpy-stl |
@@ -138,7 +138,7 @@ cópia verdadeira em disco:
   desta cópia, apenas para visualização); um botão da barra de ferramentas
   passa para as peças em bruto para edição.
 
-**Limites do envio e da transformação:** só são enviadas as peças `.stl` (as outras são indicadas), o envio completo tem de caber no limite de pedido de 50 MB do servidor e o modelo só fica guardado no catálogo do servidor (o HYDRA-UMC-STUDIO ainda não o lê). A pose identidade é correta para peças independentes (camas aquecidas, racks, mesas de vácuo); as peças de um robô ou máquina estão guardadas no seu próprio referencial de elo, pelo que são enviadas na sua posição de pose inicial, segundo a cinemática do HYDRA-UMC-SUITE, fixas e sem articulações (empilhadas na origem só se essa colocação não for conhecida). Prefira um anfitrião `https://` (ou `HYDRA_UMC_PASSWORD` / o pedido da palavra-passe em vez de `--password`). Uma transformação escala primeiro, depois roda em X, Y e Z e por fim translada; a rotação é em torno da origem do ficheiro, não do centro da peça.
+**Limites do envio e da transformação:** só são enviadas as peças `.stl` (as outras são indicadas), o envio completo tem de caber no limite de pedido de 50 MB do servidor e o modelo só fica guardado no catálogo do servidor (o HYDRA-UMC-STUDIO ainda não o lê). A pose identidade é correta para peças independentes (camas aquecidas, racks, mesas de vácuo); as peças de um robô ou máquina estão guardadas no seu próprio referencial de elo, pelo que chegam empilhadas na origem e sem articulações. Prefira um anfitrião `https://` (ou `HYDRA_UMC_PASSWORD` / o pedido da palavra-passe em vez de `--password`). Uma transformação escala primeiro, depois roda em X, Y e Z e por fim translada; a rotação é em torno da origem do ficheiro, não do centro da peça.
 
 **Nada é alguma vez eliminado permanentemente.** Uma remoção ou uma
 substituição move primeiro o ficheiro original real para a subpasta `.trash/`
@@ -204,7 +204,7 @@ A **HYDRA-UMC-EDITOR-STL** é a ferramenta de ambiente de trabalho que edita as 
 
 **O que nunca faz:** editar nada fora das pastas de modelos que lhe indicar, nem apagar uma peça para sempre. O envio para um servidor foi escrito segundo o seu contrato documentado e não foi experimentado num servidor real.
 
-Um modelo de robô ou de máquina vai para o catálogo com cada peça na sua posição de pose inicial, tirada da cinemática do `HYDRA-UMC-SUITE` ao lado deste repositório (a mesma colocação da vista montada); as articulações ficam fixas. Se essa colocação não for conhecida para o modelo, o envio é recusado, porque as suas peças chegariam empilhadas na origem; as peças independentes (camas, racks) passam sempre. A recusa diz porquê e as peças que não são `.stl` são indicadas.
+O envio de um modelo de robô ou de máquina para um catálogo é recusado por predefinição, porque as suas peças chegariam empilhadas na origem; só passam as categorias de peças independentes (camas, racks). A recusa explica o motivo e as peças que não são `.stl` são comunicadas.
 
 ## 🔌 Interfaces
 
@@ -216,7 +216,7 @@ Um modelo de robô ou de máquina vai para o catálogo com cada peça na sua pos
 | `--cli push <library> <category> <model> --host --username` | envia as peças editáveis de um modelo para `POST /api/models/submit` de um servidor (início de sessão de administrador; `--port` 3000 por predefinição, `--server-category`, `--overwrite`) |
 | `--root <folder>` | a raiz do ecossistema que contém `HYDRA-UMC-STUDIO` e `HYDRA-UMC-SUITE` lado a lado; por predefinição, a pasta-mãe desta ferramenta |
 
-`--allow-stacked-push` em `--cli push` e a caixa **Forçar** da janela de envio (desligada por predefinição, nos oito idiomas) deixam enviar para o catálogo um modelo de robô ou de máquina mesmo que a colocação inicial das suas peças não seja conhecida e elas cheguem empilhadas na origem.
+`--allow-stacked-push` em `--cli push` e a caixa **Forçar** da janela de envio (desligada por predefinição, nos oito idiomas) deixam enviar para o catálogo um modelo de robô ou de máquina mesmo que as suas peças cheguem empilhadas na origem.
 
 ## ⚙️ Configuração
 

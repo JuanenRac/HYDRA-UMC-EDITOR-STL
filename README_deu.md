@@ -20,7 +20,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
   <img src="https://img.shields.io/badge/Tests-222%20passing-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.1.7-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.1.8-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -62,7 +62,7 @@ zieht.
 
 | | |
 |---|---|
-| Version | `0.1.7` |
+| Version | `0.1.8` |
 | Reifegrad | Gerüst |
 | Tests | 222 (`python -m pytest tests -q`) |
 | Technik | Python / PySide6 / Qt Quick / numpy-stl |
@@ -139,7 +139,7 @@ echten Checkout auf der Festplatte:
 - **Schwebende Viewer-Werkzeugleiste** - Auswählen, Verschieben (ein echtes ziehbares 3-Achsen-Gizmo), Bearbeiten (drehen/skalieren), Farbe, Hinzufügen, Löschen, Fixieren (speichert Verschiebung/Drehung/Skalierung dauerhaft), Kopieren, Einfügen und Ausschneiden, direkt in der 3D-Ansicht. Heizbetten, Vakuumtische und Racks sind unabhängige Größenvarianten, daher zeigt der Viewer nur die ausgewählte statt alle übereinander.
 - **Montierte Ansicht** - Roboter, CNC, PnP und Laser öffnen sich bereits in ihrer Grundstellung montiert (aus der Kinematik von HYDRA-UMC-SUITE neben diesem Checkout gelesen, nur Anzeige); eine Schaltfläche der Leiste wechselt zu den Rohteilen zum Bearbeiten.
 
-**Grenzen von Senden und Transformation:** Es werden nur `.stl`-Teile hochgeladen (die übrigen werden gemeldet), der gesamte Upload muss in das 50-MB-Anfragelimit des Servers passen, und das Modell wird nur im Katalog des Servers gespeichert (HYDRA-UMC-STUDIO liest es noch nicht). Die Identitätspose passt für unabhängige Teile (Heizbetten, Racks, Vakuumtische); die Teile eines Roboters oder einer Maschine liegen in ihrem eigenen Link-Koordinatensystem und werden daher an ihrer Grundstellungs-Position aus der Kinematik von HYDRA-UMC-SUITE gesendet, fest und ohne Gelenke (nur wenn diese Platzierung nicht bekannt ist, am Ursprung gestapelt). Bevorzugen Sie einen `https://`-Host (oder `HYDRA_UMC_PASSWORD` / die Passwortabfrage statt `--password`). Eine Transformation skaliert zuerst, dreht dann um X, Y und Z und verschiebt zuletzt; die Drehung erfolgt um den Ursprung der Datei, nicht um die Mitte des Teils.
+**Grenzen von Senden und Transformation:** Es werden nur `.stl`-Teile hochgeladen (die übrigen werden gemeldet), der gesamte Upload muss in das 50-MB-Anfragelimit des Servers passen, und das Modell wird nur im Katalog des Servers gespeichert (HYDRA-UMC-STUDIO liest es noch nicht). Die Identitätspose passt für unabhängige Teile (Heizbetten, Racks, Vakuumtische); die Teile eines Roboters oder einer Maschine liegen in ihrem eigenen Link-Koordinatensystem und kommen daher am Ursprung gestapelt und ohne Gelenke an. Bevorzugen Sie einen `https://`-Host (oder `HYDRA_UMC_PASSWORD` / die Passwortabfrage statt `--password`). Eine Transformation skaliert zuerst, dreht dann um X, Y und Z und verschiebt zuletzt; die Drehung erfolgt um den Ursprung der Datei, nicht um die Mitte des Teils.
 
 **Nichts wird jemals dauerhaft gelöscht.** Ein Entfernen oder Ersetzen
 verschiebt zuerst die echte Originaldatei in den eigenen
@@ -214,7 +214,7 @@ angewendet, nicht nur als interne Gewohnheit.
 
 **Was es nie tut:** etwas außerhalb der Modellordner bearbeiten, auf die du es zeigst, oder ein Teil endgültig löschen. Das Senden an einen Server wurde gegen dessen dokumentierten Vertrag geschrieben und nie mit einem echten Server erprobt.
 
-Ein Roboter- oder Maschinenmodell geht mit jedem Teil an seiner Grundstellungs-Position in den Katalog, entnommen der Kinematik von `HYDRA-UMC-SUITE` neben diesem Checkout (dieselbe Platzierung wie in der zusammengesetzten Ansicht); die Gelenke bleiben fest. Ist diese Platzierung für das Modell nicht bekannt, wird das Senden abgelehnt, weil seine Teile am Ursprung gestapelt ankämen; unabhängige Teile (Betten, Racks) gehen immer durch. Die Ablehnung nennt den Grund, und Teile, die keine `.stl` sind, werden gemeldet.
+Das Senden eines Roboter- oder Maschinenmodells an einen Katalog wird standardmäßig abgelehnt, weil seine Teile am Ursprung gestapelt ankämen; nur Kategorien unabhängiger Teile (Betten, Racks) gehen durch. Die Ablehnung nennt den Grund, und Teile, die keine `.stl` sind, werden gemeldet.
 
 ## 🔌 Schnittstellen
 
@@ -226,7 +226,7 @@ Ein Roboter- oder Maschinenmodell geht mit jedem Teil an seiner Grundstellungs-P
 | `--cli push <library> <category> <model> --host --username` | sendet die bearbeitbaren Teile eines Modells an `POST /api/models/submit` eines Servers (Administrator-Anmeldung; `--port` standardmäßig 3000, `--server-category`, `--overwrite`) |
 | `--root <folder>` | die Ökosystem-Wurzel, die `HYDRA-UMC-STUDIO` und `HYDRA-UMC-SUITE` nebeneinander enthält; standardmäßig der übergeordnete Ordner dieses Werkzeugs |
 
-`--allow-stacked-push` bei `--cli push` und das Kästchen **Erzwingen** im Sendefenster (standardmäßig aus, in allen acht Sprachen) lassen ein Roboter- oder Maschinenmodell an den Katalog gehen, auch wenn die Grundstellungs-Platzierung seiner Teile nicht bekannt ist und sie am Ursprung gestapelt ankommen.
+`--allow-stacked-push` bei `--cli push` und das Kästchen **Erzwingen** im Sendefenster (standardmäßig aus, in allen acht Sprachen) lassen ein Roboter- oder Maschinenmodell an den Katalog gehen, obwohl seine Teile am Ursprung gestapelt ankämen.
 
 ## ⚙️ Konfiguration
 

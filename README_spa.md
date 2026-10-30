@@ -20,7 +20,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
   <img src="https://img.shields.io/badge/Tests-222%20passing-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.1.7-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.1.8-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -61,7 +61,7 @@ propia capa Qt Quick.
 
 | | |
 |---|---|
-| Versión | `0.1.7` |
+| Versión | `0.1.8` |
 | Madurez | Andamiaje |
 | Tests | 222 (`python -m pytest tests -q`) |
 | Tecnología | Python / PySide6 / Qt Quick / numpy-stl |
@@ -137,7 +137,7 @@ contra el checkout real en disco:
 - **Barra flotante del visor** - Seleccionar, Mover (un gizmo real de 3 ejes arrastrable), Editar (rotar/escalar), Color, Añadir, Borrar, Fijar (guarda de forma permanente el movimiento/rotación/escala), Copiar, Pegar y Cortar, dentro del propio visor 3D. Las camas calientes, mesas de vacío y racks son variantes de tamaño independientes, así que el visor muestra solo la seleccionada en vez de apilarlas.
 - **Vista montada** - los robots, CNC, PnP y laser se abren ya montados en su pose de reposo (leída de la cinemática de HYDRA-UMC-SUITE junto a este checkout, solo visualización); un botón de la barra cambia a las piezas sin montar para editarlas.
 
-**Límites del envío y de la transformación:** solo se suben las piezas `.stl` (las demás se notifican), todo el envío debe caber en el límite de 50 MB de petición del servidor y el modelo solo se guarda en el catálogo del servidor (HYDRA-UMC-STUDIO aún no lo lee). La pose identidad es correcta para piezas independientes (camas calientes, racks, mesas de vacío); las piezas de un robot o máquina están en su propio marco de eslabón, así que se envían en su posición de pose inicial según la cinemática de HYDRA-UMC-SUITE, fijas y sin articulaciones (apiladas en el origen solo si esa colocación no se conoce). Usa preferiblemente un host `https://` (o `HYDRA_UMC_PASSWORD` / la petición de contraseña en lugar de `--password`). Una transformación primero escala, luego rota en X, Y y Z y por último traslada; la rotación es alrededor del origen del archivo, no del centro de la pieza.
+**Límites del envío y de la transformación:** solo se suben las piezas `.stl` (las demás se notifican), todo el envío debe caber en el límite de 50 MB de petición del servidor y el modelo solo se guarda en el catálogo del servidor (HYDRA-UMC-STUDIO aún no lo lee). La pose identidad es correcta para piezas independientes (camas calientes, racks, mesas de vacío); las piezas de un robot o máquina están en su propio marco de eslabón, así que llegan apiladas en el origen y sin articulaciones. Usa preferiblemente un host `https://` (o `HYDRA_UMC_PASSWORD` / la petición de contraseña en lugar de `--password`). Una transformación primero escala, luego rota en X, Y y Z y por último traslada; la rotación es alrededor del origen del archivo, no del centro de la pieza.
 
 **Nunca se borra nada de forma permanente.** Un "quitar" o un
 "reemplazar" mueve primero el fichero original real a la propia
@@ -209,7 +209,7 @@ del producto, no solo como un hábito interno.
 
 **Lo que nunca hace:** editar nada fuera de las carpetas de modelos que le indiques, ni borrar una pieza para siempre. El envío a un servidor se escribió contra su contrato documentado y no se ha probado con un servidor real.
 
-Un modelo de robot o máquina va al catálogo con cada pieza en su posición de pose inicial, tomada de la cinemática de `HYDRA-UMC-SUITE` junto a este repositorio (la misma colocación de la vista ensamblada); las articulaciones quedan fijas. Si esa colocación no se conoce para el modelo, el envío se rechaza, porque sus piezas llegarían apiladas en el origen; las piezas independientes (camas, racks) siempre pasan. El rechazo explica el motivo y las piezas que no son `.stl` se notifican.
+El envío de un modelo de robot o máquina a un catálogo se rechaza por defecto, porque sus piezas llegarían apiladas en el origen; solo pasan las categorías de piezas independientes (camas, racks). El rechazo explica el motivo y se informa de las piezas que no son `.stl`.
 
 ## 🔌 Interfaces
 
@@ -221,7 +221,7 @@ Un modelo de robot o máquina va al catálogo con cada pieza en su posición de 
 | `--cli push <library> <category> <model> --host --username` | envía las piezas editables de un modelo a `POST /api/models/submit` de un servidor (inicio de sesión de administrador; `--port` 3000 por defecto, `--server-category`, `--overwrite`) |
 | `--root <folder>` | la raíz del ecosistema que contiene `HYDRA-UMC-STUDIO` y `HYDRA-UMC-SUITE` juntos; por defecto, la carpeta padre de esta herramienta |
 
-`--allow-stacked-push` en `--cli push` y la casilla **Forzar** de la ventana de envío (apagada por defecto, en los ocho idiomas) dejan enviar al catálogo un modelo de robot o máquina aunque la colocación inicial de sus piezas no se conozca y lleguen apiladas en el origen.
+`--allow-stacked-push` en `--cli push` y la casilla **Forzar** de la ventana de envío (apagada por defecto, en los ocho idiomas) dejan enviar al catálogo un modelo de robot o máquina aunque sus piezas lleguen apiladas en el origen.
 
 ## ⚙️ Configuración
 
