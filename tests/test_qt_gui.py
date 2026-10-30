@@ -198,17 +198,50 @@ def _fake_client(calls: list):
     return FakeClient
 
 
+class _Signal:
+    def __init__(self):
+        self.slots = []
+
+    def connect(self, slot):
+        self.slots.append(slot)
+
+
+class _SyncPushThread:
+    """Runs the push at once on the calling thread, so the test does not depend on thread timing."""
+
+    def __init__(self, fn, parent=None):
+        self._fn = fn
+        self.finished_ok = _Signal()
+        self.finished_error = _Signal()
+        self.finished = _Signal()
+
+    def start(self):
+        try:
+            slug = self._fn()
+        except Exception as error:  # noqa: BLE001 - mirrors the real thread's guard
+            for slot in self.finished_error.slots:
+                slot(str(error))
+        else:
+            for slot in self.finished_ok.slots:
+                slot(slug)
+        for slot in self.finished.slots:
+            slot()
+
+    def deleteLater(self):
+        pass
+
+
 @pytest.mark.parametrize("force", [False, True])
 def test_the_push_window_passes_the_force_box_as_allow_stacked(qt_app, ecosystem_root: Path, monkeypatch, force: bool) -> None:
     from hydra_umc_editor_stl import qt_gui
 
     calls: list = []
     monkeypatch.setattr(qt_gui, "ServerClient", _fake_client(calls))
+    monkeypatch.setattr(qt_gui, "_PushThread", _SyncPushThread)
     bridge = EditorBridge(ecosystem_root)
     _select_ar3_base_link(bridge)
 
     bridge.pushToServer("host", 3000, "admin", "pw", "robots-6-dof", False, force)
-    assert bridge._push_thread.wait(10000)
-    qt_app.processEvents()
 
     assert calls == [{"overwrite": False, "allow_stacked": force}]
+    assert not bridge.pushBusy
