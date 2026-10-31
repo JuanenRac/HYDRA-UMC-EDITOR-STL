@@ -45,8 +45,8 @@ class BoundingBox:
 def _bounding_box(mesh: stl_mesh.Mesh) -> BoundingBox:
     points = mesh.points.reshape(-1, 3)
     return BoundingBox(
-        min_xyz=tuple(float(v) for v in points.min(axis=0)),
-        max_xyz=tuple(float(v) for v in points.max(axis=0)),
+        min_xyz=tuple(float(v) for v in points.min(axis=0)),  # type: ignore[arg-type]
+        max_xyz=tuple(float(v) for v in points.max(axis=0)),  # type: ignore[arg-type]
     )
 
 
@@ -103,8 +103,8 @@ def model_bounds(model_dir: Path, filenames: list[str]) -> BoundingBox | None:
     mins_arr = np.array(mins)
     maxs_arr = np.array(maxs)
     return BoundingBox(
-        min_xyz=tuple(float(v) for v in mins_arr.min(axis=0)),
-        max_xyz=tuple(float(v) for v in maxs_arr.max(axis=0)),
+        min_xyz=tuple(float(v) for v in mins_arr.min(axis=0)),  # type: ignore[arg-type]
+        max_xyz=tuple(float(v) for v in maxs_arr.max(axis=0)),  # type: ignore[arg-type]
     )
 
 

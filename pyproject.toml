@@ -38,3 +38,9 @@ version = { attr = "hydra_umc_editor_stl.__version__" }
 
 [tool.setuptools.package-data]
 hydra_umc_editor_stl = ["qml/*.qml", "qml/icons/*.svg"]
+
+[tool.ruff.lint]
+select = ["F", "E9", "B"]
+
+[tool.mypy]
+ignore_missing_imports = true

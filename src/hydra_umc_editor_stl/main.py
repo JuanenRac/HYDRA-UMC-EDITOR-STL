@@ -157,7 +157,7 @@ def cmd_lite(args: argparse.Namespace) -> int:
         print(f"No such model: {args.library}/{args.category}/{args.model}", file=sys.stderr)
         return 1
     ratio = args.ratio if args.ratio is not None else _saved_ratio()
-    names = [args.part] if args.part else [p.filename for p in load_model(
+    names = [args.part] if args.part else [p.filename for p in load_model(  # type: ignore[union-attr]
         Path(args.root).resolve() if args.root else default_ecosystem_root(), args.library, args.category, args.model).parts if p.editable]
     for name in names:
         try:

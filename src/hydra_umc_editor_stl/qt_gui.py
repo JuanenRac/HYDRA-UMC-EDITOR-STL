@@ -15,6 +15,8 @@
 # =============================================================================
 from __future__ import annotations
 
+from typing import Any
+
 import sys
 import tempfile
 from pathlib import Path
@@ -309,7 +311,7 @@ class EditorBridge(QObject):
                 placements = assembled_transforms(self._ecosystem_root, self._category, self._model, model.path)
             self._has_assembly = placements is not None
             show_assembled = self._has_assembly and self._assembled_view
-            identity = {"asmMatrix": []}
+            identity: Any = {"asmMatrix": []}
             self._parts = [
                 {
                     "filename": p.filename,
@@ -327,7 +329,7 @@ class EditorBridge(QObject):
             editable_filenames = [p.filename for p in model.parts if p.editable]
             box = None
             if show_assembled:
-                world = assembled_bounds(model.path, placements)
+                world = assembled_bounds(model.path, placements)  # type: ignore[arg-type]
                 if world is not None:
                     from .stl_ops import BoundingBox
                     box = BoundingBox(min_xyz=world[0], max_xyz=world[1])

@@ -15,7 +15,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from stl import mesh as stl_mesh
 
 from hydra_umc_editor_stl import settings
 from hydra_umc_editor_stl.assembly import (

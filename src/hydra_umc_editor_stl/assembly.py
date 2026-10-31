@@ -209,7 +209,7 @@ def assembled_bounds(model_dir: Path, placements: dict[str, PartPlacement]) -> t
     if not corners_all:
         return None
     stacked = np.vstack(corners_all)
-    return tuple(float(v) for v in stacked.min(axis=0)), tuple(float(v) for v in stacked.max(axis=0))
+    return tuple(float(v) for v in stacked.min(axis=0)), tuple(float(v) for v in stacked.max(axis=0))  # type: ignore[return-value]
 
 
 def placement_matrix(placement: PartPlacement) -> list[float]:

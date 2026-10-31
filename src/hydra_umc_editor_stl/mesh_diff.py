@@ -69,9 +69,9 @@ def diff_vectors(before: np.ndarray, after: np.ndarray) -> MeshDiff:
     return MeshDiff(
         triangles_before=int(len(before)),
         triangles_after=int(len(after)),
-        size_before=tuple(float(v) for v in b_hi - b_lo),
-        size_after=tuple(float(v) for v in a_hi - a_lo),
-        center_shift=tuple(float(v) for v in shift),
+        size_before=tuple(float(v) for v in b_hi - b_lo),  # type: ignore[arg-type]
+        size_after=tuple(float(v) for v in a_hi - a_lo),  # type: ignore[arg-type]
+        center_shift=tuple(float(v) for v in shift),  # type: ignore[arg-type]
         volume_before=_signed_volume(b),
         volume_after=_signed_volume(a),
     )
@@ -130,10 +130,10 @@ def render_diff_svg(before: np.ndarray, after: np.ndarray) -> str:
         origin_x = panel * _PANEL + _MARGIN
         origin_y = _MARGIN + 18
 
-        def project(points: np.ndarray) -> list[str]:
+        def project(points: np.ndarray, hx: int = hx, vx: int = vx, origin_x: float = origin_x, origin_y: float = origin_y, scale: float = scale) -> list[str]:
             x = origin_x + (points[:, hx] - low[hx]) * scale
             y = origin_y + inner - (points[:, vx] - low[vx]) * scale
-            return [f"{px:.1f},{py:.1f}" for px, py in zip(x, y)]
+            return [f"{px:.1f},{py:.1f}" for px, py in zip(x, y, strict=False)]
 
         parts.append(f'<text x="{origin_x}" y="{_MARGIN + 8}" fill="#9aa4ad" font-family="sans-serif" font-size="12">{name}</text>')
         for colour, tris in ((_BEFORE, b), (_AFTER, a)):
