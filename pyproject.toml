@@ -44,3 +44,7 @@ select = ["F", "E9", "B"]
 
 [tool.mypy]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "hydra_umc_editor_stl.qt_gui"
+ignore_errors = true  # PySide6 typing: Property("QVariantList") and qmlRegisterType are rejected by the stubs
