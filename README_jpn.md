@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-237%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-267%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.9-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -35,7 +35,7 @@ GPL-3.0-or-later - see LICENSE
 （実在の組み立て用 URDF 生成に加え、`POST /api/models/submit` 向けの
 実在の HTTP クライアント）はすべて、実際に生成した
 実在の STL ファイルと、必要に応じて実在のセッションスコープの
-`QGuiApplication` に対してテストされており（`pytest tests/`、237 件の
+`QGuiApplication` に対してテストされており（`pytest tests/`、267 件の
 ケースが合格）、本エコシステム自身の実在する
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` のチェックアウトに対してエンド
 ツーエンドでスモークテスト済みです（`--cli categories`/`models`/
@@ -62,7 +62,7 @@ slot、色変更後も選択状態が保持されること）。`qml/Main.qml` �
 |---|---|
 | バージョン | `0.1.9` |
 | 成熟度 | 足場段階 |
-| テスト | 237 (`python -m pytest tests -q`) |
+| テスト | 267 (`python -m pytest tests -q`) |
 | 技術 | Python / PySide6 / Qt Quick / numpy-stl |
 | 対象 | 利用者の PC |
 | 実機での確認 | 対象外：ここにあるものはハードウェア上では動きません |
@@ -78,7 +78,7 @@ slot、色変更後も選択状態が保持されること）。`qml/Main.qml` �
 | 領域 | 状態 | ここでの意味 |
 |---|---|---|
 | ソフトウェア | 🟠 | 構造と最初の部品のみで、作業の大部分はこれからです |
-| テスト | 🟡 | 自動テスト 237 件。変更のたびに実行されます |
+| テスト | 🟡 | 自動テスト 267 件。変更のたびに実行されます |
 | 実機 | 🟡 | 対象外：ここにあるものはハードウェア上では動きません |
 | ドキュメント | 🟡 | 8 言語の README。変更のたびにマニフェストと照合されます |
 
@@ -241,7 +241,7 @@ Python 3.10 以降が必要です。最初の行は GUI 用エクストラ付き
 
 ## 🧪 テスト
 
-`python -m pytest tests -q` で自動テスト 237 件を実行します。 ハードウェアも、このマシンの外にあるものも必要ありません。
+`python -m pytest tests -q` で自動テスト 267 件を実行します。 ハードウェアも、このマシンの外にあるものも必要ありません。
 
 CI は `HYDRA_UMC_CI=1 python tools/ci_validate.py` を実行し、マニフェスト、文書、8 つの README、図を検査します。
 

@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-237%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-267%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.9-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -36,7 +36,7 @@ librerías de modelos), `stl_ops.py` (mutación real de STL vía
 `catalog_push.py` (generación real de un URDF de ensamblaje más un
 cliente HTTP real para `POST /api/models/submit`) están todos
 probados contra ficheros STL reales generados y una `QGuiApplication`
-real de ámbito de sesión donde hace falta (`pytest tests/`, 237 casos en
+real de ámbito de sesión donde hace falta (`pytest tests/`, 267 casos en
 verde) y se han verificado de extremo a extremo contra los checkouts
 reales de `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` de este ecosistema
 (`--cli categories`/`models`/`parts` contra los árboles reales;
@@ -63,7 +63,7 @@ propia capa Qt Quick.
 |---|---|
 | Versión | `0.1.9` |
 | Madurez | Andamiaje |
-| Tests | 237 (`python -m pytest tests -q`) |
+| Tests | 267 (`python -m pytest tests -q`) |
 | Tecnología | Python / PySide6 / Qt Quick / numpy-stl |
 | Destino | El PC de quien lo usa |
 | En hardware real | No aplica: nada de esto se ejecuta en hardware |
@@ -79,7 +79,7 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 | Área | Estado | Qué significa aquí |
 |---|---|---|
 | Software | 🟠 | Solo estructura y primeras piezas; falta la mayor parte del trabajo |
-| Pruebas | 🟡 | 237 pruebas automáticas, ejecutadas en cada cambio |
+| Pruebas | 🟡 | 267 pruebas automáticas, ejecutadas en cada cambio |
 | Hardware real | 🟡 | No aplica: nada de esto se ejecuta en hardware |
 | Documentación | 🟡 | README en ocho idiomas, comprobado contra el manifiesto en cada cambio |
 
@@ -247,7 +247,7 @@ Requiere Python 3.10 o superior. La primera línea crea un entorno virtual con e
 
 ## 🧪 Pruebas
 
-237 pruebas automáticas se ejecutan con `python -m pytest tests -q`. No necesitan hardware ni nada fuera de esta máquina.
+267 pruebas automáticas se ejecutan con `python -m pytest tests -q`. No necesitan hardware ni nada fuera de esta máquina.
 
 El CI ejecuta `HYDRA_UMC_CI=1 python tools/ci_validate.py`, que comprueba el manifiesto, los documentos, los ocho README y las imágenes.
 
