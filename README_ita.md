@@ -20,7 +20,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
   <img src="https://img.shields.io/badge/Tests-237%20passing-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.1.8-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.1.9-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -61,7 +61,7 @@ HYDRA-UMC-UPDATER traccia già per il proprio strato Qt Quick.
 
 | | |
 |---|---|
-| Versione | `0.1.8` |
+| Versione | `0.1.9` |
 | Maturità | Impalcatura |
 | Test | 237 (`python -m pytest tests -q`) |
 | Tecnologia | Python / PySide6 / Qt Quick / numpy-stl |

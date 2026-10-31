@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.9] - A lighter copy of a part, the before and after of a part, one model library for both apps and the unit of a model from its metadata
+
 - **A lighter copy of a part (`--cli lite`):** vertices are merged cell by cell on a grid that is searched so that about the wanted share of the triangles is left (`--ratio`, or `lite_ratio` in the saved settings, 0.2 by default); the copy goes to `.lite/<part>` in the model folder, which is hidden and so not listed as a part, and the original is never touched. The copy keeps the outline and the size of the part but is not promised to be a closed mesh, so it is for looking at, not for printing. The push to the catalog is unchanged: it still sends the full parts.
 - **The before and after of a part (`--cli diff`):** a part is compared with the version `.trash/` kept before its last change (or the entry named with `--entry`): triangles, size, centre shift and volume, and with `--svg` a picture with both versions laid over each other from the top, the front and the side. Nothing is written to the model folder.
 - **One model library for both apps (`--cli sync-libraries`):** the two library folders are compared by content and one is brought in line with the other (`--master`, `--target`). By default it only prints the plan; with `--apply` the missing and different files are copied, a replaced file is first kept in `.sync-backup/` of the target, and nothing is ever deleted (files only in the target are reported and left alone).
