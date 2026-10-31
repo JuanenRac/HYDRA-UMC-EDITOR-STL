@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-222%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-237%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.8-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -36,7 +36,7 @@ von Qt-Quick-3D-Geometrie) und `catalog_push.py` (echte Erzeugung
 eines Assembly-URDF plus ein echter HTTP-Client für
 `POST /api/models/submit`) sind alle gegen echte, generierte
 STL-Dateien und, wo nötig, eine echte, sitzungsweite
-`QGuiApplication` getestet (`pytest tests/`, 222 bestandene Fälle) und
+`QGuiApplication` getestet (`pytest tests/`, 237 bestandene Fälle) und
 wurden End-to-End gegen die echten `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE`-
 Checkouts dieses Ökosystems verifiziert (`--cli categories`/`models`/
 `parts` gegen die echten Bäume; `transform`/`remove` gegen eine
@@ -64,7 +64,7 @@ zieht.
 |---|---|
 | Version | `0.1.8` |
 | Reifegrad | Gerüst |
-| Tests | 222 (`python -m pytest tests -q`) |
+| Tests | 237 (`python -m pytest tests -q`) |
 | Technik | Python / PySide6 / Qt Quick / numpy-stl |
 | Ziel | Der PC der Person, die es benutzt |
 | Auf echter Hardware | Nicht zutreffend: nichts hiervon läuft auf Hardware |
@@ -80,7 +80,7 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
 | Software | 🟠 | Nur Struktur und erste Teile; der größte Teil der Arbeit steht noch aus |
-| Tests | 🟡 | 222 automatische Tests, bei jeder Änderung ausgeführt |
+| Tests | 🟡 | 237 automatische Tests, bei jeder Änderung ausgeführt |
 | Echte Hardware | 🟡 | Nicht zutreffend: nichts hiervon läuft auf Hardware |
 | Dokumentation | 🟡 | README in acht Sprachen, bei jeder Änderung gegen das Manifest geprüft |
 
@@ -252,7 +252,7 @@ Benötigt Python 3.10 oder neuer. Die erste Zeile baut eine virtuelle Umgebung m
 
 ## 🧪 Tests
 
-222 automatische Tests laufen mit `python -m pytest tests -q`. Sie brauchen weder Hardware noch etwas außerhalb dieses Rechners.
+237 automatische Tests laufen mit `python -m pytest tests -q`. Sie brauchen weder Hardware noch etwas außerhalb dieses Rechners.
 
 Die CI führt `HYDRA_UMC_CI=1 python tools/ci_validate.py` aus; das prüft das Manifest, die Dokumente, die acht READMEs und die Bilder.
 
@@ -269,6 +269,9 @@ chmod +x build.sh   # einmalig
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /pfad/neu.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /pfad/neu.stl
+./run.sh --cli lite studio robots-6-dof ar3 --ratio 0.2          # leichtere Kopien in .lite/ (Originale bleiben unberührt)
+./run.sh --cli diff studio robots-6-dof ar3 base_link.STL --svg diff.svg   # mit der in .trash/ gesicherten Version vergleichen
+./run.sh --cli sync-libraries --master studio --target suite   # nur der Plan; mit --apply wird geschrieben, nichts wird gelöscht
 ./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
 ```
 
@@ -327,6 +330,9 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── main.py                 Dispatch: GUI standardmäßig, --cli für categories/models/parts/transform/replace/remove/add/push
 │   ├── assembly.py             Die zusammengesetzte Ansicht (Grundstellung) einer Maschine aus ihren STL-Teilen
 │   ├── mesh_check.py           Netzprüfungen vor dem Hochladen in den Katalog
+│   ├── decimate.py             Eine leichtere Kopie eines Teils
+│   ├── mesh_diff.py            Vorher und nachher eines Teils, als Zahlen und Bild
+│   ├── library_sync.py         Gleicht eine Modellbibliothek an die andere an
 │   ├── part_colors.py          Farbanmerkungen pro Teil (ein binäres STL bringt keine eigenen mit)
 │   └── stl_geometry.py         Die echten Dreiecke einer STL-Datei als Qt-Quick-3D-Geometrie
 ├── tests/                      Echte Tests gegen echte, generierte STL-Dateien

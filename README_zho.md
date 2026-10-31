@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-222%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-237%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.8-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -34,7 +34,7 @@ GPL-3.0-or-later - see LICENSE
 （真实生成装配用 URDF，外加一个真实的 `POST /api/models/submit` HTTP
 客户端）全部都针对真实生成的
 STL 文件、以及在需要时一个真实的、会话范围的 `QGuiApplication` 进行了
-测试（`pytest tests/`，222 个用例通过），并已针对本生态系统真实的
+测试（`pytest tests/`，237 个用例通过），并已针对本生态系统真实的
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` 检出进行了端到端的冒烟测试
 （`--cli categories`/`models`/`parts` 针对真实的目录树；`transform`/`remove`
 针对一份可丢弃的副本，绝不是真实的检出本身）。`qt_gui.py` 自己的
@@ -57,7 +57,7 @@ README 已经为其自身 Qt Quick 层划出的诚实界限相同。
 |---|---|
 | 版本 | `0.1.8` |
 | 成熟度 | 雏形 |
-| 测试 | 222 (`python -m pytest tests -q`) |
+| 测试 | 237 (`python -m pytest tests -q`) |
 | 技术栈 | Python / PySide6 / Qt Quick / numpy-stl |
 | 目标 | 使用者的电脑 |
 | 真实硬件 | 不适用：这里的内容不在硬件上运行 |
@@ -73,7 +73,7 @@ README 已经为其自身 Qt Quick 层划出的诚实界限相同。
 | 领域 | 状态 | 在这里的含义 |
 |---|---|---|
 | 软件 | 🟠 | 目前只有结构和最初的部分，大部分工作尚未完成 |
-| 测试 | 🟡 | 222 项自动测试，每次变更都会运行 |
+| 测试 | 🟡 | 237 项自动测试，每次变更都会运行 |
 | 真实硬件 | 🟡 | 不适用：这里的内容不在硬件上运行 |
 | 文档 | 🟡 | 八种语言的 README，每次变更都会与清单核对 |
 
@@ -220,7 +220,7 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
 
 ## 🧪 测试
 
-运行 `python -m pytest tests -q` 会执行 222 个自动测试。 不需要硬件，也不需要这台机器以外的任何东西。
+运行 `python -m pytest tests -q` 会执行 237 个自动测试。 不需要硬件，也不需要这台机器以外的任何东西。
 
 CI 运行 `HYDRA_UMC_CI=1 python tools/ci_validate.py`，检查清单、文档、八个 README 和图片。
 
@@ -237,6 +237,9 @@ chmod +x build.sh   # 一次性
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /路径/new.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /路径/new.stl
+./run.sh --cli lite studio robots-6-dof ar3 --ratio 0.2          # 在 .lite/ 中生成轻量副本(原件不动)
+./run.sh --cli diff studio robots-6-dof ar3 base_link.STL --svg diff.svg   # 与 .trash/ 中保留的版本比较
+./run.sh --cli sync-libraries --master studio --target suite   # 仅显示计划;加 --apply 才写入,不删除任何内容
 ./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
 ```
 
@@ -289,6 +292,9 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── main.py                 分发：默认 GUI，--cli 用于 categories/models/parts/transform/replace/remove/add/push
 │   ├── assembly.py             由 STL 零件组装出的机器视图 (原位姿态)
 │   ├── mesh_check.py           推送到目录前的网格检查
+│   ├── decimate.py             零件的轻量副本
+│   ├── mesh_diff.py            零件修改前后的数值与图像对比
+│   ├── library_sync.py         使一个模型库与另一个保持一致
 │   ├── part_colors.py          按零件的颜色标注 (二进制 STL 本身不带颜色)
 │   └── stl_geometry.py         把 STL 文件的真实三角形作为 Qt Quick 3D 几何体
 ├── tests/                      针对真实生成的 STL 文件的真实测试

@@ -23,6 +23,9 @@ from pathlib import Path
 
 from . import __version__, settings
 from .catalog_push import CatalogPushError, ServerClient, push_warnings
+from .decimate import DEFAULT_RATIO, make_light_copy
+from .library_sync import LibrarySyncError, sync_libraries
+from .mesh_diff import diff_with_trash, render_diff_with_trash
 from .model_catalog import list_categories, list_models, load_model
 from .stl_ops import StlOpsError, add_part, remove_part, replace_part, transform_part
 
@@ -148,6 +151,65 @@ def cmd_add(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_lite(args: argparse.Namespace) -> int:
+    model_dir = _resolve_model_dir(args)
+    if model_dir is None:
+        print(f"No such model: {args.library}/{args.category}/{args.model}", file=sys.stderr)
+        return 1
+    ratio = args.ratio if args.ratio is not None else _saved_ratio()
+    names = [args.part] if args.part else [p.filename for p in load_model(
+        Path(args.root).resolve() if args.root else default_ecosystem_root(), args.library, args.category, args.model).parts if p.editable]
+    for name in names:
+        try:
+            done = make_light_copy(model_dir, name, ratio)
+        except StlOpsError as error:
+            print(f"Light copy failed for {name}: {error}", file=sys.stderr)
+            return 1
+        print(f"{name}: {done['triangles_before']} -> {done['triangles_after']} triangles, {done['bytes_before']} -> {done['bytes_after']} bytes ({done['path']})")
+    return 0
+
+
+def _saved_ratio() -> float:
+    """The share of the triangles a light copy keeps when --ratio is not given: `lite_ratio` in the saved settings."""
+    value = settings.load_settings().get("lite_ratio", DEFAULT_RATIO)
+    return float(value) if isinstance(value, (int, float)) and not isinstance(value, bool) and 0 < value <= 1 else DEFAULT_RATIO
+
+
+def cmd_diff(args: argparse.Namespace) -> int:
+    model_dir = _resolve_model_dir(args)
+    if model_dir is None:
+        print(f"No such model: {args.library}/{args.category}/{args.model}", file=sys.stderr)
+        return 1
+    try:
+        result = diff_with_trash(model_dir, args.part, args.entry)
+        if args.svg:
+            Path(args.svg).write_text(render_diff_with_trash(model_dir, args.part, args.entry), encoding="utf-8")
+    except (StlOpsError, OSError) as error:
+        print(f"Diff failed: {error}", file=sys.stderr)
+        return 1
+    print(f"triangles: {result.triangles_before} -> {result.triangles_after}")
+    print("size (x, y, z): " + " -> ".join(", ".join(f"{v:.3f}" for v in size) for size in (result.size_before, result.size_after)))
+    print("center shift: " + ", ".join(f"{v:.3f}" for v in result.center_shift))
+    print(f"volume: {result.volume_before:.3f} -> {result.volume_after:.3f}")
+    if args.svg:
+        print(f"picture written to {args.svg}")
+    return 0
+
+
+def cmd_sync_libraries(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve() if args.root else default_ecosystem_root()
+    try:
+        outcome = sync_libraries(root, args.master, args.target, apply=args.apply)
+    except LibrarySyncError as error:
+        print(f"Library sync failed: {error}", file=sys.stderr)
+        return 1
+    diff = outcome["diff"]
+    print(f"same: {diff.same}  to copy: {len(diff.only_in_master)}  to replace: {len(diff.different)}  only in {args.target} (left alone): {len(diff.only_in_target)}")
+    if not args.apply and not diff.in_sync:
+        print("Nothing was written: add --apply to bring the target in line (replaced files are kept in .sync-backup/).")
+    return 0
+
+
 def cmd_push(args: argparse.Namespace) -> int:
     root = Path(args.root).resolve() if args.root else default_ecosystem_root()
     model = load_model(root, args.library, args.category, args.model)
@@ -232,6 +294,26 @@ def build_parser() -> argparse.ArgumentParser:
     add_p.add_argument("source", help="Path to the STL file to add.")
     add_p.add_argument("--dest-filename", help="Save under this filename instead of the source's own name.")
     add_p.set_defaults(func=cmd_add)
+
+    lite_p = subparsers.add_parser("lite", help="Write a lighter copy of the parts to .lite/ in the model folder (the originals are not touched).")
+    _add_model_selector_args(lite_p)
+    lite_p.add_argument("--part", help="Only this part (default: every editable part).")
+    lite_p.add_argument("--ratio", type=float, help=f"Share of the triangles to keep, above 0 and up to 1 (default: lite_ratio in the saved settings, else {DEFAULT_RATIO}).")
+    lite_p.set_defaults(func=cmd_lite)
+
+    diff_p = subparsers.add_parser("diff", help="Compare a part with the version that .trash/ kept before its last change.")
+    _add_model_selector_args(diff_p)
+    diff_p.add_argument("part", help="Part filename.")
+    diff_p.add_argument("--entry", help="The .trash/ entry to compare with (default: the newest one for this part).")
+    diff_p.add_argument("--svg", help="Also write a picture with both versions laid over each other to this file.")
+    diff_p.set_defaults(func=cmd_diff)
+
+    sync_p = subparsers.add_parser("sync-libraries", help="Bring one model library in line with the other (a plan unless --apply is given; nothing is deleted).")
+    sync_p.add_argument("--root", help="Ecosystem root to scan (default: this tool's own parent directory).")
+    sync_p.add_argument("--master", choices=["studio", "suite"], default="studio", help="The library that is right (default: studio).")
+    sync_p.add_argument("--target", choices=["studio", "suite"], default="suite", help="The library that is brought in line (default: suite).")
+    sync_p.add_argument("--apply", action="store_true", help="Write the changes; without it only the plan is shown.")
+    sync_p.set_defaults(func=cmd_sync_libraries)
 
     push_p = subparsers.add_parser("push", help="Push a model's editable parts to a running server's model-submission catalog.")
     _add_model_selector_args(push_p)

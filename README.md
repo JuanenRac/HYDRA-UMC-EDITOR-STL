@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-222%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-237%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.8-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -35,7 +35,7 @@ mutation via `numpy-stl` - transform/replace/remove/add, plus
 assembly-URDF generation plus a real HTTP client for
 `POST /api/models/submit`) are all tested against real, generated STL
 fixtures and a real, session-scoped `QGuiApplication` where needed
-(`pytest tests/`, 222 passing cases) and have been smoke-tested end to end
+(`pytest tests/`, 237 passing cases) and have been smoke-tested end to end
 against this ecosystem's own real
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` checkouts (`--cli categories`/
 `models`/`parts` against the real trees; `transform`/`remove` against a
@@ -60,7 +60,7 @@ README already draws for its own Qt Quick shell.
 |---|---|
 | Version | `0.1.8` |
 | Maturity | Scaffolding |
-| Tests | 222 (`python -m pytest tests -q`) |
+| Tests | 237 (`python -m pytest tests -q`) |
 | Stack | Python / PySide6 / Qt Quick / numpy-stl |
 | Target | The PC of the person using it |
 | On real hardware | Not applicable: nothing here runs on hardware |
@@ -76,7 +76,7 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Software | 🟠 | Structure and first pieces only; most of the work is still to do |
-| Tests | 🟡 | 222 automated tests, run on every change |
+| Tests | 🟡 | 237 automated tests, run on every change |
 | Real hardware | 🟡 | Not applicable: nothing here runs on hardware |
 | Documentation | 🟡 | README in eight languages, checked against the manifest on every change |
 
@@ -230,7 +230,7 @@ Requires Python 3.10 or newer. The first line builds a virtual environment with 
 
 ## 🧪 Testing
 
-222 automated tests run with `python -m pytest tests -q`. They need no hardware and nothing outside this machine.
+237 automated tests run with `python -m pytest tests -q`. They need no hardware and nothing outside this machine.
 
 The CI runs `HYDRA_UMC_CI=1 python tools/ci_validate.py`, which checks the manifest, the documents, the eight READMEs and the pictures.
 
@@ -247,6 +247,9 @@ chmod +x build.sh   # one-time
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /path/new.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /path/new.stl
+./run.sh --cli lite studio robots-6-dof ar3 --ratio 0.2          # lighter copies in .lite/ (originals untouched)
+./run.sh --cli diff studio robots-6-dof ar3 base_link.STL --svg diff.svg   # compare with the version kept in .trash/
+./run.sh --cli sync-libraries --master studio --target suite   # plan only; add --apply to write, nothing is deleted
 ./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
 ```
 
@@ -301,6 +304,9 @@ HYDRA-UMC-EDITOR-STL/
 │   ├── main.py                 Dispatch: GUI by default, --cli for categories/models/parts/transform/replace/remove/add/push
 │   ├── assembly.py             The assembled (home-pose) view of a machine from its STL parts
 │   ├── mesh_check.py           Mesh checks before a push to the catalog
+│   ├── decimate.py             A lighter copy of a part (vertex clustering)
+│   ├── mesh_diff.py            Before and after of a part, as numbers and a picture
+│   ├── library_sync.py         Brings one model library in line with the other
 │   ├── part_colors.py          Per-part colour annotations (a binary STL carries none of its own)
 │   └── stl_geometry.py         The real triangles of an STL file as Qt Quick 3D geometry
 ├── tests/                      Real tests against real, generated STL fixtures

@@ -295,6 +295,45 @@
           }
         },
         {
+          "name": "decimate.py",
+          "desc": {
+            "en": "A lighter copy of a part (vertex clustering)",
+            "es": "Una copia más ligera de una pieza",
+            "de": "Eine leichtere Kopie eines Teils",
+            "fr": "Une copie allégée d'une pièce",
+            "it": "Una copia più leggera di un pezzo",
+            "ja": "パーツの軽量コピー",
+            "zh": "零件的轻量副本",
+            "pt": "Uma cópia mais leve de uma peça"
+          }
+        },
+        {
+          "name": "mesh_diff.py",
+          "desc": {
+            "en": "Before and after of a part, as numbers and a picture",
+            "es": "El antes y el después de una pieza, en cifras y en imagen",
+            "de": "Vorher und nachher eines Teils, als Zahlen und Bild",
+            "fr": "L'avant et l'après d'une pièce, en chiffres et en image",
+            "it": "Prima e dopo di un pezzo, in numeri e in immagine",
+            "ja": "パーツの変更前後を数値と画像で比較",
+            "zh": "零件修改前后的数值与图像对比",
+            "pt": "O antes e o depois de uma peça, em números e em imagem"
+          }
+        },
+        {
+          "name": "library_sync.py",
+          "desc": {
+            "en": "Brings one model library in line with the other",
+            "es": "Pone una biblioteca de modelos al día con la otra",
+            "de": "Gleicht eine Modellbibliothek an die andere an",
+            "fr": "Aligne une bibliothèque de modèles sur l'autre",
+            "it": "Allinea una libreria di modelli all'altra",
+            "ja": "モデルライブラリを片方に揃える",
+            "zh": "使一个模型库与另一个保持一致",
+            "pt": "Alinha uma biblioteca de modelos com a outra"
+          }
+        },
+        {
           "name": "part_colors.py",
           "desc": {
             "en": "Per-part colour annotations",
