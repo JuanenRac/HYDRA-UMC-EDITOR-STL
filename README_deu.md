@@ -21,7 +21,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
   <img src="https://img.shields.io/badge/Tests-267%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.9-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
+  <img src="https://img.shields.io/badge/Maturity-functional-0F6CBD.svg" alt="Maturity">
 </p>
 
 ---
@@ -63,7 +63,7 @@ zieht.
 | | |
 |---|---|
 | Version | `0.1.9` |
-| Reifegrad | Gerüst |
+| Reifegrad | Funktionsfähig |
 | Tests | 267 (`python -m pytest tests -q`) |
 | Technik | Python / PySide6 / Qt Quick / numpy-stl |
 | Ziel | Der PC der Person, die es benutzt |
@@ -79,10 +79,10 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
-| Software | 🟠 | Nur Struktur und erste Teile; der größte Teil der Arbeit steht noch aus |
-| Tests | 🟡 | 267 automatische Tests, bei jeder Änderung ausgeführt |
-| Echte Hardware | 🟡 | Nicht zutreffend: nichts hiervon läuft auf Hardware |
-| Dokumentation | 🟡 | README in acht Sprachen, bei jeder Änderung gegen das Manifest geprüft |
+| Software | 🟡 | Funktioniert für seinen Hauptzweck; die Ehrlichkeitsprüfung oben nennt, was noch fehlt |
+| Tests | 🟢 | 267 automatische Tests, bei jeder Änderung ausgeführt |
+| Echte Hardware | 🟢 | Nicht zutreffend: nichts hiervon läuft auf Hardware |
+| Dokumentation | 🟢 | README in acht Sprachen, bei jeder Änderung gegen das Manifest geprüft |
 
 ## 🎯 Überblick
 

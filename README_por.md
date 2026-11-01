@@ -21,7 +21,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
   <img src="https://img.shields.io/badge/Tests-267%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.9-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
+  <img src="https://img.shields.io/badge/Maturity-functional-0F6CBD.svg" alt="Maturity">
 </p>
 
 ---
@@ -59,7 +59,7 @@ próprio HYDRA-UMC-UPDATER já traça para o seu shell Qt Quick.
 | | |
 |---|---|
 | Versão | `0.1.9` |
-| Maturidade | Estrutura inicial |
+| Maturidade | Funcional |
 | Testes | 267 (`python -m pytest tests -q`) |
 | Tecnologia | Python / PySide6 / Qt Quick / numpy-stl |
 | Destino | O PC de quem o usa |
@@ -75,10 +75,10 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 
 | Área | Estado | O que significa aqui |
 |---|---|---|
-| Software | 🟠 | Só estrutura e as primeiras peças; falta a maior parte do trabalho |
-| Testes | 🟡 | 267 testes automáticos, executados a cada alteração |
-| Hardware real | 🟡 | Não aplicável: nada aqui corre em hardware |
-| Documentação | 🟡 | README em oito idiomas, verificado contra o manifesto a cada alteração |
+| Software | 🟡 | Funciona para o seu propósito principal; a verificação de honestidade acima lista o que ainda falta |
+| Testes | 🟢 | 267 testes automáticos, executados a cada alteração |
+| Hardware real | 🟢 | Não aplicável: nada aqui corre em hardware |
+| Documentação | 🟢 | README em oito idiomas, verificado contra o manifesto a cada alteração |
 
 ## 🎯 Visão geral
 

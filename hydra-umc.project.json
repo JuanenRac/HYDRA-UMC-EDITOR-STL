@@ -12,7 +12,7 @@
     "numpy-stl"
   ],
   "deployment_target": "user-pc",
-  "maturity": "scaffolding",
+  "maturity": "functional",
   "evidence": "none",
   "hardware_bound": false,
   "family": "Core Backend & Clients",

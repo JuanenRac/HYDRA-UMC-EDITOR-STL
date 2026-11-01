@@ -21,7 +21,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
   <img src="https://img.shields.io/badge/Tests-267%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.9-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
+  <img src="https://img.shields.io/badge/Maturity-functional-0F6CBD.svg" alt="Maturity">
 </p>
 
 ---
@@ -59,7 +59,7 @@ README already draws for its own Qt Quick shell.
 | | |
 |---|---|
 | Version | `0.1.9` |
-| Maturity | Scaffolding |
+| Maturity | Functional |
 | Tests | 267 (`python -m pytest tests -q`) |
 | Stack | Python / PySide6 / Qt Quick / numpy-stl |
 | Target | The PC of the person using it |
@@ -75,10 +75,10 @@ Each line is one part of this repository and the light says how far it is today.
 
 | Area | State | What it means here |
 |---|---|---|
-| Software | 🟠 | Structure and first pieces only; most of the work is still to do |
-| Tests | 🟡 | 267 automated tests, run on every change |
-| Real hardware | 🟡 | Not applicable: nothing here runs on hardware |
-| Documentation | 🟡 | README in eight languages, checked against the manifest on every change |
+| Software | 🟡 | Works for its main purpose; the honesty check above lists what is still missing |
+| Tests | 🟢 | 267 automated tests, run on every change |
+| Real hardware | 🟢 | Not applicable: nothing here runs on hardware |
+| Documentation | 🟢 | README in eight languages, checked against the manifest on every change |
 
 ## 🎯 Overview
 
