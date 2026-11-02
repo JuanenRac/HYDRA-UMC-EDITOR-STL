@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.2.0] - A light copy travels with a push, a model opens in the URDF editor, the trash can be compared in the 3D view, the libraries can be checked for drift and a golden URDF set is shared, all off by default
+
 - **A light copy travels with a push (off by default):** `push_lite` (`stl` or `glb`) and `lite_ratio` in the saved settings, or `--cli push --lite stl|glb [--lite-ratio R]`, add `<mesh>.lite.stl` or `<mesh>.lite.glb` next to every full mesh; the URDF keeps pointing at the full one. The GLB (`glb.py`) shares vertices and uses no compression library.
 - **Open a model in the URDF editor (off by default):** `open_in_urdf_editor` in the saved settings shows the button; `--cli open-in-urdf-editor ... [--launch]` does the same. The model is written as a URDF with its parts at the home pose and its meshes copied into a work folder (`urdf_handoff_dir`), the model folder is not touched, and HYDRA-UMC-EDITOR-URDF is started on the file with `--open` (it must be a git checkout next to the others, or `urdf_editor_path`).
 - **Compare with the trash in the 3D view (off by default):** `diff_overlay` in the saved settings adds a Compare button to the trash window; the version kept there is laid over the current part, semi-transparent.
