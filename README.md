@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-267%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-288%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.9-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-functional-0F6CBD.svg" alt="Maturity">
 </p>
@@ -35,7 +35,7 @@ mutation via `numpy-stl` - transform/replace/remove/add, plus
 assembly-URDF generation plus a real HTTP client for
 `POST /api/models/submit`) are all tested against real, generated STL
 fixtures and a real, session-scoped `QGuiApplication` where needed
-(`pytest tests/`, 267 passing cases) and have been smoke-tested end to end
+(`pytest tests/`, 288 passing cases) and have been smoke-tested end to end
 against this ecosystem's own real
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` checkouts (`--cli categories`/
 `models`/`parts` against the real trees; `transform`/`remove` against a
@@ -60,7 +60,7 @@ README already draws for its own Qt Quick shell.
 |---|---|
 | Version | `0.1.9` |
 | Maturity | Functional |
-| Tests | 267 (`python -m pytest tests -q`) |
+| Tests | 288 (`python -m pytest tests -q`) |
 | Stack | Python / PySide6 / Qt Quick / numpy-stl |
 | Target | The PC of the person using it |
 | On real hardware | Not applicable: nothing here runs on hardware |
@@ -76,7 +76,7 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Software | 🟡 | Works for its main purpose; the honesty check above lists what is still missing |
-| Tests | 🟢 | 267 automated tests, run on every change |
+| Tests | 🟢 | 288 automated tests, run on every change |
 | Real hardware | 🟢 | Not applicable: nothing here runs on hardware |
 | Deployment | 🟠 | Published as a release; installing it on a clean machine is documented but not recorded |
 | Languages and accessibility | 🟡 | The interface and its help are in eight languages; keyboard and screen-reader use has not been tested |
@@ -136,6 +136,8 @@ real original file into that model's own `.trash/` subfolder first -
 the same "never destroy, move aside instead" discipline this ecosystem's
 own internal working conventions already follow, applied here as a real
 product feature, not just an internal habit.
+
+**Extras that are off until the saved settings switch them on.** `push_lite` (`stl` or `glb`, with `lite_ratio`) makes a push send a lighter copy of every part next to the full mesh (`<name>.lite.stl` or `.lite.glb`, a plain GLB with shared vertices and no compression library); `open_in_urdf_editor` shows an "Open in the URDF editor" button that writes the model as a URDF (parts at their home pose, meshes copied, the model folder untouched) in a work folder and starts HYDRA-UMC-EDITOR-URDF on it, also as `--cli open-in-urdf-editor ... --launch`; `diff_overlay` adds a Compare button to the trash window that lays the version kept there over the current part in the 3D view, semi-transparent. `--cli sync-libraries --check` exits with 1 when the two libraries have drifted apart. The rotation a placement is written with is checked against the same golden URDF set as HYDRA-UMC-EDITOR-URDF and HYDRA-UMC-PHYSICS-REPLICA. None of this has been seen on a real display, only loaded and tested headless.
 
 ## 🧩 Role in HYDRA-UMC
 
@@ -232,7 +234,7 @@ Requires Python 3.10 or newer. The first line builds a virtual environment with 
 
 ## 🧪 Testing
 
-267 automated tests run with `python -m pytest tests -q`. They need no hardware and nothing outside this machine.
+288 automated tests run with `python -m pytest tests -q`. They need no hardware and nothing outside this machine.
 
 The CI runs `HYDRA_UMC_CI=1 python tools/ci_validate.py`, which checks the manifest, the documents, the eight READMEs and the pictures.
 

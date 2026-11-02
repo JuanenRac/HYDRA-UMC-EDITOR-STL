@@ -336,6 +336,12 @@ ApplicationWindow {
                     width: ListView.view.width
                     LabelText { text: modelData.original + "  " + modelData.stamp; elide: Text.ElideMiddle; Layout.fillWidth: true }
                     GameButton {
+                        visible: backend.diffOverlayEnabled
+                        text: ui("btn_compare")
+                        accent: "#e0a030"
+                        onClicked: { backend.showTrashOverlay(modelData.entry); trashDialog.close() }
+                    }
+                    GameButton {
                         text: ui("btn_restore")
                         accent: window.green
                         onClicked: { backend.restoreTrashEntry(modelData.entry); trashDialog.entries = backend.trashEntries() }
@@ -351,6 +357,12 @@ ApplicationWindow {
                     onClicked: emptyTrashConfirm.open()
                 }
                 Item { Layout.fillWidth: true }
+                GameButton {
+                    visible: backend.diffOverlayEnabled && backend.overlayPath !== ""
+                    text: ui("btn_clear_compare")
+                    accent: "#264966"
+                    onClicked: backend.clearOverlay()
+                }
                 GameButton { text: "OK"; accent: "#264966"; onClicked: trashDialog.close() }
             }
         }
@@ -731,6 +743,24 @@ ApplicationWindow {
                                     }
                                 }
 
+                                // The version a .trash/ entry kept, laid over the current part, semi-transparent
+                                // (only with `diff_overlay` true in the saved settings; backend.overlayPath is
+                                // empty otherwise).
+                                Model {
+                                    visible: backend.overlayPath !== ""
+                                    pickable: false
+                                    geometry: StlGeometry {
+                                        source: backend.overlayPath
+                                        placement: backend.overlayPlacement
+                                    }
+                                    materials: PrincipledMaterial {
+                                        baseColor: "#e0a030"
+                                        opacity: 0.45
+                                        roughness: 0.6
+                                        alphaMode: PrincipledMaterial.Blend
+                                    }
+                                }
+
                                 // Real, draggable translate gizmo - 3 axis
                                 // rods (X red/Y green/Z blue) centered on the
                                 // selected part's own real bounding-box
@@ -1103,6 +1133,14 @@ ApplicationWindow {
                                 Layout.fillWidth: true
                                 enabled: !!backend.selectedModel
                                 onClicked: { trashDialog.entries = backend.trashEntries(); trashDialog.open() }
+                            }
+                            GameButton {
+                                visible: backend.urdfEditorEnabled
+                                text: ui("btn_open_urdf_editor")
+                                accent: "#264966"
+                                Layout.fillWidth: true
+                                enabled: !!backend.selectedModel
+                                onClicked: backend.openInUrdfEditor()
                             }
 
                             Rectangle { Layout.fillWidth: true; height: 1; color: window.border }

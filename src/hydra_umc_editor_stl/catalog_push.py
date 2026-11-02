@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import base64
 import http.client
+import io
 import json
 import urllib.error
 import urllib.request
@@ -38,10 +39,14 @@ from pathlib import Path
 from xml.dom import minidom
 
 import numpy as np
+from stl import mesh as stl_mesh
 
 from .assembly import PartPlacement, _mesh_is_millimeters, _rotation_matrix, assembled_transforms, unit_from_metadata
+from .decimate import DEFAULT_RATIO, decimate_to_ratio
+from .glb import mesh_to_glb
 from .mesh_check import check_stl
 from .model_catalog import ModelInfo, is_independent_parts_category
+from .stl_ops import StlOpsError, _read_mesh
 
 REQUEST_TIMEOUT_S = 20.0
 
@@ -149,6 +154,25 @@ def build_assembly_urdf(model: ModelInfo, placements: dict[str, PartPlacement] |
     return minidom.parseString(rough).toprettyxml(indent="  ")
 
 
+def _lite_copy(source: Path, upload_name: str, lite_format: str, ratio: float) -> tuple[str, bytes]:
+    """(file name, bytes) of the light copy of one part, in memory: the originals and the model folder are not touched."""
+    try:
+        reduced = decimate_to_ratio(_read_mesh(source).vectors, ratio)
+        if len(reduced) == 0:
+            raise StlOpsError(f"{source.name} has no usable triangles")
+        stem = upload_name.rsplit(".", 1)[0]
+        if lite_format == "glb":
+            return f"{stem}.lite.glb", mesh_to_glb(reduced, stem)
+        light = stl_mesh.Mesh(np.zeros(len(reduced), dtype=stl_mesh.Mesh.dtype))
+        light.vectors[:] = reduced.astype(np.float32)
+        light.update_normals()
+        buffer = io.BytesIO()
+        light.save(f"{stem}.lite.stl", fh=buffer)
+        return f"{stem}.lite.stl", buffer.getvalue()
+    except (StlOpsError, ValueError) as error:
+        raise CatalogPushError(f"could not make the light copy of {source.name}: {error}") from error
+
+
 class ServerClient:
     """One instance per server the operator points this app at - mirrors
     HYDRA-UMC-EDITOR-URDF's own server/client.py StudioClient (same real
@@ -216,6 +240,8 @@ class ServerClient:
         overwrite: bool = False,
         allow_stacked: bool = False,
         ecosystem_root: Path | None = None,
+        lite_format: str | None = None,
+        lite_ratio: float = DEFAULT_RATIO,
     ) -> str:
         """POST /api/models/submit - builds the assembly URDF above,
         base64-encodes every editable part's own current STL bytes
@@ -223,7 +249,13 @@ class ServerClient:
         and submits. Returns the server-assigned slug on success; raises
         CatalogPushError with the server's own message on a real failure
         (including its 409 name-collision message when `overwrite` is
-        not set)."""
+        not set).
+
+        With `lite_format` "stl" or "glb" (the default None sends nothing extra) a lighter copy of each part travels
+        too, as `<mesh name>.lite.stl` or `.lite.glb` next to the full one, for the apps that cannot carry the full mesh;
+        the URDF keeps pointing at the full mesh."""
+        if lite_format not in (None, "stl", "glb"):
+            raise CatalogPushError(f"unknown light-copy format {lite_format!r} (use stl or glb)")
         editable_parts = [p for p in model.parts if p.editable]
         if not editable_parts:
             raise CatalogPushError("This model has no editable (.stl) parts to push.")
@@ -248,6 +280,9 @@ class ServerClient:
                 "filename": _upload_filename(index, part.filename),
                 "base64": base64.b64encode(mesh_bytes).decode("ascii"),
             })
+            if lite_format is not None:
+                lite_name, lite_bytes = _lite_copy(model.path / part.filename, _upload_filename(index, part.filename), lite_format, lite_ratio)
+                mesh_files.append({"filename": lite_name, "base64": base64.b64encode(lite_bytes).decode("ascii")})
 
         body = {
             "name": model.model_id,

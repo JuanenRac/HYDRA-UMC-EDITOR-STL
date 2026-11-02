@@ -71,3 +71,9 @@ def get_saved_lang() -> str | None:
 
 def save_lang(lang: str) -> None:
     save_settings(lang=lang)
+
+
+def saved_lite_ratio(default: float = 0.2) -> float:
+    """The share of the triangles a light copy keeps: `lite_ratio` of the saved settings when it is a number above 0 and up to 1."""
+    value = load_settings().get("lite_ratio", default)
+    return float(value) if isinstance(value, (int, float)) and not isinstance(value, bool) and 0 < value <= 1 else default

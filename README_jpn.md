@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-267%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-288%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.9-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-functional-0F6CBD.svg" alt="Maturity">
 </p>
@@ -35,7 +35,7 @@ GPL-3.0-or-later - see LICENSE
 （実在の組み立て用 URDF 生成に加え、`POST /api/models/submit` 向けの
 実在の HTTP クライアント）はすべて、実際に生成した
 実在の STL ファイルと、必要に応じて実在のセッションスコープの
-`QGuiApplication` に対してテストされており（`pytest tests/`、267 件の
+`QGuiApplication` に対してテストされており（`pytest tests/`、288 件の
 ケースが合格）、本エコシステム自身の実在する
 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` のチェックアウトに対してエンド
 ツーエンドでスモークテスト済みです（`--cli categories`/`models`/
@@ -62,7 +62,7 @@ slot、色変更後も選択状態が保持されること）。`qml/Main.qml` �
 |---|---|
 | バージョン | `0.1.9` |
 | 成熟度 | 機能する |
-| テスト | 267 (`python -m pytest tests -q`) |
+| テスト | 288 (`python -m pytest tests -q`) |
 | 技術 | Python / PySide6 / Qt Quick / numpy-stl |
 | 対象 | 利用者の PC |
 | 実機での確認 | 対象外：ここにあるものはハードウェア上では動きません |
@@ -78,7 +78,7 @@ slot、色変更後も選択状態が保持されること）。`qml/Main.qml` �
 | 領域 | 状態 | ここでの意味 |
 |---|---|---|
 | ソフトウェア | 🟡 | 主な目的では動作します。足りない点は上の正直さの確認に書かれています |
-| テスト | 🟢 | 自動テスト 267 件。変更のたびに実行されます |
+| テスト | 🟢 | 自動テスト 288 件。変更のたびに実行されます |
 | 実機 | 🟢 | 対象外：ここにあるものはハードウェア上では動きません |
 | デプロイ | 🟠 | リリースとして公開されています。新しい環境へのインストールは文書化されていますが記録はありません |
 | 言語とアクセシビリティ | 🟡 | インターフェースとヘルプは 8 言語ですが、キーボード操作とスクリーンリーダーでの利用は試していません |
@@ -142,6 +142,8 @@ HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
 エコシステムの内部作業慣習がすでに従っている「破壊せず、脇に移す」
 という規律を、単なる内部的な習慣としてではなく、実在の製品機能として
 ここに適用したものです。
+
+**保存済みの設定で有効にするまでオフの追加機能。** `push_lite`（`stl` または `glb`、`lite_ratio` と併用）を設定すると、送信時に完全なメッシュの隣に各パーツの軽量コピー（`<名前>.lite.stl` または `.lite.glb`。頂点を共有するだけの単純な GLB で、圧縮ライブラリは使いません）も送ります。`open_in_urdf_editor` は「URDF エディターで開く」ボタンを表示し、モデルを URDF（パーツは初期姿勢、メッシュはコピー、モデルのフォルダーは変更なし）として作業フォルダーに書き出し、HYDRA-UMC-EDITOR-URDF をそれで起動します。`--cli open-in-urdf-editor ... --launch` でも同じです。`diff_overlay` はごみ箱ウィンドウに「比較」ボタンを追加し、そこに保管されたバージョンを 3D ビューの現在のパーツに半透明で重ねます。`--cli sync-libraries --check` は 2 つのライブラリがずれていると終了コード 1 で終わります。配置を書き出すときの回転は、HYDRA-UMC-EDITOR-URDF や HYDRA-UMC-PHYSICS-REPLICA と同じ基準 URDF セットで検査されます。いずれも実際の画面では確認しておらず、画面なしで読み込んでテストしただけです。
 
 ## 🧩 HYDRA-UMC での役割
 
@@ -243,7 +245,7 @@ Python 3.10 以降が必要です。最初の行は GUI 用エクストラ付き
 
 ## 🧪 テスト
 
-`python -m pytest tests -q` で自動テスト 267 件を実行します。 ハードウェアも、このマシンの外にあるものも必要ありません。
+`python -m pytest tests -q` で自動テスト 288 件を実行します。 ハードウェアも、このマシンの外にあるものも必要ありません。
 
 CI は `HYDRA_UMC_CI=1 python tools/ci_validate.py` を実行し、マニフェスト、文書、8 つの README、図を検査します。
 

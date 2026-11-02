@@ -31,6 +31,7 @@ from .diagnostics import guarded
 from . import __version__
 from .assembly import assembled_bounds, assembled_transforms, placement_matrix
 from .catalog_push import CatalogPushError, ServerClient
+from .urdf_bridge import UrdfBridgeError, handoff_enabled, open_in_urdf_editor
 from .model_catalog import is_independent_parts_category, list_categories, list_models, load_model
 from .part_colors import DEFAULT_COLOR, load_part_colors, save_part_color
 from .stl_geometry import StlGeometry
@@ -82,6 +83,7 @@ class EditorBridge(QObject):
     statusChanged = Signal()
     pushStateChanged = Signal()
     clipboardChanged = Signal()
+    overlayChanged = Signal()
 
     def __init__(self, ecosystem_root: Path) -> None:
         super().__init__()
@@ -105,6 +107,8 @@ class EditorBridge(QObject):
         self._clipboard_label = ""
         self._assembled_view = True
         self._has_assembly = False
+        self._overlay_path = ""
+        self._overlay_placement: list = []
         self._refresh_categories()
 
     # --- i18n ---------------------------------------------------------
@@ -300,6 +304,9 @@ class EditorBridge(QObject):
         self.partsChanged.emit()
 
     def _refresh_parts(self) -> None:
+        if self._overlay_path:
+            self._overlay_path, self._overlay_placement = "", []
+            self.overlayChanged.emit()
         model = self._load_selected_model()
         if model is None:
             self._parts = []
@@ -427,6 +434,69 @@ class EditorBridge(QObject):
             return
         self._set_status(i18n.t(self._lang, "msg_restore_done", name=restored))
         self._refresh_parts()
+
+    # --- extras that are off unless the saved settings switch them on ------------------------------------------
+
+    @Property(bool, constant=True)
+    def urdfEditorEnabled(self) -> bool:
+        """The "open in the URDF editor" button exists only with `open_in_urdf_editor` true in the saved settings."""
+        return handoff_enabled()
+
+    @Property(bool, constant=True)
+    def diffOverlayEnabled(self) -> bool:
+        """The comparison with a version from the trash exists only with `diff_overlay` true in the saved settings."""
+        return settings.load_settings().get("diff_overlay") is True
+
+    @Slot()
+    @guarded()
+    def openInUrdfEditor(self) -> None:
+        if not handoff_enabled():
+            return
+        model = self._load_selected_model()
+        if model is None:
+            self._set_status(i18n.t(self._lang, "msg_select_model_first"))
+            return
+        try:
+            open_in_urdf_editor(model, self._ecosystem_root)
+        except (UrdfBridgeError, OSError) as error:
+            self._set_status(i18n.t(self._lang, "msg_urdf_editor_failed", error=str(error)))
+            return
+        self._set_status(i18n.t(self._lang, "msg_urdf_editor_opened", model=self._model))
+
+    @Property(str, notify=overlayChanged)
+    def overlayPath(self) -> str:
+        """The file of the version laid over the current one (empty when there is none)."""
+        return self._overlay_path
+
+    @Property("QVariantList", notify=overlayChanged)
+    def overlayPlacement(self) -> list:
+        return self._overlay_placement
+
+    @Slot(str)
+    @guarded()
+    def showTrashOverlay(self, entry: str) -> None:
+        """Lays the version a `.trash/` entry kept over the part it came from, semi-transparent, in the 3D view."""
+        if not self.diffOverlayEnabled:
+            return
+        model = self._load_selected_model()
+        if model is None:
+            return
+        listing = {e["entry"]: e for e in list_trash(model.path)}
+        if entry not in listing:
+            return
+        original = listing[entry]["original"]
+        match = next((p for p in self._parts if p["filename"] == original), None)
+        self._overlay_path = str((model.path / ".trash" / entry).resolve())
+        self._overlay_placement = list(match["asmMatrix"]) if match is not None and self._assembled_view and self._has_assembly else []
+        self.overlayChanged.emit()
+        self._set_status(i18n.t(self._lang, "msg_compare_shown"))
+
+    @Slot()
+    @guarded()
+    def clearOverlay(self) -> None:
+        if self._overlay_path:
+            self._overlay_path, self._overlay_placement = "", []
+            self.overlayChanged.emit()
 
     @Slot(bool)
     @guarded()
@@ -576,7 +646,9 @@ class EditorBridge(QObject):
         def do_push() -> str:
             client = ServerClient(host, port)
             client.login(username, password)
-            slug = client.push_model(model, target_category, overwrite, allow_stacked=force, ecosystem_root=self._ecosystem_root)
+            lite_format = settings.load_settings().get("push_lite")  # "stl" or "glb" sends a lighter copy too; off otherwise
+            extra: dict = {"lite_format": lite_format, "lite_ratio": settings.saved_lite_ratio()} if lite_format in ("stl", "glb") else {}
+            slug = client.push_model(model, target_category, overwrite, allow_stacked=force, ecosystem_root=self._ecosystem_root, **extra)
             if client.last_skipped_parts:
                 self._push_notes.append(i18n.t(self._lang, "msg_push_skipped", count=client.last_skipped_parts))
             if not is_independent_parts_category(target_category):

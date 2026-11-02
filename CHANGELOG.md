@@ -4,6 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A light copy travels with a push (off by default):** `push_lite` (`stl` or `glb`) and `lite_ratio` in the saved settings, or `--cli push --lite stl|glb [--lite-ratio R]`, add `<mesh>.lite.stl` or `<mesh>.lite.glb` next to every full mesh; the URDF keeps pointing at the full one. The GLB (`glb.py`) shares vertices and uses no compression library.
+- **Open a model in the URDF editor (off by default):** `open_in_urdf_editor` in the saved settings shows the button; `--cli open-in-urdf-editor ... [--launch]` does the same. The model is written as a URDF with its parts at the home pose and its meshes copied into a work folder (`urdf_handoff_dir`), the model folder is not touched, and HYDRA-UMC-EDITOR-URDF is started on the file with `--open` (it must be a git checkout next to the others, or `urdf_editor_path`).
+- **Compare with the trash in the 3D view (off by default):** `diff_overlay` in the saved settings adds a Compare button to the trash window; the version kept there is laid over the current part, semi-transparent.
+- **`--cli sync-libraries --check`** exits with 1 when the target library has drifted from the master, for a script or CI.
+- **The golden URDF set:** the rotation a placement is written with is checked against the same files as HYDRA-UMC-EDITOR-URDF and HYDRA-UMC-PHYSICS-REPLICA (`tests/golden/`, `tests/test_golden_urdf.py`).
+- Six new window texts in all eight languages.
+
 ## [0.1.9] - A lighter copy of a part, the before and after of a part, one model library for both apps and the unit of a model from its metadata
 
 - **A lighter copy of a part (`--cli lite`):** vertices are merged cell by cell on a grid that is searched so that about the wanted share of the triangles is left (`--ratio`, or `lite_ratio` in the saved settings, 0.2 by default); the copy goes to `.lite/<part>` in the model folder, which is hidden and so not listed as a part, and the original is never touched. The copy keeps the outline and the size of the part but is not promised to be a closed mesh, so it is for looking at, not for printing. The push to the catalog is unchanged: it still sends the full parts.

@@ -124,3 +124,19 @@ hydra-umc-editor-stl --cli push studio robots-6-dof ar3 --host 192.168.1.100 --u
 - `--json` (on `categories`/`models`/`parts`) - machine-readable JSON
   instead of one entry per line.
 - `--version` - print this tool's own version and exit.
+
+## `open-in-urdf-editor <library> <category> <model> [--launch]`
+
+Writes the model as a URDF in a work folder (`urdf_handoff_dir` of the saved settings, else `~/.hydra_umc_editor_stl/urdf_handoff`): the editable parts as fixed links at their home-pose placement, the meshes copied into `meshes/`. The model folder is not touched and an earlier hand-over of the same model is replaced. With `--launch` the URDF editor is started on the file (`main.py --open FILE`); it is looked for as the git checkout `HYDRA-UMC-EDITOR-URDF` next to the others or at `urdf_editor_path` in the saved settings. The window offers the same as a button only when `open_in_urdf_editor` is `true` in the saved settings.
+
+## `push ... [--lite stl|glb] [--lite-ratio R]`
+
+Besides the full meshes, sends a lighter copy of every part (`<mesh>.lite.stl` or `<mesh>.lite.glb`, `R` of the triangles kept; default `lite_ratio` of the saved settings, else 0.2). Without `--lite`, `push_lite` of the saved settings decides; with neither, nothing extra is sent.
+
+## `sync-libraries ... [--check]`
+
+`--check` makes the exit code 1 when the target library is not in line with the master (nothing is written without `--apply`).
+
+## Saved settings that switch things on
+
+All in `~/.hydra_umc_editor_stl_settings.json`, all off or empty by default: `push_lite` (`"stl"`, `"glb"`), `lite_ratio`, `open_in_urdf_editor` (`true`), `urdf_editor_path`, `urdf_handoff_dir`, `diff_overlay` (`true`: a Compare button in the trash window).

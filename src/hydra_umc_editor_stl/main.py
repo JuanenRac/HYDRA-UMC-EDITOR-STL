@@ -27,6 +27,7 @@ from .decimate import DEFAULT_RATIO, make_light_copy
 from .library_sync import LibrarySyncError, sync_libraries
 from .mesh_diff import diff_with_trash, render_diff_with_trash
 from .model_catalog import list_categories, list_models, load_model
+from .urdf_bridge import UrdfBridgeError, open_in_urdf_editor
 from .stl_ops import StlOpsError, add_part, remove_part, replace_part, transform_part
 
 
@@ -171,8 +172,13 @@ def cmd_lite(args: argparse.Namespace) -> int:
 
 def _saved_ratio() -> float:
     """The share of the triangles a light copy keeps when --ratio is not given: `lite_ratio` in the saved settings."""
-    value = settings.load_settings().get("lite_ratio", DEFAULT_RATIO)
-    return float(value) if isinstance(value, (int, float)) and not isinstance(value, bool) and 0 < value <= 1 else DEFAULT_RATIO
+    return settings.saved_lite_ratio(DEFAULT_RATIO)
+
+
+def _saved_push_lite() -> str | None:
+    """The light-copy format a push also sends when --lite is not given: `push_lite` ("stl" or "glb") in the saved settings; off otherwise."""
+    value = settings.load_settings().get("push_lite")
+    return value if value in ("stl", "glb") else None
 
 
 def cmd_diff(args: argparse.Namespace) -> int:
@@ -207,6 +213,23 @@ def cmd_sync_libraries(args: argparse.Namespace) -> int:
     print(f"same: {diff.same}  to copy: {len(diff.only_in_master)}  to replace: {len(diff.different)}  only in {args.target} (left alone): {len(diff.only_in_target)}")
     if not args.apply and not diff.in_sync:
         print("Nothing was written: add --apply to bring the target in line (replaced files are kept in .sync-backup/).")
+    if args.check and not diff.in_sync:
+        return 1  # for a script or a CI step: the two libraries have drifted apart
+    return 0
+
+
+def cmd_open_in_urdf_editor(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve() if args.root else default_ecosystem_root()
+    model = load_model(root, args.library, args.category, args.model)
+    if model is None:
+        print(f"No such model: {args.library}/{args.category}/{args.model}", file=sys.stderr)
+        return 1
+    try:
+        urdf = open_in_urdf_editor(model, root, launch=args.launch)
+    except UrdfBridgeError as error:
+        print(f"Hand-over failed: {error}", file=sys.stderr)
+        return 1
+    print(f"URDF written to {urdf}" + (" and the URDF editor was started" if args.launch else " (add --launch to start the URDF editor on it)"))
     return 0
 
 
@@ -220,11 +243,15 @@ def cmd_push(args: argparse.Namespace) -> int:
     for warning in push_warnings(model, args.server_category or args.category, root):
         print(f"Warning: {warning}", file=sys.stderr)
     client = ServerClient(args.host, args.port)
+    lite_format = args.lite if args.lite is not None else _saved_push_lite()
     try:
         client.login(args.username, password)
+        extra: dict = {}
+        if lite_format is not None:  # nothing extra is passed (or sent) unless a light copy was asked for
+            extra = {"lite_format": lite_format, "lite_ratio": _saved_ratio() if args.lite_ratio is None else args.lite_ratio}
         slug = client.push_model(
             model, args.server_category or args.category, args.overwrite, allow_stacked=args.allow_stacked_push,
-            ecosystem_root=root,
+            ecosystem_root=root, **extra,
         )
     except CatalogPushError as error:
         print(f"Push failed: {error}", file=sys.stderr)
@@ -312,8 +339,14 @@ def build_parser() -> argparse.ArgumentParser:
     sync_p.add_argument("--root", help="Ecosystem root to scan (default: this tool's own parent directory).")
     sync_p.add_argument("--master", choices=["studio", "suite"], default="studio", help="The library that is right (default: studio).")
     sync_p.add_argument("--target", choices=["studio", "suite"], default="suite", help="The library that is brought in line (default: suite).")
+    sync_p.add_argument("--check", action="store_true", help="Exit with 1 when the target is not in line with the master (still writes nothing without --apply).")
     sync_p.add_argument("--apply", action="store_true", help="Write the changes; without it only the plan is shown.")
     sync_p.set_defaults(func=cmd_sync_libraries)
+
+    open_p = subparsers.add_parser("open-in-urdf-editor", help="Write the model as a URDF (parts at their home pose) in a work folder and, with --launch, open it in the URDF editor.")
+    _add_model_selector_args(open_p)
+    open_p.add_argument("--launch", action="store_true", help="Start the URDF editor on the file (without it only the files are written).")
+    open_p.set_defaults(func=cmd_open_in_urdf_editor)
 
     push_p = subparsers.add_parser("push", help="Push a model's editable parts to a running server's model-submission catalog.")
     _add_model_selector_args(push_p)
@@ -327,6 +360,8 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Send a robot or machine even when the home-pose placement of its parts is not known here (they would arrive stacked at the origin).",
     )
+    push_p.add_argument("--lite", choices=["stl", "glb"], help="Also send a lighter copy of every part in this format, next to the full mesh (default: push_lite in the saved settings; off when it is not set).")
+    push_p.add_argument("--lite-ratio", type=float, help="Share of the triangles the light copy keeps (default: lite_ratio in the saved settings).")
     push_p.add_argument("--overwrite", action="store_true", help="Replace an existing submission with the same name/category.")
     push_p.set_defaults(func=cmd_push)
 

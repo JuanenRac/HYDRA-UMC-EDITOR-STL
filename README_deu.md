@@ -19,7 +19,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Language-Python%203.10%2B-blue.svg" alt="Language">
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
-  <img src="https://img.shields.io/badge/Tests-267%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-288%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.9-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-functional-0F6CBD.svg" alt="Maturity">
 </p>
@@ -36,7 +36,7 @@ von Qt-Quick-3D-Geometrie) und `catalog_push.py` (echte Erzeugung
 eines Assembly-URDF plus ein echter HTTP-Client für
 `POST /api/models/submit`) sind alle gegen echte, generierte
 STL-Dateien und, wo nötig, eine echte, sitzungsweite
-`QGuiApplication` getestet (`pytest tests/`, 267 bestandene Fälle) und
+`QGuiApplication` getestet (`pytest tests/`, 288 bestandene Fälle) und
 wurden End-to-End gegen die echten `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE`-
 Checkouts dieses Ökosystems verifiziert (`--cli categories`/`models`/
 `parts` gegen die echten Bäume; `transform`/`remove` gegen eine
@@ -64,7 +64,7 @@ zieht.
 |---|---|
 | Version | `0.1.9` |
 | Reifegrad | Funktionsfähig |
-| Tests | 267 (`python -m pytest tests -q`) |
+| Tests | 288 (`python -m pytest tests -q`) |
 | Technik | Python / PySide6 / Qt Quick / numpy-stl |
 | Ziel | Der PC der Person, die es benutzt |
 | Auf echter Hardware | Nicht zutreffend: nichts hiervon läuft auf Hardware |
@@ -80,7 +80,7 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
 | Software | 🟡 | Funktioniert für seinen Hauptzweck; die Ehrlichkeitsprüfung oben nennt, was noch fehlt |
-| Tests | 🟢 | 267 automatische Tests, bei jeder Änderung ausgeführt |
+| Tests | 🟢 | 288 automatische Tests, bei jeder Änderung ausgeführt |
 | Echte Hardware | 🟢 | Nicht zutreffend: nichts hiervon läuft auf Hardware |
 | Bereitstellung | 🟠 | Als Release veröffentlicht; die Installation auf einem frischen Rechner ist dokumentiert, aber nicht vermerkt |
 | Sprachen und Barrierefreiheit | 🟡 | Oberfläche und Hilfe gibt es in acht Sprachen; die Bedienung per Tastatur und Screenreader wurde nicht getestet |
@@ -149,6 +149,8 @@ verschiebt zuerst die echte Originaldatei in den eigenen
 zur Seite verschieben"-Disziplin, der die internen Arbeitskonventionen
 dieses Ökosystems bereits folgen, hier als echtes Produktmerkmal
 angewendet, nicht nur als interne Gewohnheit.
+
+**Extras, die aus sind, bis die gespeicherten Einstellungen sie einschalten.** `push_lite` (`stl` oder `glb`, mit `lite_ratio`) lässt ein Senden neben dem vollen Mesh eine leichtere Kopie jedes Teils mitschicken (`<Name>.lite.stl` oder `.lite.glb`, ein schlichtes GLB mit gemeinsamen Eckpunkten und ohne Kompressionsbibliothek); `open_in_urdf_editor` zeigt eine Schaltfläche „Im URDF-Editor öffnen“, die das Modell als URDF schreibt (Teile in ihrer Grundpose, Meshes kopiert, der Modellordner unangetastet) und HYDRA-UMC-EDITOR-URDF damit startet, auch als `--cli open-in-urdf-editor ... --launch`; `diff_overlay` fügt dem Papierkorbfenster eine Schaltfläche Vergleichen hinzu, die die dort aufbewahrte Version halbtransparent über das aktuelle Teil in der 3D-Ansicht legt. `--cli sync-libraries --check` endet mit 1, wenn die beiden Bibliotheken auseinandergelaufen sind. Die Drehung, mit der eine Platzierung geschrieben wird, wird gegen denselben Satz Referenz-URDF geprüft wie in HYDRA-UMC-EDITOR-URDF und HYDRA-UMC-PHYSICS-REPLICA. Nichts davon wurde auf einem echten Bildschirm gesehen, nur ohne Bildschirm geladen und getestet.
 
 ## 🧩 Rolle in HYDRA-UMC
 
@@ -254,7 +256,7 @@ Benötigt Python 3.10 oder neuer. Die erste Zeile baut eine virtuelle Umgebung m
 
 ## 🧪 Tests
 
-267 automatische Tests laufen mit `python -m pytest tests -q`. Sie brauchen weder Hardware noch etwas außerhalb dieses Rechners.
+288 automatische Tests laufen mit `python -m pytest tests -q`. Sie brauchen weder Hardware noch etwas außerhalb dieses Rechners.
 
 Die CI führt `HYDRA_UMC_CI=1 python tools/ci_validate.py` aus; das prüft das Manifest, die Dokumente, die acht READMEs und die Bilder.
 

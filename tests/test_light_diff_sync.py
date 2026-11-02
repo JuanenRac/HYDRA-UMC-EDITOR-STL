@@ -249,7 +249,11 @@ def test_cli_lite_diff_and_sync(monkeypatch, capsys, tmp_path: Path) -> None:
 
     code, out, _ = _cli(monkeypatch, capsys, "sync-libraries", "--root", str(root))
     assert code == 0 and "Nothing was written" in out and not (suite / "robots" / "a" / "only_studio.stl").exists()
+    code, _, _ = _cli(monkeypatch, capsys, "sync-libraries", "--root", str(root), "--check")
+    assert code == 1 and not (suite / "robots" / "a" / "only_studio.stl").exists()  # drifted: the exit code says so, nothing written
     code, out, _ = _cli(monkeypatch, capsys, "sync-libraries", "--root", str(root), "--apply")
     assert code == 0 and (suite / "robots" / "a" / "only_studio.stl").is_file()
+    code, _, _ = _cli(monkeypatch, capsys, "sync-libraries", "--root", str(root), "--check")
+    assert code == 0
     code, _, err = _cli(monkeypatch, capsys, "sync-libraries", "--root", str(root), "--master", "suite", "--target", "suite")
     assert code == 1 and "Library sync failed" in err
