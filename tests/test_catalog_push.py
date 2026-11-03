@@ -88,3 +88,45 @@ def test_server_client_raises_a_readable_error_for_an_unreachable_host() -> None
     client = ServerClient("this-host-does-not-exist.invalid", 3000)
     with pytest.raises(CatalogPushError):
         client.login("admin", "wrong")
+
+
+def _pushable(tmp_path: Path, role: str | None):
+    from .conftest import make_cube_stl
+
+    make_cube_stl(tmp_path / "a.stl")
+    model = _model(tmp_path, (PartInfo(filename="a.stl", size_bytes=10, editable=True),))
+    client = ServerClient("127.0.0.1", 1)
+    client.token = "t"
+    client.role = role
+    return client, model
+
+
+@pytest.mark.parametrize("role", ["operator", "viewer", "", None, "ADMIN"])
+def test_push_is_blocked_without_the_admin_role(tmp_path: Path, role) -> None:
+    client, model = _pushable(tmp_path, role)
+    with pytest.raises(CatalogPushError, match="admin account"):
+        client.push_model(model, "heatedbeds", confirmed=True)
+
+
+def test_push_is_blocked_without_the_confirmation(tmp_path: Path) -> None:
+    client, model = _pushable(tmp_path, "admin")
+    with pytest.raises(CatalogPushError, match="not confirmed"):
+        client.push_model(model, "heatedbeds")
+
+
+def test_login_keeps_the_role_the_server_reports(monkeypatch) -> None:
+    client = ServerClient("127.0.0.1", 1)
+    monkeypatch.setattr(client, "_request", lambda *a, **k: {"token": "t", "role": "operator"})
+    client.login("u", "p")
+    assert client.role == "operator"
+    monkeypatch.setattr(client, "_request", lambda *a, **k: {"token": "t"})
+    client.login("u", "p")
+    assert client.role is None
+
+
+def test_push_summary_names_the_server_the_model_and_the_replacement(tmp_path: Path) -> None:
+    from hydra_umc_editor_stl.catalog_push import push_summary
+
+    _, model = _pushable(tmp_path, "admin")
+    lines = push_summary(model, "heatedbeds", "http://h:3000", overwrite=True)
+    assert "http://h:3000" in lines[0] and "heatedbeds" in lines[1] and "REPLACED" in lines[2]

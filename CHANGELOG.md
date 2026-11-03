@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The push to the catalog needs an admin login and the person's confirmation:** the role the server reports at login must be `admin` (any other role, or none, blocks the push with the reason, before anything is sent), and the push needs an explicit confirmation: `--yes` on the command line (otherwise the summary is shown and `yes` is typed; a script with no terminal is refused) or the new confirmation box of the push window, which keeps the Push button off until it is ticked. The token of the login is the only identity sent. One new window text in all eight languages, 10 new tests.
+
 ## [0.2.0] - A light copy travels with a push, a model opens in the URDF editor, the trash can be compared in the 3D view, the libraries can be checked for drift and a golden URDF set is shared, all off by default
 
 - **A light copy travels with a push (off by default):** `push_lite` (`stl` or `glb`) and `lite_ratio` in the saved settings, or `--cli push --lite stl|glb [--lite-ratio R]`, add `<mesh>.lite.stl` or `<mesh>.lite.glb` next to every full mesh; the URDF keeps pointing at the full one. The GLB (`glb.py`) shares vertices and uses no compression library.

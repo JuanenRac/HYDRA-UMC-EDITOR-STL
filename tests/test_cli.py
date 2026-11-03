@@ -116,12 +116,12 @@ def test_push_reads_the_password_from_the_environment(monkeypatch, capsys, ecosy
         def login(self, username: str, password: str) -> None:
             seen.append(password)
 
-        def push_model(self, model, category, overwrite, allow_stacked=False, ecosystem_root=None) -> str:
+        def push_model(self, model, category, overwrite, allow_stacked=False, ecosystem_root=None, confirmed=False) -> str:
             return "slug-1"
 
     monkeypatch.setattr(main_module, "ServerClient", FakeClient)
     code, out, _ = run_cli(
-        monkeypatch, capsys, ecosystem_root, "push", *selector(ecosystem_root), "--host", "h", "--username", "admin"
+        monkeypatch, capsys, ecosystem_root, "push", *selector(ecosystem_root), "--host", "h", "--username", "admin", "--yes"
     )
     assert code == 0 and "Pushed as slug-1" in out
     assert seen == ["from-env"]
@@ -144,3 +144,43 @@ def test_the_saved_root_wins_over_the_parent_directory(monkeypatch, tmp_path: Pa
     assert main_module.resolve_ecosystem_root() == tmp_path
     monkeypatch.setattr(main_module.settings, "get_saved_ecosystem_root", lambda: None)
     assert main_module.resolve_ecosystem_root() == main_module.default_ecosystem_root()
+
+
+def test_push_without_yes_in_a_script_is_not_sent(monkeypatch, capsys, ecosystem_root: Path) -> None:
+    sent: list[str] = []
+
+    class FakeClient:
+        base_url = "http://h:3000"
+
+        def __init__(self, host, port) -> None:
+            pass
+
+        def login(self, username: str, password: str) -> None:
+            sent.append("login")
+
+    monkeypatch.setenv("HYDRA_UMC_PASSWORD", "x")
+    monkeypatch.setattr(main_module, "ServerClient", FakeClient)
+    monkeypatch.setattr(sys.stdin, "isatty", lambda: False)
+    code, _, err = run_cli(monkeypatch, capsys, ecosystem_root, "push", *selector(ecosystem_root), "--host", "h", "--username", "admin")
+    assert code == 1 and "confirmation" in err and "Server: http://h:3000" in err
+    assert sent == []
+
+
+def test_push_asked_on_the_terminal_needs_the_word_yes(monkeypatch, capsys, ecosystem_root: Path) -> None:
+    sent: list[str] = []
+
+    class FakeClient:
+        base_url = "http://h:3000"
+
+        def __init__(self, host, port) -> None:
+            pass
+
+        def login(self, username: str, password: str) -> None:
+            sent.append("login")
+
+    monkeypatch.setenv("HYDRA_UMC_PASSWORD", "x")
+    monkeypatch.setattr(main_module, "ServerClient", FakeClient)
+    monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
+    monkeypatch.setattr("builtins.input", lambda prompt="": "no")
+    code, _, err = run_cli(monkeypatch, capsys, ecosystem_root, "push", *selector(ecosystem_root), "--host", "h", "--username", "admin")
+    assert code == 1 and "not confirmed" in err and sent == []

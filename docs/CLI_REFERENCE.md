@@ -95,7 +95,7 @@ Submits `model`'s own current editable (`.stl`) parts to a running
 HYDRA-UMC-SERVER's real model-submission catalog (`POST
 /api/models/submit`) - the same real integration point
 HYDRA-UMC-EDITOR-URDF already uses for URDF models. Requires an
-admin-role account (that endpoint's own `requireAdmin`). Since the
+admin-role account (that endpoint's own `requireAdmin`): the role the server reports at login must be `admin`, otherwise the push is refused before anything is sent, with the role named in the message (a server that reports no role is treated as not admin). It also needs the person's explicit confirmation (`--yes`, or the confirmation box of the push window, which keeps the Push button off until it is ticked). The editor sends only the token of that login, so the server's own record names the account; it makes up no identity. The server route itself writes no audit entry for a submission today: that is a change in HYDRA-UMC-SERVER, not made from here. Since the
 endpoint's own contract is URDF-shaped, this wraps the parts in the
 smallest real URDF it accepts: one root link plus one un-jointed
 (`fixed`) child link per part - each part's actual position is already
@@ -109,6 +109,7 @@ baked into its own STL vertices, never a synthetic pose invented here. That hold
 | `--password` | Not recommended: it is visible in the process list and the shell history. Leave it out to be prompted, or set `HYDRA_UMC_PASSWORD` | prompt |
 | `--server-category` | Category to file this under server-side | same as `<category>` |
 | `--overwrite` | Replace an existing submission with the same name/category | off |
+| `--yes` | Confirm the push without being asked. Without it the summary (server, model, category, replacement) is printed and the word `yes` must be typed; in a script with no terminal the push is refused | off |
 | `--allow-stacked-push` | Send a robot or machine although the home-pose placement of its parts is not known here and they arrive stacked at the origin (refused by default only in that case; independent pieces such as heated beds are never refused; the **Force** box of the push window does the same) | off |
 
 ```bash

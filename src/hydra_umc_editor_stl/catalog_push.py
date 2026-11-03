@@ -173,6 +173,18 @@ def _lite_copy(source: Path, upload_name: str, lite_format: str, ratio: float) -
         raise CatalogPushError(f"could not make the light copy of {source.name}: {error}") from error
 
 
+def push_summary(model: ModelInfo, category: str, base_url: str, overwrite: bool = False) -> list[str]:
+    """The lines shown before the confirmation: what goes where, so the person confirms with the facts in front of them."""
+    editable = sum(1 for p in model.parts if p.editable)
+    lines = [
+        f"Server: {base_url}",
+        f"Model: {model.model_id} ({editable} editable part(s)) -> category '{category}'",
+    ]
+    if overwrite:
+        lines.append("An existing submission with the same name will be REPLACED.")
+    return lines
+
+
 class ServerClient:
     """One instance per server the operator points this app at - mirrors
     HYDRA-UMC-EDITOR-URDF's own server/client.py StudioClient (same real
@@ -190,6 +202,8 @@ class ServerClient:
         else:
             self.base_url = f"http://{host}:{port}"
         self.token: str | None = None
+        # The role the server reported for this login ("admin", "operator", "viewer"...); None until a login says it.
+        self.role: str | None = None
         self.last_skipped_parts = 0
         self.last_placed_parts = 0
 
@@ -232,6 +246,21 @@ class ServerClient:
         if not isinstance(token, str) or not token:
             raise CatalogPushError("Login succeeded but the server returned no token.")
         self.token = token
+        role = data.get("role")
+        self.role = role if isinstance(role, str) and role else None
+
+    def require_admin(self) -> None:
+        """Block the push with a clear reason unless the server said this login is an admin. The check is made here before
+        anything is sent; the server checks the role again on its own (requireAdmin), so this is the early, readable refusal,
+        not the only guard. A server that reports no role is treated as not admin (fail closed)."""
+        if not self.token:
+            raise CatalogPushError("Not logged in - call login() first.")
+        if self.role != "admin":
+            shown = self.role if self.role else "unknown"
+            raise CatalogPushError(
+                f"Not pushed: sending a model to the catalog needs an admin account of the server, and this login has the "
+                f"role '{shown}'. Sign in with an admin account."
+            )
 
     def push_model(
         self,
@@ -242,6 +271,7 @@ class ServerClient:
         ecosystem_root: Path | None = None,
         lite_format: str | None = None,
         lite_ratio: float = DEFAULT_RATIO,
+        confirmed: bool = False,
     ) -> str:
         """POST /api/models/submit - builds the assembly URDF above,
         base64-encodes every editable part's own current STL bytes
@@ -253,12 +283,24 @@ class ServerClient:
 
         With `lite_format` "stl" or "glb" (the default None sends nothing extra) a lighter copy of each part travels
         too, as `<mesh name>.lite.stl` or `.lite.glb` next to the full one, for the apps that cannot carry the full mesh;
-        the URDF keeps pointing at the full mesh."""
+        the URDF keeps pointing at the full mesh.
+
+        The push changes the server's catalog, so it needs an admin login (`role` reported by the server) and an explicit
+        `confirmed=True` from the person (the push window's confirmation box, `--yes` on the command line); without either it
+        is refused before anything is sent. The server records the push under the account of the token this client sends;
+        nothing here makes up an identity."""
+        if not self.token:
+            raise CatalogPushError("Not logged in - call login() first.")
         if lite_format not in (None, "stl", "glb"):
             raise CatalogPushError(f"unknown light-copy format {lite_format!r} (use stl or glb)")
         editable_parts = [p for p in model.parts if p.editable]
         if not editable_parts:
             raise CatalogPushError("This model has no editable (.stl) parts to push.")
+        self.require_admin()
+        if not confirmed:
+            raise CatalogPushError(
+                "Not pushed: the person has not confirmed the push. Confirm it in the push window or pass --yes on the command line."
+            )
         placements = None
         self.last_placed_parts = 0
         if not is_independent_parts_category(category):

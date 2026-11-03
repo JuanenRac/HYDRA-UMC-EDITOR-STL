@@ -111,9 +111,9 @@ def test_a_push_above_the_server_limit_is_refused_before_sending(tmp_path: Path,
     model = load_model(root, "studio", "robots-6-dof", "arm")
     monkeypatch.setattr("hydra_umc_editor_stl.catalog_push.MAX_BODY_BYTES", 100)
     client = ServerClient("127.0.0.1", 1)
-    client.token = "x"
+    client.token = "x"; client.role = "admin"
     with pytest.raises(CatalogPushError, match="50 MB"):
-        client.push_model(model, "robots-6-dof", allow_stacked=True)
+        client.push_model(model, "robots-6-dof", allow_stacked=True, confirmed=True)
     assert MAX_BODY_BYTES > 100 and json.dumps({})
 
 
@@ -127,16 +127,16 @@ def test_a_robot_push_is_blocked_unless_stacking_is_allowed(tmp_path: Path) -> N
     root, _ = _library(tmp_path)
     model = load_model(root, "studio", "robots-6-dof", "arm")
     client = ServerClient("127.0.0.1", 1)
-    client.token = "x"
+    client.token = "x"; client.role = "admin"
     with pytest.raises(CatalogPushError, match="stacked"):
-        client.push_model(model, "robots-6-dof")
+        client.push_model(model, "robots-6-dof", confirmed=True)
     # Independent pieces are never blocked: this one only fails later, on the unreachable server.
     heated = load_model(root, "studio", "robots-6-dof", "arm")
     with pytest.raises(CatalogPushError) as info:
-        client.push_model(heated, "heatedbeds")
+        client.push_model(heated, "heatedbeds", confirmed=True)
     assert "stacked" not in str(info.value)
     with pytest.raises(CatalogPushError) as info:
-        client.push_model(model, "robots-6-dof", allow_stacked=True)
+        client.push_model(model, "robots-6-dof", allow_stacked=True, confirmed=True)
     assert "stacked" not in str(info.value)
 
 
@@ -160,9 +160,9 @@ def test_a_robot_with_known_home_placements_is_pushed_assembled_not_stacked(tmp_
     assert rpy == pytest.approx([0.0, 0.0, 1.5707963], abs=1e-6)
     # no refusal any more: the push gets as far as the (unreachable) server
     client = ServerClient("127.0.0.1", 1)
-    client.token = "x"
+    client.token = "x"; client.role = "admin"
     with pytest.raises(CatalogPushError) as info:
-        client.push_model(model, "robots-6-dof", ecosystem_root=root)
+        client.push_model(model, "robots-6-dof", ecosystem_root=root, confirmed=True)
     assert "stacked" not in str(info.value)
     assert client.last_placed_parts == 1
     assert not any("link frame" in w for w in catalog_push.push_warnings(model, "robots-6-dof", root))
@@ -180,9 +180,9 @@ def test_parts_without_a_known_placement_are_reported_and_a_model_with_none_is_s
     assert any("1 part(s)" in w and "arm2.stl" in w for w in warnings)
     monkeypatch.setattr(catalog_push, "assembled_transforms", lambda *a, **k: None)
     client = ServerClient("127.0.0.1", 1)
-    client.token = "x"
+    client.token = "x"; client.role = "admin"
     with pytest.raises(CatalogPushError, match="stacked"):
-        client.push_model(model, "robots-6-dof", ecosystem_root=root)
+        client.push_model(model, "robots-6-dof", ecosystem_root=root, confirmed=True)
 
 
 def test_a_failing_kinematics_module_counts_as_no_placement(tmp_path: Path, monkeypatch) -> None:

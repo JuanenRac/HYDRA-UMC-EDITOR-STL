@@ -421,6 +421,10 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 CheckBox { id: pushForceCheck; checked: false; text: ui("push_force_checkbox") }
             }
+            RowLayout {
+                Layout.fillWidth: true
+                CheckBox { id: pushConfirmCheck; checked: false; text: ui("push_confirm_checkbox") }
+            }
             LabelText {
                 text: backend.pushStatus
                 visible: backend.pushStatus.length > 0
@@ -436,11 +440,11 @@ ApplicationWindow {
                 GameButton {
                     text: backend.pushBusy ? "..." : ui("push_button")
                     accent: window.blue
-                    enabled: !backend.pushBusy
+                    enabled: !backend.pushBusy && pushConfirmCheck.checked
                     onClicked: backend.pushToServer(
                         pushHostField.text, parseInt(pushPortField.text) || 3000,
                         pushUsernameField.text, pushPasswordField.text,
-                        pushCategoryField.text, pushOverwriteCheck.checked, pushForceCheck.checked
+                        pushCategoryField.text, pushOverwriteCheck.checked, pushForceCheck.checked, pushConfirmCheck.checked
                     )
                 }
             }

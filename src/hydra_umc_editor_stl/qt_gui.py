@@ -627,10 +627,11 @@ class EditorBridge(QObject):
     def pushStatus(self) -> str:
         return self._push_status
 
-    @Slot(str, int, str, str, str, bool, bool)
+    @Slot(str, int, str, str, str, bool, bool, bool)
     @guarded()
     def pushToServer(
-        self, host: str, port: int, username: str, password: str, category: str, overwrite: bool, force: bool = False
+        self, host: str, port: int, username: str, password: str, category: str, overwrite: bool, force: bool = False,
+        confirmed: bool = False,
     ) -> None:
         model = self._load_selected_model()
         if model is None:
@@ -648,7 +649,7 @@ class EditorBridge(QObject):
             client.login(username, password)
             lite_format = settings.load_settings().get("push_lite")  # "stl" or "glb" sends a lighter copy too; off otherwise
             extra: dict = {"lite_format": lite_format, "lite_ratio": settings.saved_lite_ratio()} if lite_format in ("stl", "glb") else {}
-            slug = client.push_model(model, target_category, overwrite, allow_stacked=force, ecosystem_root=self._ecosystem_root, **extra)
+            slug = client.push_model(model, target_category, overwrite, allow_stacked=force, ecosystem_root=self._ecosystem_root, confirmed=confirmed, **extra)
             if client.last_skipped_parts:
                 self._push_notes.append(i18n.t(self._lang, "msg_push_skipped", count=client.last_skipped_parts))
             if not is_independent_parts_category(target_category):

@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 from . import __version__, settings
-from .catalog_push import CatalogPushError, ServerClient, push_warnings
+from .catalog_push import CatalogPushError, ServerClient, push_summary, push_warnings
 from .decimate import DEFAULT_RATIO, make_light_copy
 from .library_sync import LibrarySyncError, sync_libraries
 from .mesh_diff import diff_with_trash, render_diff_with_trash
@@ -243,6 +243,15 @@ def cmd_push(args: argparse.Namespace) -> int:
     for warning in push_warnings(model, args.server_category or args.category, root):
         print(f"Warning: {warning}", file=sys.stderr)
     client = ServerClient(args.host, args.port)
+    if not args.yes:
+        for line in push_summary(model, args.server_category or args.category, getattr(client, "base_url", args.host), args.overwrite):
+            print(line, file=sys.stderr)
+        if not sys.stdin.isatty():
+            print("Push failed: the push needs your confirmation; pass --yes to confirm it in a script.", file=sys.stderr)
+            return 1
+        if input("Push this to the server catalog? Type yes to confirm: ").strip().lower() != "yes":
+            print("Push failed: not confirmed, nothing was sent.", file=sys.stderr)
+            return 1
     lite_format = args.lite if args.lite is not None else _saved_push_lite()
     try:
         client.login(args.username, password)
@@ -251,7 +260,7 @@ def cmd_push(args: argparse.Namespace) -> int:
             extra = {"lite_format": lite_format, "lite_ratio": _saved_ratio() if args.lite_ratio is None else args.lite_ratio}
         slug = client.push_model(
             model, args.server_category or args.category, args.overwrite, allow_stacked=args.allow_stacked_push,
-            ecosystem_root=root, **extra,
+            ecosystem_root=root, confirmed=True, **extra,
         )
     except CatalogPushError as error:
         print(f"Push failed: {error}", file=sys.stderr)
@@ -362,6 +371,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     push_p.add_argument("--lite", choices=["stl", "glb"], help="Also send a lighter copy of every part in this format, next to the full mesh (default: push_lite in the saved settings; off when it is not set).")
     push_p.add_argument("--lite-ratio", type=float, help="Share of the triangles the light copy keeps (default: lite_ratio in the saved settings).")
+    push_p.add_argument("--yes", action="store_true", help="Confirm the push without being asked (needed in a script; the account must be an admin of the server).")
     push_p.add_argument("--overwrite", action="store_true", help="Replace an existing submission with the same name/category.")
     push_p.set_defaults(func=cmd_push)
 

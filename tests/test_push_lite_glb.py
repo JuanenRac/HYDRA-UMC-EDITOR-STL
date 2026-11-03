@@ -22,7 +22,7 @@ from .test_light_diff_sync import sphere_vectors
 class _Capture(ServerClient):
     def __init__(self) -> None:
         super().__init__("127.0.0.1", 1)
-        self.token = "t"
+        self.token = "t"; self.role = "admin"
         self.sent: dict = {}
 
     def _request(self, method, path, body=None, auth=False):  # type: ignore[override]
@@ -58,14 +58,14 @@ def test_a_glb_without_triangles_is_refused() -> None:
 
 def test_a_push_sends_no_light_copy_unless_asked(tmp_path: Path) -> None:
     client = _Capture()
-    client.push_model(_model(tmp_path), "heatedbeds")
+    client.push_model(_model(tmp_path), "heatedbeds", confirmed=True)
     assert [m["filename"] for m in client.sent["meshFiles"]] == ["0_ball.stl"]
 
 
 @pytest.mark.parametrize("fmt", ["stl", "glb"])
 def test_a_push_can_send_a_lighter_copy_next_to_the_full_one(tmp_path: Path, fmt: str) -> None:
     client = _Capture()
-    client.push_model(_model(tmp_path), "heatedbeds", lite_format=fmt, lite_ratio=0.2)
+    client.push_model(_model(tmp_path), "heatedbeds", lite_format=fmt, lite_ratio=0.2, confirmed=True)
     files = {m["filename"]: base64.b64decode(m["base64"]) for m in client.sent["meshFiles"]}
     assert set(files) == {"0_ball.stl", f"0_ball.lite.{fmt}"}
     assert len(files[f"0_ball.lite.{fmt}"]) < len(files["0_ball.stl"]) / 2
@@ -77,5 +77,5 @@ def test_a_push_can_send_a_lighter_copy_next_to_the_full_one(tmp_path: Path, fmt
 def test_an_unknown_light_format_is_refused_before_anything_is_sent(tmp_path: Path) -> None:
     client = _Capture()
     with pytest.raises(CatalogPushError, match="light-copy format"):
-        client.push_model(_model(tmp_path), "heatedbeds", lite_format="draco")
+        client.push_model(_model(tmp_path), "heatedbeds", lite_format="draco", confirmed=True)
     assert client.sent == {}

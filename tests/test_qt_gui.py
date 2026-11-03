@@ -191,7 +191,7 @@ def _fake_client(calls: list):
         def login(self, username, password):
             pass
 
-        def push_model(self, model, category, overwrite=False, allow_stacked=False, ecosystem_root=None):
+        def push_model(self, model, category, overwrite=False, allow_stacked=False, ecosystem_root=None, confirmed=False, **_):
             calls.append({"overwrite": overwrite, "allow_stacked": allow_stacked})
             return "slug"
 
@@ -241,7 +241,32 @@ def test_the_push_window_passes_the_force_box_as_allow_stacked(qt_app, ecosystem
     bridge = EditorBridge(ecosystem_root)
     _select_ar3_base_link(bridge)
 
-    bridge.pushToServer("host", 3000, "admin", "pw", "robots-6-dof", False, force)
+    bridge.pushToServer("host", 3000, "admin", "pw", "robots-6-dof", False, force, True)
 
     assert calls == [{"overwrite": False, "allow_stacked": force}]
     assert not bridge.pushBusy
+
+def test_the_push_window_without_the_confirmation_sends_confirmed_false(qt_app, ecosystem_root: Path, monkeypatch) -> None:
+    from hydra_umc_editor_stl import qt_gui
+
+    seen: list = []
+
+    class Client:
+        last_skipped_parts = 0
+
+        def __init__(self, host, port):
+            pass
+
+        def login(self, username, password):
+            pass
+
+        def push_model(self, model, category, overwrite=False, allow_stacked=False, ecosystem_root=None, confirmed=False, **_):
+            seen.append(confirmed)
+            return "slug"
+
+    monkeypatch.setattr(qt_gui, "ServerClient", Client)
+    monkeypatch.setattr(qt_gui, "_PushThread", _SyncPushThread)
+    bridge = EditorBridge(ecosystem_root)
+    _select_ar3_base_link(bridge)
+    bridge.pushToServer("host", 3000, "admin", "pw", "robots-6-dof", False, True)
+    assert seen == [False]

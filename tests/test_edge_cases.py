@@ -514,14 +514,15 @@ def test_error_message_of_the_server_is_passed_on(fake_server) -> None:
 
 def test_login_then_push_returns_the_slug(fake_server, tmp_path: Path) -> None:
     port, routes = fake_server
-    routes["/api/login"] = (200, b'{"token":"abc"}')
+    routes["/api/login"] = (200, b'{"token":"abc","role":"admin"}')
     routes["/api/models/submit"] = (200, b'{"slug":"arm-1"}')
     make_cube_stl(tmp_path / "a.stl")
     model = ModelInfo("studio", "heatedbeds", "arm", tmp_path, (PartInfo("a.stl", 10, True),))
     client = ServerClient("127.0.0.1", port)
     client.login("admin", "pw")
     assert client.token == "abc"
-    assert client.push_model(model, "heatedbeds") == "arm-1"
+    assert client.role == "admin"
+    assert client.push_model(model, "heatedbeds", confirmed=True) == "arm-1"
 
 
 @pytest.mark.parametrize("answer", [b"{}", b"[]", b"null", b'{"slug":""}', b'{"slug":null}', b"<html>"])
@@ -531,9 +532,9 @@ def test_push_without_a_usable_slug_is_an_error(fake_server, tmp_path: Path, ans
     make_cube_stl(tmp_path / "a.stl")
     model = ModelInfo("studio", "heatedbeds", "arm", tmp_path, (PartInfo("a.stl", 10, True),))
     client = ServerClient("127.0.0.1", port)
-    client.token = "abc"
+    client.token = "abc"; client.role = "admin"
     with pytest.raises(CatalogPushError):
-        client.push_model(model, "heatedbeds")
+        client.push_model(model, "heatedbeds", confirmed=True)
 
 
 def test_server_addresses_are_built_the_way_the_login_screen_shows_them() -> None:
