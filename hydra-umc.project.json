@@ -22,5 +22,8 @@
   "native_version": {
     "file": "src/hydra_umc_editor_stl/__init__.py",
     "pattern": "__version__\\s*=\\s*\"(\\d+)\\.(\\d+)\\.(\\d+)\""
-  }
+  },
+  "depends_on": [
+    "HYDRA-UMC-STUDIO"
+  ]
 }
