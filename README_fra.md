@@ -20,7 +20,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Core-numpy--stl-brightgreen.svg" alt="Core">
   <img src="https://img.shields.io/badge/Desktop-PySide6%20%7C%20Qt%20Quick-367BF5.svg" alt="Desktop">
   <img src="https://img.shields.io/badge/Tests-302%20passing-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.2.0-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.2.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-functional-0F6CBD.svg" alt="Maturity">
 </p>
 
@@ -37,7 +37,7 @@ bibliothèques de modèles), `stl_ops.py` (mutation STL réelle via
 client HTTP pour `POST /api/models/submit`) sont tous
 testés contre de vrais fichiers STL générés et une vraie
 `QGuiApplication` à portée de session quand nécessaire (`pytest tests/`,
-299 cas réussis) et ont été vérifiés de bout en bout contre les vrais
+302 cas réussis) et ont été vérifiés de bout en bout contre les vrais
 checkouts `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` de cet écosystème
 (`--cli categories`/`models`/`parts` contre les vrais arbres ;
 `transform`/`remove` contre une copie jetable, jamais le vrai checkout).
@@ -61,7 +61,7 @@ pour sa propre couche Qt Quick.
 
 | | |
 |---|---|
-| Version | `0.2.0` |
+| Version | `0.2.1` |
 | Maturité | Fonctionnel |
 | Tests | 302 (`python -m pytest tests -q`) |
 | Technologie | Python / PySide6 / Qt Quick / numpy-stl |
