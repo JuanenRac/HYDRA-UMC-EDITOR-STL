@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The two model libraries can be one folder:** with `HYDRA_UMC_LIBRARY_DIR` set to an existing folder, both libraries (`studio` and `suite`) are that folder, STUDIO and the desktop app read the same one, and `sync-libraries` says there is nothing to bring in line. Unset, or naming something that is not a folder, each library keeps its own folder as before. 3 tests.
+
 - **The build test of the repository compiles only on CI or when allowed:** for the stacks that compile (`rust`, `go`, `android`, `flutter`, `firmware-c`), `tools/build_test.py` prints `BUILD_TEST=SKIPPED` with exit status 2 on a plain PC, never a pass; `ALLOW_LOCAL_BUILD=1` allows it and a CI runner always may. The `python` and `node` stacks are not locked.
 
 - **The push to the catalog needs an admin login and the person's confirmation:** the role the server reports at login must be `admin` (any other role, or none, blocks the push with the reason, before anything is sent), and the push needs an explicit confirmation: `--yes` on the command line (otherwise the summary is shown and `yes` is typed; a script with no terminal is refused) or the new confirmation box of the push window, which keeps the Push button off until it is ticked. The token of the login is the only identity sent. One new window text in all eight languages, 10 new tests.

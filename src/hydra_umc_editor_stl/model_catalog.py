@@ -18,6 +18,8 @@
 from __future__ import annotations
 
 import json
+import os
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -77,7 +79,27 @@ class ModelInfo:
     metadata: dict | None = None
 
 
-def resolve_library_root(ecosystem_root: Path, library: str) -> Path | None:
+#: The environment variable that names ONE folder for the model libraries of both apps (same layout as STUDIO's `public/models`
+#: and SUITE's `assets/meshes`: category / model / files). STUDIO and SUITE read it too; unset, each keeps its own folder.
+LIBRARY_DIR_ENV = "HYDRA_UMC_LIBRARY_DIR"
+
+
+def shared_library_dir(environ: Mapping[str, str] | None = None) -> Path | None:
+    """The common library folder named by `HYDRA_UMC_LIBRARY_DIR`, or None when it is unset or is not an existing folder
+    (a wrong value falls back to the folders of the two apps instead of editing something unexpected)."""
+    value = (os.environ if environ is None else environ).get(LIBRARY_DIR_ENV, "").strip()
+    if not value:
+        return None
+    candidate = Path(value).expanduser()
+    return candidate if candidate.is_dir() else None
+
+
+def resolve_library_root(ecosystem_root: Path, library: str, environ: Mapping[str, str] | None = None) -> Path | None:
+    """The folder of a library. With `HYDRA_UMC_LIBRARY_DIR` set to a folder, both libraries are that one folder."""
+    if library in {lib_id for lib_id, _ in LIBRARIES}:
+        shared = shared_library_dir(environ)
+        if shared is not None:
+            return shared
     for lib_id, relative in LIBRARIES:
         if lib_id == library:
             candidate = ecosystem_root / relative

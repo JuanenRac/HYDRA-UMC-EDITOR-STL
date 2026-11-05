@@ -26,7 +26,7 @@ from .catalog_push import CatalogPushError, ServerClient, push_summary, push_war
 from .decimate import DEFAULT_RATIO, make_light_copy
 from .library_sync import LibrarySyncError, sync_libraries
 from .mesh_diff import diff_with_trash, render_diff_with_trash
-from .model_catalog import list_categories, list_models, load_model
+from .model_catalog import LIBRARY_DIR_ENV, list_categories, list_models, load_model, shared_library_dir
 from .urdf_bridge import UrdfBridgeError, open_in_urdf_editor
 from .stl_ops import StlOpsError, add_part, remove_part, replace_part, transform_part
 
@@ -210,6 +210,8 @@ def cmd_sync_libraries(args: argparse.Namespace) -> int:
         print(f"Library sync failed: {error}", file=sys.stderr)
         return 1
     diff = outcome["diff"]
+    if shared_library_dir() is not None:
+        print(f"{LIBRARY_DIR_ENV} is set: both apps read the one folder {shared_library_dir()}, so there is nothing to bring in line.")
     print(f"same: {diff.same}  to copy: {len(diff.only_in_master)}  to replace: {len(diff.different)}  only in {args.target} (left alone): {len(diff.only_in_target)}")
     if not args.apply and not diff.in_sync:
         print("Nothing was written: add --apply to bring the target in line (replaced files are kept in .sync-backup/).")

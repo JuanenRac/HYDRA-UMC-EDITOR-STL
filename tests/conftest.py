@@ -63,3 +63,9 @@ def ecosystem_root(tmp_path: Path) -> Path:
         encoding="utf-8",
     )
     return root
+
+
+@pytest.fixture(autouse=True)
+def _no_shared_library_folder(monkeypatch):
+    """A developer machine that sets the common library folder must not change what the tests read."""
+    monkeypatch.delenv("HYDRA_UMC_LIBRARY_DIR", raising=False)

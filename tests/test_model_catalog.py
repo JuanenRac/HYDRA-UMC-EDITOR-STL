@@ -40,3 +40,36 @@ def test_load_model_lists_real_parts_and_metadata(ecosystem_root: Path) -> None:
 
 def test_load_model_none_for_a_missing_model(ecosystem_root: Path) -> None:
     assert load_model(ecosystem_root, "studio", "robots-6-dof", "no-such-model") is None
+
+
+def test_the_shared_library_folder_replaces_both_libraries(ecosystem_root: Path, tmp_path: Path) -> None:
+    from hydra_umc_editor_stl.model_catalog import resolve_library_root, shared_library_dir
+
+    shared = tmp_path / "common-library"
+    (shared / "robots-6-dof" / "xarm6").mkdir(parents=True)
+    env = {"HYDRA_UMC_LIBRARY_DIR": str(shared)}
+    assert shared_library_dir(env) == shared
+    assert resolve_library_root(ecosystem_root, "studio", env) == shared
+    assert resolve_library_root(ecosystem_root, "suite", env) == shared
+    assert list_categories(ecosystem_root, "suite") == []  # without the variable each app keeps its own folder
+
+
+def test_a_wrong_shared_library_folder_falls_back_to_the_folders_of_the_apps(ecosystem_root: Path, tmp_path: Path) -> None:
+    from hydra_umc_editor_stl.model_catalog import resolve_library_root, shared_library_dir
+
+    for value in ("", "   ", str(tmp_path / "does-not-exist")):
+        env = {"HYDRA_UMC_LIBRARY_DIR": value}
+        assert shared_library_dir(env) is None
+        assert resolve_library_root(ecosystem_root, "studio", env) == ecosystem_root / "HYDRA-UMC-STUDIO/public/models"
+    assert resolve_library_root(ecosystem_root, "unknown", {"HYDRA_UMC_LIBRARY_DIR": str(tmp_path)}) is None
+
+
+def test_with_one_shared_folder_the_sync_has_nothing_to_do(ecosystem_root: Path, tmp_path: Path, monkeypatch) -> None:
+    from hydra_umc_editor_stl.library_sync import sync_libraries
+
+    shared = tmp_path / "common-library"
+    (shared / "cat" / "m").mkdir(parents=True)
+    (shared / "cat" / "m" / "a.stl").write_bytes(b"x")
+    monkeypatch.setenv("HYDRA_UMC_LIBRARY_DIR", str(shared))
+    outcome = sync_libraries(ecosystem_root, apply=True)
+    assert outcome["diff"].in_sync and outcome["copied"] == [] and outcome["replaced"] == []
