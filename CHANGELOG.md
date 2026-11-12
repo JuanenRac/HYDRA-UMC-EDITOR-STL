@@ -4,7 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
-## [0.2.1] - The two model libraries can be one folder: with HYDRAUMCLIBRARYDIR set to an existing folder, both libraries (studio and suite) are that folder, STUDIO and the desktop app read the same one, and sync-libraries says there is... (and 2 more changes)
+## [0.2.1] - **README: the platform statement:** a note says that where the README speaks of the CM5 it means the pilot bench that runs today, and that the target platform of HYDRA-UMC, an NVIDIA Jetson Orin NX 16 GB, is a design that has not been built or tested.
+- The two model libraries can be one folder: with HYDRAUMCLIBRARYDIR set to an existing folder, both libraries (studio and suite) are that folder, STUDIO and the desktop app read the same one, and sync-libraries says there is... (and 2 more changes)
 
 - **The two model libraries can be one folder:** with `HYDRA_UMC_LIBRARY_DIR` set to an existing folder, both libraries (`studio` and `suite`) are that folder, STUDIO and the desktop app read the same one, and `sync-libraries` says there is nothing to bring in line. Unset, or naming something that is not a folder, each library keeps its own folder as before. 3 tests.
 

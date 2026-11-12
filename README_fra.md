@@ -154,6 +154,8 @@ produit, pas seulement comme une habitude interne.
 
 **HYDRA-UMC-EDITOR-STL** est l'outil de bureau qui modifie les vraies pièces STL de chaque modèle de robot et de machine fourni par HYDRA-UMC-STUDIO et HYDRA-UMC-SUITE. Il lit leurs deux dossiers de modèles tels quels, montre un modèle dans une visionneuse Qt Quick 3D, et transforme, recolore, remplace, retire ou ajoute une pièce sur le disque, en mettant l'original de côté au lieu de le supprimer. Un modèle terminé peut être envoyé au catalogue de modèles d'un HYDRA-UMC-SERVER.
 
+> **Plateforme :** là où ce README dit CM5, il s'agit du banc pilote qui fonctionne aujourd'hui ; la plateforme visée par HYDRA-UMC est un NVIDIA Jetson Orin NX 16 Go, une conception ni construite ni testée.
+
 ## 🏛️ Architecture
 
 <p align="center">

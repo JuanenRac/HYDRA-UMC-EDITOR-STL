@@ -154,6 +154,8 @@ aqui como uma funcionalidade real do produto, e não apenas um hábito interno.
 
 A **HYDRA-UMC-EDITOR-STL** é a ferramenta de ambiente de trabalho que edita as peças STL reais de cada modelo de robô e máquina que o HYDRA-UMC-STUDIO e o HYDRA-UMC-SUITE trazem. Lê as suas duas pastas de modelos tal como estão, mostra um modelo num visualizador Qt Quick 3D, e transforma, recolore, substitui, remove ou adiciona uma peça no disco, pondo o original de lado em vez de o apagar. Um modelo terminado pode ser enviado para o catálogo de modelos de um HYDRA-UMC-SERVER.
 
+> **Plataforma:** onde este README diz CM5, refere-se ao banco piloto que funciona hoje; a plataforma objetivo do HYDRA-UMC é uma NVIDIA Jetson Orin NX de 16 GB, um desenho que não foi construído nem testado.
+
 ## 🏛️ Arquitetura
 
 <p align="center">

@@ -136,6 +136,8 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
 
 **HYDRA-UMC-EDITOR-STL** 是桌面工具，用来编辑 HYDRA-UMC-STUDIO 和 HYDRA-UMC-SUITE 所带的每个机器人和机器模型的真实 STL 零件。它按原样读取这两个模型文件夹，在 Qt Quick 3D 查看器中显示模型，并在磁盘上变换、改色、替换、移除或添加零件，原文件被移到一旁而不是删除。完成的模型可以推送到 HYDRA-UMC-SERVER 的模型目录。
 
+> **平台：** 本 README 中的 CM5 指的是目前正在运行的试验台；HYDRA-UMC 的目标平台是 NVIDIA Jetson Orin NX 16 GB，这是尚未制造或测试的设计。
+
 ## 🏛️ 架构
 
 <p align="center">
