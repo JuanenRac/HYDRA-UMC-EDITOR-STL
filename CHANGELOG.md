@@ -4,7 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
-## [0.2.1] - **README: the platform statement:** a note says that where the README speaks of the CM5 it means the pilot bench that runs today, and that the target platform of HYDRA-UMC, an NVIDIA Jetson Orin NX 16 GB, is a design that has not been built or tested.
+## [0.2.1] - **Tests of the language and the selection slots of the Qt bridge:** 7 new tests (the eight languages and the version, the language saved once and the texts that follow it, an unknown text key, the ecosystem root taken only from a directory or the URL of the folder dialog, the library that clears the category and the model, a repeated selection that does not notify); they record what would be saved instead of touching the real settings; no behaviour changes.
+- **README: the platform statement:** a note says that where the README speaks of the CM5 it means the pilot bench that runs today, and that the target platform of HYDRA-UMC, an NVIDIA Jetson Orin NX 16 GB, is a design that has not been built or tested.
 - The two model libraries can be one folder: with HYDRAUMCLIBRARYDIR set to an existing folder, both libraries (studio and suite) are that folder, STUDIO and the desktop app read the same one, and sync-libraries says there is... (and 2 more changes)
 
 - **The two model libraries can be one folder:** with `HYDRA_UMC_LIBRARY_DIR` set to an existing folder, both libraries (`studio` and `suite`) are that folder, STUDIO and the desktop app read the same one, and `sync-libraries` says there is nothing to bring in line. Unset, or naming something that is not a folder, each library keeps its own folder as before. 3 tests.
