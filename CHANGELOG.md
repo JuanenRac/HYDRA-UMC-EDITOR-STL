@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The SDK pin and the shared tools are up to date:** the SDK dependency names the newest release tag, and the shared tools are the canonical copies again.
 - **A simulation bench for the STL operations:** `tests/test_simulation_bench.py` runs the real operations of the editor (move, rotate, scale, add, remove, restore, empty the trash, the light copy, the mesh check, the comparison and the GLB of the viewer) on boxes and spheres of random size drawn from a fixed seed, whose volume is known in closed form, and then injures the parts (a hole, faces turned inside out, a number that is not a number, a repeated face, a wrong unit, a file cut short) and requires the checks to see each injury. The workflow "Simulation bench" runs it on every change and `docs/SIMULATION.md` describes it. The manifest now declares the evidence level `simulator`.
 - **The coverage of the tests is measured on every change:** the workflow "Coverage floor" runs the whole suite under line and branch coverage and fails when it falls under 85 %.
 
