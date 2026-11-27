@@ -1039,7 +1039,8 @@ ApplicationWindow {
                                             backend.applyTransform(
                                                 gizmoState.pendingOffset.x, gizmoState.pendingOffset.y, gizmoState.pendingOffset.z,
                                                 parseFloat(rxField.text) || 0, parseFloat(ryField.text) || 0, parseFloat(rzField.text) || 0,
-                                                parseFloat(scaleField.text) || 1
+                                                parseFloat(scaleField.text) || 1,
+                                    unitCombo.currentValue || "file"
                                             )
                                             gizmoState.resetForSelection()
                                             rxField.text = "0"; ryField.text = "0"; rzField.text = "0"; scaleField.text = "1"
@@ -1151,6 +1152,17 @@ ApplicationWindow {
 
                             ListLabel { text: ui("panel_transform_title") }
                             ListLabel { text: ui("lbl_translate") }
+                            GameCombo {
+                                id: unitCombo
+                                Layout.fillWidth: true
+                                textRole: "label"
+                                valueRole: "code"
+                                model: [
+                                    { code: "file", label: ui("unit_file") },
+                                    { code: "mm", label: "mm" },
+                                    { code: "m", label: "m" }
+                                ]
+                            }
                             RowLayout {
                                 spacing: 4
                                 GameField { id: txField; text: "0"; Layout.fillWidth: true }
@@ -1167,7 +1179,8 @@ ApplicationWindow {
                                 onClicked: backend.applyTransform(
                                     parseFloat(txField.text) || 0, parseFloat(tyField.text) || 0, parseFloat(tzField.text) || 0,
                                     parseFloat(rxField.text) || 0, parseFloat(ryField.text) || 0, parseFloat(rzField.text) || 0,
-                                    parseFloat(scaleField.text) || 1
+                                    parseFloat(scaleField.text) || 1,
+                                    unitCombo.currentValue || "file"
                                 )
                             }
 

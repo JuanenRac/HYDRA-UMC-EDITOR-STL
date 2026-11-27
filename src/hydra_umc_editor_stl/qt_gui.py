@@ -364,14 +364,15 @@ class EditorBridge(QObject):
     # --- real STL operations --------------------------------------------
 
     @Slot(float, float, float, float, float, float, float)
+    @Slot(float, float, float, float, float, float, float, str)
     @guarded()
-    def applyTransform(self, tx: float, ty: float, tz: float, rx: float, ry: float, rz: float, scale: float) -> None:
+    def applyTransform(self, tx: float, ty: float, tz: float, rx: float, ry: float, rz: float, scale: float, unit: str = "file") -> None:
         model = self._load_selected_model()
         if model is None or not self._selected_part:
             self._set_status(i18n.t(self._lang, "msg_select_part_first"))
             return
         try:
-            bbox = transform_part(model.path, self._selected_part, (tx, ty, tz), (rx, ry, rz), scale)
+            bbox = transform_part(model.path, self._selected_part, (tx, ty, tz), (rx, ry, rz), scale, unit=unit)
         except (StlOpsError, OSError) as error:
             self._set_status(i18n.t(self._lang, "msg_transform_failed", error=str(error)))
             return

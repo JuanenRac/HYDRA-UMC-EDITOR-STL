@@ -52,7 +52,8 @@ back in place. The original is backed up into that model's own
 
 | Option | Meaning | Default |
 | --- | --- | --- |
-| `--tx`/`--ty`/`--tz` | Translation, millimeters | `0` |
+| `--tx`/`--ty`/`--tz` | Translation, in the unit of `--unit` | `0` |
+| `--unit` | `file` (the numbers are added as they are, in the units of the STL), `mm` or `m` (converted to the unit the model declares in `metadata.json`; refused when it declares none) | `file` |
 | `--rx`/`--ry`/`--rz` | Rotation, degrees (applied X, then Y, then Z, after scale) | `0` |
 | `--scale` | Uniform scale factor, must be positive | `1` |
 
