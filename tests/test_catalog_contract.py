@@ -4,7 +4,7 @@
 # GPL-3.0-or-later - see LICENSE
 # =============================================================================
 """What this editor sends to the model catalog of the server, against the contract it shares with HYDRA-UMC-EDITOR-URDF
-(`tests/golden/catalog_submit.json`, a byte copy of `conformance/fixtures/v1/catalog-submit.json` of HYDRA-UMC-SDK)."""
+(`tests/catalog_submit.json`, a byte copy of `conformance/fixtures/v1/catalog-submit.json` of HYDRA-UMC-SDK)."""
 from __future__ import annotations
 
 import hashlib
@@ -14,7 +14,7 @@ from pathlib import Path
 from hydra_umc_editor_stl.catalog_push import ServerClient
 from hydra_umc_editor_stl.model_catalog import ModelInfo, PartInfo
 
-CONTRACT_FILE = Path(__file__).parent / "golden" / "catalog_submit.json"
+CONTRACT_FILE = Path(__file__).parent / "catalog_submit.json"
 # The same number in the other editor: the contract changes in the SDK first, then in both copies.
 CONTRACT_SHA256 = "86442c8b44d37b068d73f728602938d0700e5d5e702f6d1ced5711b4f2507cb1"
 CONTRACT = json.loads(CONTRACT_FILE.read_text(encoding="utf-8"))
