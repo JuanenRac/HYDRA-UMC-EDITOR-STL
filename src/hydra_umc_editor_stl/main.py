@@ -99,13 +99,16 @@ def cmd_transform(args: argparse.Namespace) -> int:
     try:
         bbox = transform_part(
             model_dir, args.part,
-            translate_mm=(args.tx, args.ty, args.tz),
+            translate=(args.tx, args.ty, args.tz),
             rotate_deg=(args.rx, args.ry, args.rz),
             scale=args.scale,
+            unit=args.unit,
         )
     except StlOpsError as error:
         print(f"Transform failed: {error}", file=sys.stderr)
         return 1
+    applied = "the units of the file" if args.unit == "file" else args.unit
+    print(f"Translation read in {applied}.")
     print(f"Transformed {args.part} - new bounds: min {bbox.min_xyz}, max {bbox.max_xyz}")
     return 0
 
@@ -314,6 +317,10 @@ def build_parser() -> argparse.ArgumentParser:
     transform_p.add_argument("--ry", type=float, default=0.0)
     transform_p.add_argument("--rz", type=float, default=0.0)
     transform_p.add_argument("--scale", type=float, default=1.0)
+    transform_p.add_argument(
+        "--unit", choices=("file", "mm", "m"), default="file",
+        help="what --tx/--ty/--tz are written in: the units of the file (default), or mm / m converted to the unit the model declares",
+    )
     transform_p.set_defaults(func=cmd_transform)
 
     replace_p = subparsers.add_parser("replace", help="Replace one part's STL file with another (original kept in .trash/).")

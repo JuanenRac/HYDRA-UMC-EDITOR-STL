@@ -189,12 +189,33 @@ def _unique_trash_path(model_dir: Path, filename: str) -> Path:
     return trash_dir / f"{stamp}_{safe_name}"
 
 
+TRANSLATION_UNITS = ("file", "mm", "m")
+
+
+def translation_factor(model_dir: Path, unit: str) -> float:
+    """What a translation written in `unit` is multiplied by to be in the units of the files of the model."""
+    if unit not in TRANSLATION_UNITS:
+        raise StlOpsError(f"the unit must be one of: {', '.join(TRANSLATION_UNITS)}")
+    if unit == "file":
+        return 1.0
+    from .assembly import model_unit  # assembly imports this module
+
+    declared = model_unit(model_dir)
+    if declared is None:
+        raise StlOpsError(f"the model does not declare its unit (unit in metadata.json): a translation in {unit} cannot be converted - nothing was changed")
+    millimeters = {"mm": 1.0, "m": 1000.0}
+    return millimeters[unit] / millimeters[declared]
+
+
 def transform_part(
     model_dir: Path,
     filename: str,
-    translate_mm: tuple[float, float, float] = (0.0, 0.0, 0.0),
+    translate: tuple[float, float, float] = (0.0, 0.0, 0.0),
     rotate_deg: tuple[float, float, float] = (0.0, 0.0, 0.0),
     scale: float = 1.0,
+    *,
+    unit: str = "file",
+    translate_mm: tuple[float, float, float] | None = None,
 ) -> BoundingBox:
     """Applies a real affine transform (scale, then rotate X/Y/Z in that
     order, then translate) to every vertex of `filename` and saves the
@@ -204,10 +225,15 @@ def transform_part(
     applied here directly to mesh vertices instead of a joint chain.
     Returns the real post-transform bounding box so a caller (CLI or
     QML) can show the operator what actually changed, not just "done"."""
-    if not all(math.isfinite(v) for v in (*translate_mm, *rotate_deg, scale)):
+    # `unit` says what `translate` is written in: "file" (default) adds it as it is, in the units of the file; "mm" or "m"
+    # converts it to the unit the model declares in its metadata. `translate_mm` is the old name of `translate`.
+    if translate_mm is not None:
+        translate = translate_mm
+    if not all(math.isfinite(v) for v in (*translate, *rotate_deg, scale)):
         raise StlOpsError("translation, rotation and scale must be finite numbers")
     if scale <= 0:
         raise StlOpsError(f"scale must be a positive number, got {scale}")
+    factor = translation_factor(model_dir, unit) if any(translate) else 1.0
     target = _part_path(model_dir, filename)
     if not target.is_file():
         raise StlOpsError(f"no such part: {filename}")
@@ -227,7 +253,7 @@ def transform_part(
     rotation = rot_z @ rot_y @ rot_x
     points = points @ rotation.T
 
-    points += np.array(translate_mm, dtype=np.float64)
+    points += np.array(translate, dtype=np.float64) * factor
 
     transformed = points.astype(np.float32)
     if not np.isfinite(transformed).all():
