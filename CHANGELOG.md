@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [0.2.2] - Units in translations and a shared catalog contract
 
 - **What the editor sends to the model catalog is checked against a shared contract:** `tests/catalog_submit.json`, the same bytes as in HYDRA-UMC-EDITOR-URDF, with its origin in HYDRA-UMC-SDK (`conformance/fixtures/v1/catalog-submit.json`). Tests only.
 - **A translation can be written in millimeters or meters:** `transform` takes `--unit file|mm|m` and the transform panel has the same choice (eight languages). `mm` and `m` are converted to the unit the model declares in its metadata and are refused when it declares none; the default, `file`, adds the numbers as before. The panel no longer says millimeters when the file may be in meters.
