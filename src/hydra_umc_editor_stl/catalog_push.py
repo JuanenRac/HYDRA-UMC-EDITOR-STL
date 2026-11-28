@@ -185,6 +185,29 @@ def push_summary(model: ModelInfo, category: str, base_url: str, overwrite: bool
     return lines
 
 
+# The credit and licence of the meshes of a model: a text file of its folder, which the server keeps as the file of the same name.
+ATTRIBUTION_FILE = "ATTRIBUTION.txt"
+# The most characters the server accepts in its `attribution` field.
+MAX_ATTRIBUTION_CHARS = 8000
+
+
+def model_attribution(model: ModelInfo, given: str | None = None) -> str:
+    """The attribution to send with a model: `given`, else the ATTRIBUTION.txt of the model folder, else nothing. A text over the
+    limit of the server, or a file that cannot be read as UTF-8 text, is refused before anything is sent."""
+    if given is None:
+        path = model.path / ATTRIBUTION_FILE
+        if not path.is_file():
+            return ""
+        try:
+            given = path.read_text(encoding="utf-8-sig")
+        except (OSError, UnicodeDecodeError) as error:
+            raise CatalogPushError(f"could not read {path.name} of the model: {error}") from error
+    text = given.strip()
+    if len(text) > MAX_ATTRIBUTION_CHARS:
+        raise CatalogPushError(f"the attribution is {len(text)} characters, above the server's limit of {MAX_ATTRIBUTION_CHARS}")
+    return text
+
+
 class ServerClient:
     """One instance per server the operator points this app at - mirrors
     HYDRA-UMC-EDITOR-URDF's own server/client.py StudioClient (same real
@@ -272,6 +295,7 @@ class ServerClient:
         lite_format: str | None = None,
         lite_ratio: float = DEFAULT_RATIO,
         confirmed: bool = False,
+        attribution: str | None = None,
     ) -> str:
         """POST /api/models/submit - builds the assembly URDF above,
         base64-encodes every editable part's own current STL bytes
@@ -280,6 +304,9 @@ class ServerClient:
         CatalogPushError with the server's own message on a real failure
         (including its 409 name-collision message when `overwrite` is
         not set).
+
+        The credit and licence of the meshes travel in `attribution`: the text given, else the ATTRIBUTION.txt of the model folder;
+        with neither the field is not sent (a server that requires it then refuses the push and says so).
 
         With `lite_format` "stl" or "glb" (the default None sends nothing extra) a lighter copy of each part travels
         too, as `<mesh name>.lite.stl` or `.lite.glb` next to the full one, for the apps that cannot carry the full mesh;
@@ -334,6 +361,9 @@ class ServerClient:
             "meshFiles": mesh_files,
             "overwrite": overwrite,
         }
+        credit = model_attribution(model, attribution)
+        if credit:
+            body["attribution"] = credit
         size = len(json.dumps(body).encode("utf-8"))
         if size > MAX_BODY_BYTES:
             raise CatalogPushError(

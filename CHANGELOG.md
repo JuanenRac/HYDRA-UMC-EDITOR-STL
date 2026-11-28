@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+- **A pushed model carries the credit of its meshes:** the `ATTRIBUTION.txt` of the model folder (or `--attribution`) is sent in the `attribution` field, so a server that requires it accepts the push; with neither nothing changes. Tests added.
+
 ## [0.2.2] - Units in translations and a shared catalog contract
 
 - **What the editor sends to the model catalog is checked against a shared contract:** `tests/catalog_submit.json`, the same bytes as in HYDRA-UMC-EDITOR-URDF, with its origin in HYDRA-UMC-SDK (`conformance/fixtures/v1/catalog-submit.json`). Tests only.
