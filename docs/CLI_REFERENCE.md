@@ -111,6 +111,7 @@ baked into its own STL vertices, never a synthetic pose invented here. That hold
 | `--server-category` | Category to file this under server-side | same as `<category>` |
 | `--overwrite` | Replace an existing submission with the same name/category | off |
 | `--yes` | Confirm the push without being asked. Without it the summary (server, model, category, replacement) is printed and the word `yes` must be typed; in a script with no terminal the push is refused | off |
+| `--attribution TEXT` | Credit and licence of the meshes, sent in the `attribution` field of the server. Default: the `ATTRIBUTION.txt` of the model folder; with neither the field is not sent. At most 8000 characters. |
 | `--allow-stacked-push` | Send a robot or machine although the home-pose placement of its parts is not known here and they arrive stacked at the origin (refused by default only in that case; independent pieces such as heated beds are never refused; the **Force** box of the push window does the same) | off |
 
 ```bash

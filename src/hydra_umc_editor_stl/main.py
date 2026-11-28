@@ -263,6 +263,8 @@ def cmd_push(args: argparse.Namespace) -> int:
         extra: dict = {}
         if lite_format is not None:  # nothing extra is passed (or sent) unless a light copy was asked for
             extra = {"lite_format": lite_format, "lite_ratio": _saved_ratio() if args.lite_ratio is None else args.lite_ratio}
+        if args.attribution is not None:
+            extra["attribution"] = args.attribution
         slug = client.push_model(
             model, args.server_category or args.category, args.overwrite, allow_stacked=args.allow_stacked_push,
             ecosystem_root=root, confirmed=True, **extra,
@@ -380,6 +382,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     push_p.add_argument("--lite", choices=["stl", "glb"], help="Also send a lighter copy of every part in this format, next to the full mesh (default: push_lite in the saved settings; off when it is not set).")
     push_p.add_argument("--lite-ratio", type=float, help="Share of the triangles the light copy keeps (default: lite_ratio in the saved settings).")
+    push_p.add_argument("--attribution", help="Credit and licence of the meshes, sent with the model (default: the ATTRIBUTION.txt of the model folder, when it has one).")
     push_p.add_argument("--yes", action="store_true", help="Confirm the push without being asked (needed in a script; the account must be an admin of the server).")
     push_p.add_argument("--overwrite", action="store_true", help="Replace an existing submission with the same name/category.")
     push_p.set_defaults(func=cmd_push)

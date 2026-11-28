@@ -11,7 +11,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from hydra_umc_editor_stl.catalog_push import ServerClient
+from hydra_umc_editor_stl.catalog_push import CatalogPushError, ServerClient
 from hydra_umc_editor_stl.model_catalog import ModelInfo, PartInfo
 
 CONTRACT_FILE = Path(__file__).parent / "catalog_submit.json"
@@ -58,3 +58,36 @@ def test_login_and_submit_send_what_the_contract_says(tmp_path: Path) -> None:
     assert body2 is not None
     _same_shape(body2, submit["required"], submit["optional"])
     assert all(set(entry) == {"filename", "base64"} for entry in body2["meshFiles"])
+    assert "attribution" not in body2, "a model with no ATTRIBUTION.txt sends none"
+
+
+def test_the_attribution_of_the_model_folder_or_of_the_command_is_sent(tmp_path: Path) -> None:
+    (tmp_path / "base.stl").write_bytes(b"solid base")
+    (tmp_path / "ATTRIBUTION.txt").write_bytes("\ufeffmeshes by their authors, CC-BY\r\n".encode("utf-8"))
+    model = ModelInfo(library="studio", category="robots", model_id="arm", path=tmp_path, parts=(PartInfo(filename="base.stl", size_bytes=10, editable=True),))
+    client = ServerClient("127.0.0.1")
+    asked = _recording(client)
+    client.login("admin", "x")
+    client.push_model(model, "robots", allow_stacked=True, confirmed=True)
+    body = asked[-1][2]
+    assert body["attribution"] == "meshes by their authors, CC-BY"
+    _same_shape(body, CONTRACT["submit"]["required"], CONTRACT["submit"]["optional"])
+    client.push_model(model, "robots", allow_stacked=True, confirmed=True, attribution="another credit")
+    assert asked[-1][2]["attribution"] == "another credit"
+
+
+def test_an_attribution_the_server_would_refuse_is_not_sent(tmp_path: Path) -> None:
+    (tmp_path / "base.stl").write_bytes(b"solid base")
+    model = ModelInfo(library="studio", category="robots", model_id="arm", path=tmp_path, parts=(PartInfo(filename="base.stl", size_bytes=10, editable=True),))
+    client = ServerClient("127.0.0.1")
+    asked = _recording(client)
+    client.login("admin", "x")
+    for setup in (lambda: None, lambda: (tmp_path / "ATTRIBUTION.txt").write_bytes(b"\xff\xfe\x00")):
+        setup()
+        try:
+            client.push_model(model, "robots", allow_stacked=True, confirmed=True, attribution=None if (tmp_path / "ATTRIBUTION.txt").exists() else "x" * 8001)
+        except CatalogPushError:
+            pass
+        else:
+            raise AssertionError("expected a refusal")
+    assert [entry[1] for entry in asked] == ["/api/login"]
